@@ -1,0 +1,11 @@
+@name ddosv2
+@inputs 
+@outputs 
+@persist I [E O]:entity
+@trigger 
+interval(100)
+if(first()){
+  E = entity()
+  O = owner()
+while(holoCanCreate()){ holoCreate(I,E:toWorld(vec(0,0,105*I))) holoModel(I,"models/props_combine/combine_train02a.mdl") holoScale(I,vec(999999999,9999999999,9999999999999)) holoMaterial(I,"models/props_combine/stasisshield_sheet") I++ }
+} 

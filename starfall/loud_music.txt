@@ -3,12 +3,12 @@
 --@shared
 --@model models/props_lab/citizenradio.mdl
 
-local Volume = 5
+local Volume = 3
 local Speed = 1
-local URL = "ar"
+local URL = "ff"
 local IsLooping = true
 
-local IsAllServer = true
+local IsAllServer = false
 local Radius = 1000
 
 ------------------------------------------------------------------------------------
@@ -29,6 +29,9 @@ end)[1]*/
 ------------------------------------------------------------------------------------
 
 local _urls = {
+    ff = "https://cdn.discordapp.com/attachments/1081967820172181578/1099699301770338304/Ozoi_The_Maid_Yakui_The_Maid_-_Faraway.mp3",
+    az = "https://cdn.discordapp.com/attachments/1081967820172181578/1099700543519215676/Itai_The_Maid_-_Azoera.mp3",
+    shalt = "https://cdn.discordapp.com/attachments/1081967820172181578/1099767485651226684/shaltai-boltai-vsiu-seriiu-vytianul_tkn2s9T.mp3",
     ar = "https://cdn.discordapp.com/attachments/1081967820172181578/1099709842320527502/-_.mp3",
     fn = "https://cdn.discordapp.com/attachments/1081967820172181578/1099705174836129912/-_.mp3",
     bam = "https://cdn.discordapp.com/attachments/1081967820172181578/1096924000879382641/-_.mp3",
