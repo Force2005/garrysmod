@@ -1,0 +1,226 @@
+--@name force sphere
+--@author Markiz
+--@shared
+
+
+local Radius = 500
+local Speed = 100  -- 18 = no gravity
+
+local ToUp = false
+
+local IsUnfrozingProps = false
+
+local IsSetPosProps = false
+local IsSetPosPlayers = false
+local IsSetPosNoclipPlayers = true
+
+local IsSetPosOnGround = false
+
+local IsTriggerWorldEntity = true
+
+local IsDeleteProps = false
+local IsDeleteWorldProps = false
+
+
+local IsWorkByTimer = false
+local WorkTimerDelay = 0.5
+
+local IsOnlyPlayers = false
+
+local Friends = {
+    --'Markiz',
+    'Force2005',
+    'prostocrifte',
+}
+
+--local SphereMode = 'ihv' -- invisible / ihv
+
+
+
+-- ===========================================================================
+
+
+local E = chip()
+
+    
+if CLIENT then
+    local SphereAlpha = 60
+    
+    local H = holograms.create(E:getPos(), E:getAngles(), "models/holograms/hq_sphere.mdl", Vector(Radius/5.8))
+    local H2 = holograms.create(E:getPos(), E:getAngles(), "models/holograms/hq_sphere.mdl", -Vector(Radius/5.8))
+    
+    H:setColor(Color(255,255,255, SphereAlpha))
+    H2:setColor(Color(255,255,255, SphereAlpha))
+    
+    H:setParent(E)
+    H2:setParent(E)
+    
+    
+    if SphereMode == 'invisible' then
+        H:setMaterial("engine/writez") 
+        H:setColor(Color(255,0,0))
+    elseif SphereMode == 'ihv' then
+        local H3 = holograms.create(E:getPos(), E:getAngles(), "models/holograms/hq_sphere.mdl", -Vector(Radius/5.8))
+        H3:setParent(E)
+        
+        H:setMaterial("models/ihvtest/eyeball_r") 
+        H2:setMaterial("models/ihvtest/eyeball_r") 
+        H3:setMaterial("models/ihvtest/eyeball_r") 
+        
+        H:setColor(Color(255, 0, 0, 150))
+        H2:setColor(Color(0, 255, 0, 50))
+        H3:setColor(Color(0, 255, 0, 50))
+        
+        local i = 0
+        hook.add("think", "", function()
+            i = (i+2) % 360
+            local c = Color(i,1,1):hsvToRGB()
+            c.a = 50
+            H:setColor(c)
+        end)
+    end
+    return
+end
+
+
+local ttime = timer.curtime()
+local W = wire.getWirelink(E)
+
+
+wire.adjustPorts(
+    {
+        Friends="array",
+        Force="number",
+    },
+    {
+    }
+)
+
+
+function table.any(t, func)
+    for i=1, #t do
+        if func(t[i]) then
+            return true
+        end
+    end
+    return false
+end
+
+function inSphere(p)
+    return p:getPos():getDistance(E:getPos()) < Radius
+end
+
+
+function checkEntity(ent)
+    if ent == E or ent == nil or !ent:isValid() or !ent:isValidPhys() or !inSphere(ent) then return false end
+
+        if IsOnlyPlayers and ent:getClass() != 'player' then return false end
+        
+        if wire.ports.Friends and #wire.ports.Friends > 0 then
+            for i, p in ipairs(wire.ports.Friends) do
+                if p == ent or p == ent:getOwner() then 
+                    return false 
+                end
+            end 
+        end
+        for i, name in ipairs(Friends) do
+            local p = find.playersByName(name)
+            if #p == 0 then continue end
+            if p[1] == ent or p[1] == ent:getOwner() then 
+                return false 
+            end
+        end 
+        
+        if !IsTriggerWorldEntity and ent:getClass() != 'player' and ent:getOwner() == nil then 
+            return false 
+        end
+        
+        return ent ~= nil and ent:isValid() and ent:isValidPhys() 
+            --and (ent:getClass() == 'prop_physics' or ent:getClass() == 'player')
+            and ent:getClass() ~= 'starfall_processor'
+    
+end
+
+
+if IsWorkByTimer then
+    timer.create("ff", WorkTimerDelay, 0, function()
+        handleForce()
+    end)
+else
+    hook.add("think", "", function()
+        handleForce()
+    end)
+end
+
+
+function handleForce()
+    
+    local ttime2 = timer.curtime()
+    ttimeDiff = ttime2 - ttime
+    ttime = ttime2
+    
+    /*local players = find.allPlayers(function(p)
+        if inSphere(p) then
+            return true
+        end
+        
+        return false
+    end)*/
+    local pp
+    
+    if IsOnlyPlayers then
+        pp = find.allPlayers(checkEntity)
+    else
+        pp = find.inSphere(chip():getPos(), Radius, checkEntity)
+    end
+    
+    
+    
+    for i, p in ipairs(pp) do
+        local phys = p:getPhysicsObject()
+        local dir0 = (p:getPos() - E:getPos()):getNormalized()
+        local dir = ToUp and Vector(0,0,1) or dir0
+        
+        local Force = W:isWired("Force") and wire.ports.Force and wire.ports.Force or Speed
+        
+        pcall(function()
+            if p:getClass() == 'player' then
+                --p:setVelocity(Vector(0,0,Speed))
+                p:setVelocity(dir*Force*ttimeDiff*34.272)
+            else
+                --p:applyForceCenter(Vector(0,0,20)*p:getMass()) 
+                --p:applyForceCenter(dir*Speed*p:getMass()) 
+                
+                if IsDeleteProps then
+                    if IsDeleteWorldProps or p:getOwner() != nil then
+                        p:remove()
+                    end
+                else
+                     phys:addVelocity(dir*Force*ttimeDiff*33.272)
+                    if IsUnfrozingProps then
+                        p:setFrozen(false)
+                    end
+                end
+            
+                
+            end
+        end)
+        
+        
+        --p:applyTorque(Vector(0,0,20)*p:getMass()) 
+        --p:applyForceCenter(Vector(0,0,18)*p:getMass()) 
+        --p:applyForceCenter(Vector(0,0,18000)) 
+        
+        if IsSetPosOnGround and p:isOnGround() then
+            p:setPos(p:getPos() + Vector(0,0,1))        
+        end
+        
+        if  p:getClass() == 'player' 
+                and (IsSetPosPlayers 
+                    or IsSetPosNoclipPlayers and p:isNoclipped()) or
+            p:getClass() != 'player' and IsSetPosProps then
+            p:setPos(E:getPos() + dir0*(Radius+20))           
+        end
+    end
+    
+end

@@ -1,0 +1,87 @@
+@name Player Blinder
+@inputs 
+@outputs Toggle TargetPlayers:array  
+@persist Toggle TargetPlayers:array
+@trigger
+
+#Created by "PotatoKingTheVII" -http://steamcommunity.com/id/ThyPotatoKing/
+if(duped())
+{
+    hint("/y        to toggle on/off",7)
+    hint("/a        to target everyone",7)
+    hint("/t playername, playername, playername     etc to target players",7)
+}
+########################################### Function and variable initialization
+runOnChat(1)
+LastSaid=owner():lastSaid():explode(",")
+function void blindPlayer(PlayerTarget:entity, Number:number)
+{
+    interval(10)
+    holoCreate(Number)
+    holoModel(Number,"cube")
+    holoColor(Number, floor(randvec(0,255)))
+    holoScale(Number,vec(3,3,3))
+    holoPos(Number, PlayerTarget:attachmentPos("anim_attachment_head"))
+    holoParentAttachment(Number,PlayerTarget,"anim_attachment_head")
+    holoEntity(Number):soundPlay(Number,100,"ambient/alarms/alarm_citizen_loop1.wav")
+    soundPitch(Number,255)
+}
+########################################### Power Toggle
+if((LastSaid:string(1)=="/y") & (chatClk(owner())))
+{
+    hideChat(1)
+    Toggle = !Toggle
+}
+########################################### Player targeting
+if(LastSaid:string(1):sub(0,2)=="/t"& chatClk(owner()))
+{
+    hideChat(1)
+    TargetPlayers:clear()
+    for(Count = 1,LastSaid:count())
+        {
+            if(Count == 1)
+            {
+                Player = findPlayerByName(LastSaid:string(1):sub(4,LastSaid:string(1):length()))
+            }
+            else
+            {
+                Player = findPlayerByName((LastSaid:string(Count)):trim())
+            }
+        if (Player:isPlayer())
+        {
+            TargetPlayers:pushEntity(Player)
+            print(Player:name(),"targeted")
+        }
+    Count = Count+1  
+        }
+}
+
+if(LastSaid:string(1):sub(0,2)=="/a"& chatClk(owner())) #Targeting everyone
+{
+    hideChat(1)
+    print("Everyone targeted")
+    TargetPlayers = players() 
+    for(I = 1, players():count())
+    {
+        if(TargetPlayers[I, entity]==owner())
+        {
+        TargetPlayers:remove(I)
+    }
+    I = I + 1
+    }
+      
+}
+########################################### Hologram and sound
+if(Toggle) 
+{
+for(C=1, TargetPlayers:count())
+{
+    blindPlayer(TargetPlayers[C,entity],C)     
+    C=C+1
+}
+}
+else
+{
+    holoDeleteAll()
+}
+###########################################

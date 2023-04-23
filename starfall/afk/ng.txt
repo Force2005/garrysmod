@@ -1,0 +1,112 @@
+--@name Happy new year
+--@author Markiz
+--@include libs/3d2dtext.txt
+--@client
+
+dofile("libs/3d2dtext.txt")
+
+local Target = chip()
+--Target = find.playersByName("Mark")[1]
+/*Target = find.allPlayers(function(p)
+    if p:getSteamID() == "STEAM_0:0:582893321" then
+        return true
+    end
+end)[1]*/
+//print(Target)
+
+local Data = {
+    {   text={"========================="}, 
+        //font = "Courier New",
+        fontSize=30, 
+        fontBold=1000, 
+        bold=true,
+        color=Color(0,255,0),
+        margin=20,
+        colorMode = 3,
+        rainbowSpace = 35,
+        rainbowColorSpace = 20,
+        rainbowReverse = false,
+        //colorSpeed = 0.3,
+    },
+    {   text={"Добро пожаловать"}, 
+        //font = "Courier New",
+        fontSize=30, 
+        fontBold=1000, 
+        bold=true,
+        color=Color(0,255,0),
+        margin=20,
+        colorMode = 3,
+        rainbowSpace = 35,
+        rainbowColorSpace = 20,
+        rainbowReverse = false,
+        //colorSpeed = 0.3,
+    },
+    {   text={"на паблик"}, 
+        //font = "Courier New",
+        fontSize=30, 
+        fontBold=1000, 
+        bold=true,
+        color=Color(0,255,0),
+        margin=30,
+        colorMode = 3,
+        rainbowSpace = 35,
+        rainbowColorSpace = 20,
+        rainbowReverse = false,
+        //colorSpeed = 0.3,
+    },
+    {   text={"Совершенные сиськи 18+"}, 
+        //font = "Courier New",
+        fontSize=30, 
+        fontBold=1000, 
+        bold=true,
+        color=Color(0,255,0),
+        margin=20,
+        colorMode = 3,
+        rainbowSpace = 35,
+        rainbowColorSpace = 20,
+        rainbowReverse = true,
+        --colorSpeed = 1.3,
+    },
+    {   text={"========================="}, 
+        //font = "Courier New",
+        fontSize=30, 
+        fontBold=1000, 
+        bold=true,
+        color=Color(0,255,0),
+        margin=20,
+        colorMode = 3,
+        rainbowSpace = 35,
+        rainbowColorSpace = 20,
+        rainbowReverse = false,
+        //colorSpeed = 0.3,
+    },
+}
+
+local Vars = {
+    Target= Target,
+
+    Mode=3,
+    isRotate=false,
+    rotateSpeed=200,
+    swaySpeed=0,
+    swayDegreesMax=0,
+    
+    IsStaticVertical=true,
+    IsDoubleData=true,
+    isHideTarget=false,
+    
+    shadowIterations=20,
+    shadowAlphaReverce=0,
+    shadowOffset=1,
+    --alphaGlobal=50,
+    
+    textSize=100*20,
+    DataOffsetZ=15,
+    
+    isParentPos=true,
+    isParentAngle=true,
+}
+
+
+obj = Text3D2D:new(Data, Vars)
+obj:run()

@@ -1,0 +1,17 @@
+@name 123123123123123123123123
+@inputs Turret:wirelink Pod:wirelink
+@outputs Fire
+@persist [E O Ee]:entity
+runOnTick(1)
+
+O=owner()
+
+E = Turret:entity()
+E:setPos(owner():shootPos()+vec(0,0,35)) 
+E:setAng(owner():eyeAngles())
+
+if(O:keyAttack1()){
+    Fire = 1
+} else {
+    Fire = 0
+}

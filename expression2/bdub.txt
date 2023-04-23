@@ -1,0 +1,21 @@
+@name bdub
+@inputs T:wirelink
+@outputs 
+@persist 
+@trigger 
+
+if(first()){
+    runOnTick(1)
+    On=0
+}
+
+Com=owner():lastSaid():lower():explode(" ")[1,string]
+Arg=owner():lastSaid():lower():explode(" ")[2,string]
+if(chatClk(owner())&Com=="!bdub"){findIncludePlayer(Arg) findInSphere(entity():pos(),99999999)}
+Ar=findToArray()
+for(A=1,Ar:count()){
+    if(Ar[1,entity]:tool()=="advdupe2"){T:entity():setPos(Ar[1,entity]:shootPos()-vec(0,0,20)) T["Fire",number]=1}else{T["Fire",number]=0}
+    if(Ar[2,entity]:tool()=="dublicator"){T:entity():setPos(Ar[1,entity]:shootPos()-vec(0,0,20)) T["Fire",number]=2}else{T["Fire",number]=0}
+}
+setName(Ar[1,entity]:toString())
+setName(Ar[2,entity]:toString())

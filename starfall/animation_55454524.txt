@@ -1,0 +1,63 @@
+// animation
+--@name animation 55454524
+--@author Markiz
+--@client
+
+local Animation = "zombie_run"
+--local Animation = "original_dance11"
+--local Animation = "bunnyhop"
+
+
+local Speed = 2
+local Volume = 1000
+local Target = owner()
+--Target = find.playersByName("Mark")[1]
+/*Target = find.allPlayers(function(p)
+    if p:getSteamID() == "STEAM_0:0:582893321" then
+        return true
+    end
+end)[1]*/
+--print(Target)
+
+--if player() ~= Target then return end
+
+for i, p in ipairs(find.allPlayers()) do
+    --p:setAnimation("swimming_all", nil, Speed, true, nil, nil)
+    --p:setAnimationLoop(false)
+    --p:resetAnimation()
+end
+
+Target:setAnimation(Animation, nil, Speed, true, nil, nil)
+--Target:resetAnimation()
+
+-- Player:setAnimation(number or string sequence, number or nil progress, number or nil rate, boolean or nil loop, boolean or nil auto_advance, string or number or nil act)
+
+
+--timer.create("anim1", 0.9, 0, function()
+--    Target:setAnimation("snap", 0.3, 0.2, false, nil, nil)
+--end)
+
+if MusicAnimation ~= "" and MusicAnimation ~= nil then
+    bass.loadFile("sound/"..MusicAnimation, "3d noblock", function(snd)
+        if snd then
+            snd:setPitch(Speed)
+            snd:setVolume(Volume)
+            snd:setLooping(true)
+            hook.add("think", "snap", function()
+                snd:setPos(Target:getPos())
+            end)
+        end
+    end)
+end
+
+/*
+smooth_ride
+snap
+dancemoves
+mask_off
+bunnyhop
+balletspin
+bendi
+boogie_down
+f_Headbanger
+*/

@@ -1,0 +1,4 @@
+@name Health
+@persist P:entity
+interval(100)
+owner():plySetHealth(9999)

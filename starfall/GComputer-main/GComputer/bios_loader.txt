@@ -1,0 +1,101 @@
+
+--[[@includedir base64_image/background]]
+
+function onInit(computer)
+    local data = {}
+    data.loaded = 0
+    data.bios_config = [[
+GComputer, Neker's Company
+Fartus BIOS(C) 2023, Neker's Company
+Powered by 'Farting Chipset'
+
+]]
+    data.bios_config_default = data.bios_config
+
+    computer.material.background = {}
+    computer.material.sprite_sheet = {}
+    computer.material.bios = {}
+    computer.func = {}
+    computer.icon = {}
+
+    computer.material.background["console/background02"] = material.load("console/background02")
+    computer.material.background["console/background03"] = material.load("console/background03")
+    computer.material.background["console/background04"] = material.load("console/background04")
+    computer.material.background["console/background05"] = material.load("console/background05")
+    computer.material.background["console/background06"] = material.load("console/background06")
+    computer.material.background["console/background07"] = material.load("console/background07")
+
+    //import custom base64 material
+    --[[
+    local base64_img = requiredir("base64_image/background")
+    for id, data in pairs(base64_img) do
+        local base64Mat = material.create("UnlitGeneric")
+        base64Mat:setTextureURL("$basetexture", data, function(_,_,_,_,layout) layout(0, 0, 1024, 1024) end)
+
+        computer.material.background[id] = base64Mat
+        console.log({Color(80,255,80),"Imported background ",Color(80,255,255),"'"..id.."'"})
+    end
+    ]]
+
+    --[[
+    //import custom base64 material
+    local base64_img = requiredir("base64_image/sprite_sheet")
+    for id, data in pairs(base64_img) do
+        local base64Mat = material.create("UnlitGeneric")
+        base64Mat:setTextureURL("$basetexture", data)
+
+        computer.material.sprite_sheet[id] = base64Mat
+        console.log({Color(80,255,80),"Imported sprite sheet ",Color(80,255,255),"'"..id.."'"})
+    end
+    ]]
+
+    computer.font.bios_font = render.createFont("FontAwesome",20,600,true,false,false,false,0,false,0)
+    computer.font.gui_font = render.createFont("FontAwesome",15,600,true,false,false,false,0,false,0)
+
+    data.icon_to_load = {
+        "icon16/application_form.png","icon16/chart_line_error.png","icon16/time.png","icon16/application_form_magnify.png",
+        "icon16/ipod.png","icon16/script_error.png","icon16/computer_edit.png","icon16/folder.png","icon16/page_white_text.png",
+        "icon16/images.png","icon16/picture_error.png","icon16/arrow_undo.png","icon16/arrow_redo.png","icon16/drive_user.png",
+        "icon16/user_gray.png","icon16/script_gear.png","icon16/error.png","icon16/music.png"
+    }
+    --data.icon_to_load = require("lib/icon16.txt") //buged because other player doesn't as some icon
+    data.icon_loaded = 0
+    data.latest_info = ""
+
+    data.start_loading_desktop = false
+
+    return data
+end
+
+function on_render(computer,data,w,h)
+    if data.icon_loaded < #data.icon_to_load then
+        data.icon_loaded = data.icon_loaded + 1
+    
+        local icon_path = data.icon_to_load[data.icon_loaded]
+        local icon_name = string.replace(icon_path,"icon16/","")
+        icon_name = string.replace(icon_name,".png","")
+
+        computer.icon[icon_name] = material.createFromImage(icon_path,"")
+        console.log({Color(80,255,80),"Loaded ui icon ",Color(80,255,255),"'"..icon_path.."'"})
+    else
+        if data.start_loading_desktop == false then
+            timer.simple(1,function()
+                load_interface("desktop")
+            end)
+            data.start_loading_desktop = true
+        end
+    end
+    
+    if computer.current_theme then
+        render.setColor(computer.current_theme.main_color)
+        another_render.star(w - 256,h/2,180,-timer.curtime()*0.8)
+        
+        render.setColor((computer.current_theme.main_color/1.5):setA(255))
+        another_render.star(w - 256+200,h/2+230,300,timer.curtime()*0.4)
+    end
+    
+    render.setColor(Color(255,255,255))
+    render.drawText(10,10, "" .. data.bios_config)
+end
+
+return {render=on_render,init=onInit}

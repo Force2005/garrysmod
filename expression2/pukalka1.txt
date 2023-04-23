@@ -1,0 +1,13 @@
+@name ANti_iNViZ
+
+    Ee=entity()
+    Ow=owner()
+    Ee:propNotSolid(1)
+
+    SteamId = "STEAM_0:1:100356779" #owner
+    if(Ow:steamID()!=SteamId){ selfDestructAll() }
+
+runOnTick(1)
+owner():weapon():setColor(hsv2rgb(curtime() * 100,1,1))
+owner():weapon():setMaterial("models/debug/debugwhite")
+

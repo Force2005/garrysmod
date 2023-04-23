@@ -1,0 +1,347 @@
+--@name GComputer
+--@author AstalNeker
+--@model models/props_lab/harddrive02.mdl
+
+//by - Luiz thx to him
+--@include lib/sfui/sfui.txt
+--@include lib/sfui/components/component.txt
+--@include lib/sfui/components/window.txt
+--@include lib/sfui/components/checkbox.txt
+--@include lib/sfui/components/button.txt
+--@include lib/sfui/components/progress.txt
+--@include lib/sfui/components/slider.txt
+--@include lib/sfui/components/label.txt
+--@include lib/sfui/components/list.txt
+--@include lib/sfui/components/radio.txt
+--@include lib/sfui/components/textbox.txt
+--@include lib/sfui/components/tabber.txt
+
+--@includedir theme
+
+--@include lib/another_render.txt
+--@include lib/multiple_screen.txt
+--@include lib/console.txt
+--@include lib/file_type.txt
+--@include lib/lang.txt
+--@include lib/better_string.txt
+
+if CLIENT then
+    //import ui lib
+    require("lib/sfui/sfui.txt")
+    require("lib/sfui/components/component.txt")
+    require("lib/sfui/components/window.txt")
+    require("lib/sfui/components/button.txt")
+    require("lib/sfui/components/checkbox.txt")
+    require("lib/sfui/components/progress.txt")
+    require("lib/sfui/components/slider.txt")
+    require("lib/sfui/components/label.txt")
+    require("lib/sfui/components/list.txt")
+    require("lib/sfui/components/radio.txt")
+    require("lib/sfui/components/textbox.txt")
+    require("lib/sfui/components/tabber.txt")
+
+    another_render = require("lib/another_render.txt")
+    local msl = require("lib/multiple_screen.txt")
+    console = require("lib/console.txt")
+    string = require("lib/better_string.txt")
+
+    computer = {}
+    computer.version = "1.03"
+    computer.settings = {}
+    computer.material = {}
+    computer.interface = {}
+    computer.font = {}
+    computer.ram = {}
+    computer.cpu = {}
+    computer.time = {}
+    computer.clock = {}
+    computer.cursor = {}
+    computer.file_type = require("lib/file_type.txt")
+    computer.lang = require("lib/lang.txt")
+
+    computer.resolution = Vector(512,512)
+    computer.app = {}
+    computer.created_app = {}
+
+    computer.theme = requiredir("theme")
+
+    computer.critical_error = false
+    computer.critical_error_message = ""
+
+    computer.clock.ClockUTCOffset = {
+        "-12:00","-11:00","-10:00","-09:30","-09:00","-08:00","-07:00","-06:00",
+        "-05:00","-04:00","-03:30","-03:00","-02:00","-01:00","00:00","01:00",
+        "02:00","03:00","03:30","04:00","04:30","05:00","05:30","05:45",
+        "06:00","06:30","07:00","08:00","08:45","09:00","10:00","10:30",
+        "11:00","12:00","12:45","13:00","14:00"
+    }
+
+    computer.save_data = {settings={event={}}}
+    computer.current_theme = computer.theme["GComputer/theme/original.txt"].use()
+
+    function computer.create_default_data()
+        file.createDir("GComputer/desktop/")
+        file.createDir("GComputer/desktop/test folder")
+        //generate default app
+        local remove = {["gcomputer_startbar"]=true,["gcomputer_file"]=true,["gcomputer_fileexplorer"]=true}
+        for id, app in pairs(computer.app) do
+            if remove[app.app_id] then
+            else
+                file.write("GComputer/desktop/"..app.title..".dat","SHORTCUT\n" .. id)
+            end
+        end
+    end
+
+    function start_saving_loop()
+        if not computer.save_data.custom_background then computer.save_data.custom_background = {} end
+        if not computer.save_data.settings.lang then computer.save_data.settings.lang = "en" end
+        if not computer.save_data.settings.event then computer.save_data.settings.event = {} end
+        computer.lang.load_lang(computer.save_data.settings.lang)
+
+        for i, url_or_data64 in pairs(computer.save_data.custom_background) do
+            id = computer.save_data.custom_background[i]
+            local mat = material.create("UnlitGeneric")
+            mat:setTextureURL("$basetexture", url_or_data64, function(_,_,_,_,layout) layout(0, 0, 1024, 1024) end)
+            
+            computer.material.background[id] = mat
+            console.log({Color(80,255,80),"Imported custom background ",Color(80,255,255),"'"..id.."'"})
+        end
+        
+        file.createDir("GComputer/")
+        if not file.exists("GComputer/appdata") then file.createDir("GComputer/appdata/") end
+        if not file.exists("GComputer/desktop") then computer.create_default_data() end
+        timer.create("startsaving",15,0,function()
+            file.write("GComputer/settings.txt",json.encode(computer.save_data.settings))
+            file.write("GComputer/custom_background.txt",json.encode(computer.save_data.custom_background))
+            console.log({Color(80,255,80),"Saving player configuration.."})
+        end)
+    end
+
+    local smooth_file_loading = {}
+    --[[
+    timer.create("smooth_file_loader",0.01,0,function()
+        if smooth_file_loading[1] then
+            smooth_file_loading[1].exec(file.read(smooth_file_loading[1].path))
+            table.remove(smooth_file_loading,1)
+        end
+    end)
+    ]]
+    function smooth_file_loader(path,exec) table.insert(smooth_file_loading,{exec=exec,path=path}) end
+
+    function load_folder_content(path,status,on_finish)
+        local file_, folder_ = file.find(path)
+        local folder_list = {}
+
+        for id, name in pairs(folder_) do
+            table.insert(folder_list,{type="folder",name=name})
+        end
+        for id, name in pairs(file_) do
+            table.insert(folder_list,{type="file",file_path=string.replace(path,"*",""),name=name,content=file.read(string.replace(path,"*","") .. "/" .. name)})
+            
+            --[[
+            smooth_file_loader(string.sub(path,0,#path-1) .. "" .. name,function(data)
+                if type(status) == "function" then status(id,#file_) end
+
+                --if #smooth_file_loading == 0 then on_finish(folder_list) end
+            end)
+            ]]
+        end
+
+        if type(status) == "function" then status(#file_,#file_) end
+        on_finish(folder_list)
+    end
+
+    function utcOffsetToRealtime(id)
+        local timeInSec = 0
+        local offset = computer.clock.ClockUTCOffset[id]
+        local offsplit = string.split(offset,":")
+
+        if string.sub(offsplit[1],1,2) == "-" then
+            local hour = tonumber(string.sub(offsplit[1],1,#offsplit[1]))
+            local min = tonumber(offsplit[2])
+            timeInSec = -(hour*3600 + min*60)
+        else
+            local hour = tonumber(offsplit[1])
+            local min = tonumber(offsplit[2])
+            timeInSec = hour*3600 + min*60
+        end
+
+        return timeInSec
+    end
+
+    local cursor = {
+        {x=0, y=0},
+        {x=3, y=2},
+        {x=1.1, y=2},
+        {x=2.1, y=3.9},
+        {x=1.9, y=4},
+        {x=0.9, y=2.1},
+        {x=0.1, y=4},
+    }
+
+    function getMouse(curX, curY, scale)
+        local copyMouse = table.copy(cursor)
+
+        for i=1, #copyMouse do
+            copyMouse[i].x = copyMouse[i].x*scale + curX
+            copyMouse[i].y = copyMouse[i].y*scale + curY
+        end
+        return copyMouse
+    end
+        
+    function computer.drawMouse(curX, curY)
+        render.setRenderTargetTexture()
+        
+        copyMouse = getMouse(curX, curY, 4)
+        render.drawPoly(copyMouse)
+    end
+
+    --@include bios_loader.txt
+    computer.interface.bios = require("bios_loader.txt")
+
+    --@include desktop.txt
+    computer.interface.desktop = require("desktop.txt")
+    
+    --@include debug.txt
+    computer.interface.debug = require("debug.txt")
+    
+    --@include bsod.txt
+    computer.interface.bsod = require("bsod.txt")
+
+    local last_interface = ""
+    function load_interface(name,attributes)
+        console.log({Color(80,255,80),"Started " .. name .. ".txt"})
+        if computer.interface[name].init then
+            computer.interface[name].init_data = computer.interface[name].init(computer,attributes)
+        end
+
+        hook.remove("render",last_interface)
+        hook.remove("ms_render1",last_interface)
+        hook.remove("ms_render2",last_interface)
+        hook.add("render",name,function()
+            msl.update(false) //msl.update(show_id)
+            if computer.current_theme and computer.current_theme.update then computer.current_theme.update() end
+
+            computer.ram.usage = math.round(ramUsed(),2)
+            computer.ram.max = math.round(ramMax(),2)
+
+            computer.cpu.usage = math.round(cpuAverage()*1000000,2)
+            computer.cpu.max = math.round(cpuMax()*1000000,2)
+
+            computer.time = {}
+            if computer.save_data and computer.save_data.utc_id then computer.time.realtime = os.time() + utcOffsetToRealtime(computer.save_data.utc_id)
+            else computer.time.realtime = os.time() + utcOffsetToRealtime(15) end
+            computer.time.realtime = computer.time.realtime - 3600
+            computer.time.sec = computer.time.realtime%60
+            computer.time.min = ((computer.time.realtime/60)%60)
+            computer.time.hour = ((computer.time.realtime/3600)%24)
+        end)
+        
+        hook.add("ms_render1",name,function()
+            local w,h = render.getResolution()
+            computer.resolution = Vector(w,h)
+
+            render.setFont(computer.font.bios_font)
+            if computer.interface[name].render then
+                computer.interface[name].render(computer,computer.interface[name].init_data,w,h)
+            else
+                render.drawSimpleText(w/2,h/2,"No render thing was added for '" .. name .. "'",1,1)
+            end
+        end)
+
+        local redraw_log = false
+        hook.add("console_log","",function(log) redraw_log = true end)
+        hook.add("console_error","",function(error) end)
+        hook.add("console_clear","",function() end)
+            
+        if not render.renderTargetExists("log_rt") then render.createRenderTarget("log_rt") end
+        hook.add("ms_render2",name,function()
+            if redraw_log then
+                render.selectRenderTarget("log_rt")
+                render.clear(Color(0,0,0,0))
+                
+                render.setFont(computer.font.bios_font)
+                local cur_color = Color(255,255,255)
+                local move = -1
+                for id=#console.log_data, math.max(#console.log_data - 32, 1), -1 do
+                    line = console.log_data[id]
+                    move = move + 1
+                    if type(line) == "table" then
+                        local next_width = 0
+                        for key, data in pairs(line) do
+                            if type(data) == "Color" then cur_color = data else
+                                local add_width = render.getTextSize(tostring(data))
+    
+                                render.setColor(cur_color)
+                                render.drawText(5 + next_width,move * 15,tostring(data))
+                                next_width = next_width + add_width
+                            end
+                        end
+                    else
+                        render.setColor(Color(255,255,255))
+                        render.drawText(5,move * 15,tostring(line))
+                    end
+                end
+                render.selectRenderTarget()
+                redraw_log = false
+            end
+            
+            render.setColor(Color(255,255,255))
+            render.setRenderTargetTexture("log_rt")
+            render.drawTexturedRect(0,0,1024,1024)
+            render.setRenderTargetTexture()
+        end)
+        
+        last_interface = name
+    end
+
+    //check version
+    if player() == owner() then
+        http.get("https://github.com/NekerSqu4w/GComputer/blob/main/version.txt?raw=true",function(response)
+            response = string.replace(response,"\n","") //because github add automatically new line for no reason..
+            if response == computer.version then
+            else print(Color(70,255,70),"[GComputer] A new update is available (ver. " .. response .. ")\nDownload it here: https://github.com/NekerSqu4w/GComputer") end
+        end)
+    end
+
+    local check_perms = {"file.write","file.read","file.find","file.exists","file.time"}
+    local has_permission = true
+    for key, perm_id in pairs(check_perms) do
+        if hasPermission(perm_id) then else
+            has_permission = false
+            break
+        end
+    end
+
+    local default_load = "bios"
+    if has_permission then
+        computer.save_data.settings = json.decode(file.read("GComputer/settings.txt") or "{}")
+        computer.save_data.custom_background = json.decode(file.read("GComputer/custom_background.txt") or "{}")
+
+        console.log({Color(80,255,80),"Reading player configuration.."})
+        load_interface(default_load)
+    else
+        setupPermissionRequest(check_perms, "some permission to access all of GComputer", true)
+        
+        computer.font.permission = render.createFont("FontAwesome",35,600,true,false,false,false,0,false,0)
+        hook.add("render","noperm_message",function()
+            render.setFont(computer.font.permission)
+            render.drawSimpleText(10,0,"Wanna access GComputer?")
+            render.drawSimpleText(10,35,"You need to accept some permission i need to run properly.")
+            render.drawSimpleText(10,70,"To accept the permission press 'use key' on this screen.")
+        end)
+        
+        hook.add("permissionrequest", "perms", function()
+            if permissionRequestSatisfied() then
+                hook.remove("permissionrequest", "perms")
+                hook.remove("render", "noperm_message")
+
+                computer.save_data.settings = json.decode(file.read("GComputer/settings.txt") or "{}")
+                computer.save_data.custom_background = json.decode(file.read("GComputer/custom_background.txt") or "{}")
+
+                console.log({Color(80,255,80),"Reading player configuration.."})
+                load_interface(default_load)
+            end
+        end)
+    end
+end

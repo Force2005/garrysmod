@@ -1,0 +1,17 @@
+@name Rip Map
+@persist J
+
+if(first()) {
+    holoCreate(1)
+    holoColor(1, vec(0))
+    holoModel(1, "models/sprops/geometry/sphere_144.mdl")
+    holoScale(1, vec(-1000))
+    holoPos(1, entity():pos())
+    holoMaterial(1, "debug/debugportals")
+}
+
+interval(10)
+
+J = (J + 1) % 360
+
+holoColor(1, hsv2rgb(J, 1, 1))

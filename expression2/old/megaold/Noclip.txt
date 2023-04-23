@@ -1,0 +1,14 @@
+@name Noclip
+@inputs 
+@outputs 
+@persist Noclip
+@trigger 
+
+if(first()){
+    runOnKeys(owner(),1)
+}
+
+if(changed(owner():keyPressed("v"))&owner():keyPressed("v")){
+    Noclip = !Noclip
+    owner():playerNoclip(Noclip)
+}

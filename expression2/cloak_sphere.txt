@@ -1,0 +1,122 @@
+@name Cloak sphere
+@inputs Activ Size
+@outputs
+@persist T Step Timer Timer2 Timer3 Timer4 Timer5 Timer6 Cring Cring2 Cring3 Cring4 Cring5 Cring6 Cloak Cloak2
+@trigger
+
+if(first()){
+print(4,"By Coder")
+print(3,"You can change the color using the color tool")
+Step = 1
+}
+runOnTick(1)
+#hlmv/debugmrmwireframe
+
+if(changed(Step)&Step==1){
+entity():setColor(random(255),random(255),random(255))
+}
+Size = 12
+Activ = 1
+Model = "hq_icosphere"
+Loc = vec(0,0,15)
+E = entity()
+T=T+0.1*1
+E:setSkin(3)
+holoCreate(0)
+holoParent(0,E)
+holoModel(0,Model)
+holoMaterial(0,"models/effects/muzzleflash/blurmuzzle")
+holoScale(0,vec(Size*25,Size*25,Size*25))
+holoAng(0,ang(T*0,T*0,T*0))
+holoPos(0,E:toWorld(Loc))
+holoAlpha(0,Cloak)
+
+holoCreate(1)
+holoParent(1,E)
+holoModel(1,Model)
+holoMaterial(1,"models/wireframe")
+holoScale(1,vec(Size*-24.5,Size*-24.5,Size*-24.5))
+holoAng(1,E:toWorld(ang(T*0.25,T*1,T*0.50)))
+holoPos(1,E:toWorld(Loc))
+holoAlpha(1,Cloak2)
+
+holoCreate(2)
+holoParent(2,E)
+holoModel(2,"icosphere")
+holoMaterial(2,"models/shiny")
+holoScale(2,vec(0.5,0.5,0.5))
+holoAng(2,E:toWorld(ang(T*14,T*35,T*20)))
+holoPos(2,E:toWorld(vec(0,0,18)))
+holoAlpha(2,255)
+
+holoCreate(3)
+holoParent(3,E)
+holoModel(3,"icosphere")
+holoMaterial(3,"debug/debugdrawflat")
+holoScale(3,vec(-0.54,-0.54,-0.54))
+holoAng(3,E:toWorld(ang(T*14,T*35,T*20)))
+holoPos(3,E:toWorld(vec(0,0,18)))
+holoAlpha(3,254)
+
+holoCreate(4)
+holoParent(4,E)
+holoModel(4,"hq_hdome_thin")
+holoMaterial(4,"models/wireframe")
+holoScale(4,vec(1,1,1))
+holoAng(4,E:toWorld(ang(0,T,0)))
+holoPos(4,E:toWorld(vec(0,0,18)))
+holoAlpha(4,10)
+
+#Tri Rings
+Timer+=3
+Cring = 1.3+(sin(Timer+50) * 0.2)
+Timer2+=3
+Cring2 = 1.3+(sin(Timer2) * 0.2)
+Timer3+=3
+Cring3 = 1.3+(sin(Timer3-50) * 0.2)
+
+
+holoCreate(5)
+holoParent(5,E)
+holoModel(5,"hq_torus_thin")
+holoMaterial(5,"debug/debugdrawflat")
+holoScale(5,vec(Cring,Cring,Cring))
+holoAng(5,E:toWorld(ang(0,T,0)))
+holoPos(5,E:toWorld(vec(0,0,12)))
+holoAlpha(5,255)
+
+holoCreate(6)
+holoParent(6,E)
+holoModel(6,"hq_torus_thin")
+holoMaterial(6,"debug/debugdrawflat")
+holoScale(6,vec(Cring2,Cring2,Cring2))
+holoAng(6,E:toWorld(ang(0,T,0)))
+holoPos(6,E:toWorld(vec(0,0,10.5)))
+holoAlpha(6,255)
+
+holoCreate(7)
+holoParent(7,E)
+holoModel(7,"hq_torus_thin")
+holoMaterial(7,"debug/debugdrawflat")
+holoScale(7,vec(Cring3,Cring3,Cring3))
+holoAng(7,E:toWorld(ang(0,T,0)))
+holoPos(7,E:toWorld(vec(0,0,9)))
+holoAlpha(7,255)
+
+if(changed(E:getColor())){
+holoColor(2,E:getColor())
+holoColor(1,E:getColor())
+holoColor(5,E:getColor())
+holoColor(6,E:getColor())
+holoColor(7,E:getColor())
+
+}
+
+if(Activ >= 1){
+Cloak = 255
+Cloak2 = 249.5
+}
+if(Activ <= 0){
+Cloak = 0
+Cloak2 = 0
+}

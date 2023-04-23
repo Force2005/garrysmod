@@ -1,0 +1,123 @@
+@name Combine Turret
+@inputs
+@outputs [Driver Turret]:entity Firying
+@persist [E O HoloTurret]:entity Players:array W:wirelink Distance StoredAngle:angle
+@persist HoldDelay IsHold
+@trigger 
+
+if (first() | dupefinished()) { 
+    E=entity() O=owner()
+    
+    Distance = 75
+    HoldDelay = 1000
+    
+    findByClass("gmod_wire_turret")
+    Turret = findClosest(E:pos())
+    W = Turret:wirelink()
+    Turret:setAlpha(0)
+    
+    HoloTurret = holoCreate(1, Turret:toWorld(vec(-5, 0, -10)), vec(0.7), Turret:toWorld(ang(0)), vec(255), "models/props_combine/bunker_gun01.mdl")
+    holoParent(1, Turret)
+    
+    function number getDegreeDiff(Dir1:vector, Dir2:vector) {
+        Cos = (Dir1:x()*Dir2:x()+Dir1:y()*Dir2:y()+Dir1:z()*Dir2:z()) / (Dir1:distance(vec(0))*Dir2:distance(vec(0)))
+        return acos(Cos)
+    }
+    
+    function void activate(NewDriver:entity) {
+        Driver = NewDriver
+        Turret:soundPlay(1, 0.600, "weapons/shotgun/shotgun_cock.wav")
+        holoAnim(1, "activate", 0)
+        
+        IsHold = 1
+        timer("hold", HoldDelay)
+    }
+    
+    function void deactivate() {
+        Driver = noentity()
+        holoAnim(1, "retract", 100)
+        
+        IsHold = 0
+        stoptimer("hold")
+    }
+    
+    timer("scan", 100)
+}
+
+
+interval(10)
+
+
+if (clk("scan")){
+    findByClass("player")
+    local OP = findToArray()
+    if (Players:count() != OP:count()){
+        runOnKeys(OP, 1)
+    }
+    Players = OP
+    timer("scan", 1000)
+}
+
+if (clk("firing")){
+    if (Driver:isPlayer() & Firying) {
+        holoAnim(1, "fire", 0.01)
+        timer("firing", 100)
+    }
+}
+
+
+local Who = keyClk()
+
+if (Who) {
+    if (changed(Who:keyPressed("e")) && Who:keyPressed("e")) {
+        if (Driver == Who & Driver:isPlayer()) {
+            deactivate()
+        }
+        else {
+            local Dir1 = Who:eyeAngles():forward()
+            local Dir2 = (Turret:pos() - Who:shootPos()):normalized()
+            if (Who:shootPos():distance(Turret:pos()) < Distance & getDegreeDiff(Dir1, Dir2) < 30) {
+                activate(Who)
+            }
+        }
+
+    }
+}
+
+if (clk("hold")) {
+    IsHold = 0
+}
+
+if (Driver:isPlayer()) {
+    if (!IsHold & changed(Driver:keyPressed("mouse_left"))) {
+        Firying = Driver:keyPressed("mouse_left")
+        W["Fire", number] = Firying
+        timer("firing", 100)
+    }
+    
+    local Dir1 = Driver:eyeAngles():forward()
+    local Dir2 = E:angles():forward()
+    local DegreeDiff = getDegreeDiff(Dir1, Dir2)
+    
+    if (DegreeDiff < 60) {
+        StoredAngle = Driver:eyeAngles()
+    }
+    
+    if (Driver:shootPos():distance(Turret:pos()) > Distance 
+        | getDegreeDiff(Dir1, Dir2) > 80
+        | E:toLocal(Driver:shootPos()):x() > 0) {
+        deactivate()
+    }
+    
+} else {
+    W["Fire", number] = 0
+}
+
+if (Driver:isPlayer() & !IsHold) {
+    Turret:setAng(StoredAngle)
+} else {
+    Turret:setAng(E:angles())
+}
+
+Turret:setPos(E:toWorld(vec(5, 0, 20)))
+

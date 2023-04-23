@@ -1,0 +1,900 @@
+//@name = Copy =
+--@name Pristavka
+--@author
+--@shared
+// @include libs/my_methods.txt
+
+// dofile("libs/my_methods.txt")
+
+
+local Scale = 5
+local DelayDupe = 0.5
+
+
+local LoadFile = "base"
+local SaveFile = LoadFile
+
+
+-- 0 = Freeze all
+-- 1 = Preserve
+-- 2 = Unfreeze all
+local FreezingMode = 0
+local PasteAtOriginalPos = false 
+
+
+local O = owner()
+local E = chip()
+--local ScaleUnit = 8.3333
+local ScaleUnit = 5.8
+
+local _scaleBase = 40
+local _scale = _scaleBase * Scale
+
+
+/*
+print("Helper:")
+print("Key G - ON/OFF the chip")
+print("Key Mouse1 - paste the build")
+print("Key Mouse2 - copy the build")
+print("Key ArrowUp - increase the area")
+print("Key ArrowDown - decrease the area")
+print("Key K - load from local file")
+print("Key L - save to local file")
+print("Key O - show all saved builds")
+print("Key P - change target file name")
+*/
+
+
+
+function isValidFileName(name)
+    return string.match(name, "^[a-zA-Z0-9_]+$") ~= nil
+end
+
+function table.map(t, func, ExcludeNil)
+    local maped = {}
+    if ExcludeNil == nil then ExcludeNil = false end
+    for i=1, #t do
+        local result = func(i, t[i])
+        if !ExcludeNil or result ~= nil then
+            maped[#maped + 1] = func(i, t[i])
+        end
+    end
+    return maped
+end
+function table.first(t, func)    
+    for i=1, #t do
+        if func(t[i]) then
+            return t[i]
+        end
+    end
+    return nil
+end
+function table.any(t, func)
+    for i=1, #t do
+        if func(t[i]) then
+            return true
+        end
+    end
+    return false
+end
+
+
+if CLIENT then
+    local ON = false;
+    local OO = player()
+    if OO ~= O then return end
+    
+    file.createDir("dupe")
+    
+    if !isValidFileName(LoadFile) then
+        throw("Bad file name")
+    end
+    
+    
+    local H = holograms.create(E:getPos(), Angle(), "models/holograms/cube.mdl", Vector(_scale/ScaleUnit))
+    local H2 = holograms.create(E:getPos(), Angle(), "models/holograms/cube.mdl", Vector(-_scale/ScaleUnit))
+    H:setColor(Color(100,255,100, 0))
+    H2:setColor(Color(100,255,100, 0))
+    
+    function setAlpha(ON)
+        if ON then
+            H:setColor(H:getColor():setA(100))
+            H2:setColor(H2:getColor():setA(100))
+        else
+            H:setColor(H:getColor():setA(0))
+            H2:setColor(H2:getColor():setA(0))
+        end
+    end
+    setAlpha(false)
+    
+    function setScale(x)
+        Scale = Scale + x
+        _scale = _scaleBase * Scale
+        H:setScale(Vector(_scale/ScaleUnit))
+        H2:setScale(Vector(-_scale/ScaleUnit))
+    end
+    
+    hook.add("think", "holoCube", function()
+        local tr = O:getEyeTrace()          
+
+        H:setPos(tr.HitPos )
+        H2:setPos(tr.HitPos )
+    end)
+    
+    hook.add("inputPressed", "", function(key)
+        if OO ~= O then return end
+        if key == KEY.G then
+            ON = !ON
+            setAlpha(ON)
+        end
+        
+        if ON then
+            if key == KEY.UPARROW then
+                setScale(1)
+            end
+            if key == KEY.DOWNARROW then
+                if Scale == 1 then return end
+                setScale(-1)
+            end
+            
+            if key == KEY.O then
+                files, dirs = file.find("dupe/*.json")
+                net.start("GetSavedDupes")
+                net.writeTable(files)
+                net.send()
+            end
+            
+            if key == KEY.K then
+                --print("You loaded file with name: '"..loadFile.."' ")
+                if !file.exists("dupe/"..LoadFile..".json") then
+                    log("Bad File Name")
+                    return
+                end
+                
+                local fileData = file.read("dupe/"..LoadFile..".json", data)
+                --throw(tostring(#dataEnts))
+                net.start("DataEnts")
+                net.writeStream(fileData)
+                net.send()
+            end
+            
+            net.start("keyHandler")
+            net.writeInt(key, 8)
+            net.send()
+        end
+    end)
+    
+    net.receive("DataEnts", function (len)
+        net.readStream(function(data)
+            --print(data)
+            file.write("dupe/"..SaveFile..".json", data)
+        end)
+    end)
+    
+    net.receive("ChangeTargetFileName", function (len)
+        LoadFile = net.readString()
+        SaveFile = LoadFile
+    end)
+
+    return
+end
+
+
+---------------------------------------------------------------------------------
+
+-- https://github.com/thegrb93/StarfallEx/blob/master/lua/starfall/libs_sv/prop_sent.lua
+local TYPE_ENTITY = "ENTITY"
+local TYPE_STRING = "STRING"
+local TYPE_NUMBER = "NORMAL"
+local TYPE_BOOL = "BOOLEAN"
+local TYPE_ANGLE = "ANGLE"
+local TYPE_VECTOR = "VECTOR"
+local TYPE_VECTOR2 = "VECTOR2"
+local TYPE_VECTOR4 = "VECTOR4"
+
+local type_convert = {
+    [TYPE_ANGLE] = function(v) return string.format("%.15g, %.15g, %.15g", v.p, v.y, v.r) end,
+    [TYPE_VECTOR] = function(v) return string.format("%.15g, %.15g, %.15g", v.x, v.y, v.z) end,
+    [TYPE_STRING] = tostring,
+    [TYPE_NUMBER] = tostring,
+    [TYPE_BOOL] = tostring,
+    [TYPE_VECTOR2] = function(v) return "" end,
+    [TYPE_VECTOR4] = function(v) return "" end,
+}
+
+local ClassPriority = {
+    prop_physics = 1,
+    gmod_wire_wheel = 2
+}
+
+local OnlyOneConstraintTypes = {
+    'Weld',
+    'Rope',
+}
+
+local DataEnts = {};
+local DupeData = {};
+
+function initData()
+    DataEnts = {}
+    DupeData = { 
+        DataEnts = DataEnts
+        ,MapName = ''
+    };
+    
+end
+initData()
+
+-- https://github.com/jakejp1259/garrysmod/tree/master/lua/wire/gates
+local gates = {
+    
+}
+local _waitSaveData = false;
+local _waitChangeTargetFileName = false;
+
+
+local mapper = {
+    gmod_wire_value = {
+        get = function(e, w)
+            local outputs = w:outputs()
+            
+            local values = {}
+            
+            for i, v in ipairs(outputs) do
+                if v == "wirelink" /*or w[v] == nil*/ then continue end
+                if w[v] == nil then
+                    values[#values+1] = { [1] = TYPE_STRING, [2] = "" }
+                else
+                    values[#values+1] = { [1] = w:outputType(v), [2] = type_convert[w:outputType(v)](w[v]) }
+                end
+                
+            end
+            
+            return {
+                value = values
+            }
+        end
+    },
+    gmod_wire_lamp = {
+        get = function(e, w)
+            local outputs = w:outputs()
+            
+            return {
+                r = 255,
+                g = 255,
+                b = 255,
+                on = false,
+                Texture = "effects/flashlight001",
+                FOV = 90,
+                Dist = 1024,
+                Brightness = 8,
+            }
+        end
+    },
+    gmod_wire_button = {
+        get = function(e, w)
+            return {
+                toggle = true
+            }
+        end
+    },
+    gmod_wire_wheel = {
+        get = function(e)
+            return {
+                Base = e:isWeldedTo()
+            }
+        end
+    },
+    gmod_abc = {
+        get = function(e, w)
+        end,
+        update = function(d)
+        end
+    }
+}
+local mapperLocal = {}
+mapperLocal = {
+    gmod_wire_value = {
+        get = function(data)
+        
+            local values = {}
+            values[#values+1] = { [1] = TYPE_STRING, [2] = "Abc" }
+            values[#values+1] = { [1] = TYPE_NUMBER, [2] = "43.256" }
+            
+            return {
+                value = values
+            }
+        end
+    },
+    gmod_wire_lamp = {
+        get = function(data)
+            return {
+                r = 255,
+                g = 255,
+                b = 255,
+                on = false,
+                Texture = "effects/flashlight001",
+                FOV = 90,
+                Dist = 1024,
+                Brightness = 8,
+            }
+        end
+    },
+    gmod_wire_button = {
+        get = function(data)
+            return {
+                toggle = true
+            }
+        end
+    },
+    gmod_wheel = {
+        get = function(data)
+            data.Class = "gmod_wire_wheel"
+            return mapperLocal.gmod_wire_wheel.get(data)
+        end,
+        update = function(data)
+            mapperLocal.gmod_wire_wheel.update(data)
+        end
+    },
+    gmod_wire_wheel = {
+        get = function(data)
+            findedId = data.ConstraintData~=nil and data.ConstraintData[1]~=nil and data.ConstraintData[1].id or nil
+            if findedId == nil then return {} end
+            
+            return {
+                BaseId = findedId,
+                LAxis = data.ConstraintData[1].LAxis,
+                LPos = data.ConstraintData[1].LPos2,
+            }
+        end,
+        update = function(data)
+            local targetData = DataEnts[data.SentData.BaseId]
+            if targetData ~= nil and targetData._entity2 ~= nil then
+                data.SentData.Base = targetData._entity2
+                data.SentData.BaseId = nil
+                --data.SentData.LAxis = targetData.ConstraintData.LAxis
+            end
+        end
+    },
+    gmod_wire_motor = {
+        get = function(data)
+            return {}
+        end,
+        update = function(data)
+            
+        end
+    },
+    gmod_abc = {
+        get = function(data)
+        end,
+        update = function(d)
+        end
+    },
+}
+
+
+function getByEnt(e)   
+    return table.first(DataEnts, function(d) return d._entity == e end)    
+end
+function getById(id) 
+    return table.first(DataEnts, function(d) return d.id == id end)   
+end
+
+// TODO: not working
+function getWireMotor(data)
+    local constr = {}
+    
+    for i, d in ipairs(DataEnts) do
+        local ent1 = table.first(DataEnts.ConstraintData, function(cdata)
+            return cdata.Type == "WireMotor"
+        end)
+        
+        if ent1 == nil then continue end
+        
+        
+        dataWires[#dataWires+1] = {
+            id = findedId,
+            InName = d,
+            OutName = w:getWiredToName(d)
+        }
+    end
+    
+    return sentData
+end
+
+
+function getSentData(e, data)
+    local w = e:getWirelink()
+    local sentData = { Model = e:getModel() }
+    if mapper[e:getClass()] ~= nil and mapper[e:getClass()]["get"] ~= nil then
+        table.merge(sentData, mapper[e:getClass()].get(e, w))
+    end
+    return sentData
+end
+
+function getLocalSentData(e, data)
+    local sentData = { Model = e:getModel() }
+    if mapperLocal[e:getClass()] ~= nil and mapperLocal[e:getClass()]["get"] ~= nil then
+        table.merge(sentData, mapperLocal[e:getClass()].get(data))
+    end
+    return sentData
+end
+
+
+local processing = false
+function verifyWait()
+    if processing then
+        print("wait...")
+        return true
+    end
+    processing = true
+    return false
+end
+
+function setSentData()
+    for i, data in ipairs(DataEnts) do
+        --local w = data._entity:getWirelink()
+        --local inputs = w:inputs()
+        
+        local sentData = data._entity:isValid() and getLocalSentData(data._entity, data) or {}
+
+        data.SentData = sentData
+    end
+end
+
+
+function setDataWires()
+    for i, data in ipairs(DataEnts) do
+        local w = data._entity:getWirelink()
+        local inputs = w:inputs()
+        
+        local dataWires = {}
+        
+        for i, d in ipairs(inputs) do
+            local x = w:getWiredTo(d)
+            if x ~= nil then
+                local finded = getByEnt(x)
+                if finded == nil then continue end
+                
+                dataWires[#dataWires+1] = {
+                    id = finded.id,
+                    InName = d,
+                    OutName = w:getWiredToName(d)
+                }
+            end
+        end
+        
+        data.DataWires = dataWires
+    end
+end
+
+
+function setParentData()
+    for i, data in ipairs(DataEnts) do
+        local parentData = {}
+        
+        for i, e in ipairs(table.getKeys(data._entity:getChildren())) do
+            local finded = getByEnt(e)
+            if finded == nil then continue end
+            
+            parentData[#parentData+1] = {
+                    id = finded.id,
+                }
+        end
+        
+        data.ParentData = parentData
+    end
+end
+
+function setConstraintData()
+    for i, data in ipairs(DataEnts) do
+        local weldData = {}
+        if !data._entity:isValid() then continue end
+        
+        for i, v in ipairs(constraint.getTable(data._entity)) do
+            coroutine.yield()
+            local own, other
+            
+            local Ent1Data = getByEnt(v.Ent1)
+            local Ent2Data = getByEnt(v.Ent2)
+            
+            if Ent1Data == nil or Ent2Data == nil then continue end
+            
+            if Ent1Data._entity == data._entity then own=Ent1Data; other=Ent2Data else own=Ent2Data; other=Ent1Data end
+            
+            
+            if table.hasValue(OnlyOneConstraintTypes, v.Type) and other.ConstraintData
+                and table.any(other.ConstraintData, function(d) return d.id == own.id and d.Type == v.Type end) then
+                continue
+            end
+            --print("==============================")
+            --printTable(v)
+            weldData[#weldData+1] = {
+                    id = other.id,
+                    LAxis = v.LocalAxis,
+                    LPos1 = v.LPos1,
+                    LPos2 = v.LPos2,
+                    Type = v.Type,
+                    EntId1 = Ent1Data.id,
+                    EntId2 = Ent2Data.id,
+                }
+                
+            if v.Type == 'Rope' then
+                weldData[#weldData].Bone1 = v.Bone1
+                weldData[#weldData].Bone2 = v.Bone2
+                weldData[#weldData].Length = v.length
+                weldData[#weldData].AddLength = v.addlength
+                weldData[#weldData].ForceLimit = v.forcelimit
+                weldData[#weldData].Width = v.width
+                weldData[#weldData].Material = v.material
+                weldData[#weldData].Rigid = v.rigid
+            end
+        end
+        
+        data.ConstraintData = weldData
+    end
+end
+
+function sortEnts(ents)
+    --printTable(DataEnts)
+    table.sort(ents, function(a, b)
+        local a2 = ClassPriority[a:getClass()]~=nil and ClassPriority[a:getClass()] or 999
+        local b2 = ClassPriority[b:getClass()]~=nil and ClassPriority[b:getClass()] or 999
+        return a2 < b2
+    end)
+    --printTable(DataEnts)
+end
+
+
+--local LIMIT = 10
+--local i;
+
+
+
+function setBaseInfo(ents)
+    --printTable(DataEnts)
+    DupeData.MapName = game.getMap()
+end
+
+local copyCoro;
+function getCopyCoro()
+    return coroutine.wrap(function()
+        local tr = O:getEyeTrace()   
+        local hitPos = tr.HitPos
+        
+        local Ents = find.inBox(hitPos-Vector(_scale), hitPos+Vector(_scale), function(e) 
+            return e:getOwner() ~= nil
+        end)
+        print(#Ents)
+        
+        --printTable(Ents)
+        sortEnts(Ents)
+        --printTable(Ents)
+        
+        coroutine.yield()
+        
+        DataEnts = table.map(Ents, function(i, e)
+            --print(''..tostring(e)..' - '..tostring(e:isValidPhys()))
+            return {
+                _entity = e,
+                id = i,
+                Class = e:getClass(),
+                Model = e:getModel(),
+                Material = e:getMaterial(),
+                PosOriginal = e:getPos(),
+                PosLocal = hitPos - e:getPos(),
+                Ang = e:getAngles(),
+                Color = e:getColor(),
+                CollisionGroup = e:getCollisionGroup(),
+                IsFrozen = e:isValidPhys() and e:isFrozen() or true,
+                --SentData = getSentData(e),
+                --SentData = getLocalSentData(e),
+            }
+        end)
+        
+        
+        coroutine.yield()
+        --setDataWires()
+        coroutine.yield()
+        setParentData()
+        coroutine.yield()
+        setConstraintData()
+        coroutine.yield()
+        setSentData()
+        
+        setBaseInfo()
+        
+        --local data3 = constraint.getTable(DataEnts[2]._entity)
+        --printTable(data3)
+        --printTable(DataEnts)
+        --print(#DataEnts)
+        processing = false
+        print("Copy finished")
+    
+        coroutine.yield()
+        return true
+    end)
+end
+
+
+function copy()
+    if verifyWait() then return end
+    copyCoro = getCopyCoro()
+    print("start copy")
+    hook.add("think","copy",function()
+        while quotaAverage()<quotaMax()*0.2 do
+            if copyCoro() then
+                hook.remove("think","copy")
+                return
+            end
+        end
+    end)
+end
+
+
+--==========================================================================================
+
+
+function linkWireAll()
+    for i, data in ipairs(DataEnts) do
+        for j, wireData in ipairs(data.DataWires) do
+            if DataEnts[wireData.id]._entity2 ~= nil then
+                -- wire.create(Entity entI, Entity entO, string inputname, string outputname, number or nil width, Color or nil color, string or nil materialName)
+                wire.create(data._entity2, DataEnts[wireData.id]._entity2, wireData.InName, wireData.OutName)
+            end
+        end
+    end
+end
+
+function parentAll()
+    /*printTable(target:getAllConstrained({
+        Wire = false,
+        Weld = false,
+        Parent = true,
+    }))*/
+    for i, data in ipairs(DataEnts) do
+        if data._entity2 == nil then continue end
+        for j, parentData in ipairs(data.ParentData) do
+            if DataEnts[parentData.id]._entity2 ~= nil then
+                DataEnts[parentData.id]._entity2:setParent(data._entity2)
+            end
+        end
+    end
+end
+
+
+function weldHandler(a, b)
+    -- constraint.weld(Entity e1, Entity e2, number or nil bone1, number or nil bone2, number or nil force_lim, boolean or nil nocollide)
+    constraint.weld(a, b)
+end
+
+function noCollideHandler(a, b)
+    constraint.nocollide(a, b)
+end
+
+function ropeHandler(a, b, constData)
+    constraint.rope(0, a, b, constData.Bone1, constData.Bone2, constData.LPos1, constData.LPos2, constData.Length, constData.AddLength, constData.ForceLimit, constData.Width, constData.Material, constData.Rigid)
+end
+
+function constraintAll()
+    /*printTable(target:getAllConstrained({
+        Wire = false,
+        Weld = true,
+        Parent = false,
+    }))*/
+    -- printTable(target:getChildren())
+    --printTable(constraint.getTable(target))
+    for i, data in ipairs(DataEnts) do
+        for j, constData in ipairs(data.ConstraintData) do
+            local first = DataEnts[constData.id]._entity2
+            local second = data._entity2
+            if first ~= nil and first:isValid() and second ~= nil and second:isValid() then
+                if constData.Type == "Weld" then weldHandler(first, second)
+                elseif constData.Type == "NoCollide" then noCollideHandler(first, second)
+                elseif constData.Type == "Rope" then ropeHandler(first, second, constData) end
+            end
+        end
+    end
+end
+
+
+function collisionGroupAll()
+    for i, data in ipairs(DataEnts) do
+        if data._entity2 ~= nil and data._entity2:isValid() and data.CollisionGroup ~= 0 then
+            data._entity2:setCollisionGroup(data.CollisionGroup)
+        end
+    end
+end
+
+function freezingAll()
+    for i, data in ipairs(DataEnts) do
+        if data._entity2 ~= nil and FreezingMode ~= 0 then
+            data._entity2:setFrozen(FreezingMode==1 and data.IsFrozen or false)
+        end
+    end
+end
+
+
+
+function updateLocalSentData(i, data)
+    if mapperLocal[data.Class] ~= nil and mapperLocal[data.Class]["update"] ~= nil then
+        mapperLocal[data.Class].update(data)
+    end
+end
+
+
+function dupe(key)
+    if #DataEnts == nil or #DataEnts == 0 or verifyWait() then return end
+    print("Start Dupe")
+    
+    local tr = O:getEyeTrace()   
+    local hitPos = tr.HitPos
+    local i = 1
+    
+    timer.create("duping", DelayDupe, #DataEnts, function()
+        local data = DataEnts[i]
+        --print(data.Class)
+        --printTable(data.DataWires)
+        updateLocalSentData(i, data)
+        --printTable(data)
+        
+        local isSuccess, _ = pcall(function()
+            local pos = PasteAtOriginalPos and data.PosOriginal or (hitPos - data.PosLocal)
+            
+            if data.Class == "prop_physics" then
+                data._entity2 = prop.create(pos, data.Ang, data.Model, true)
+            elseif data.Class == "prop_vehicle_prisoner_pod" then
+                prop.createSeat(pos, data.Ang, data.Model, true)
+            else
+                data._entity2 = prop.createSent(pos, data.Ang, data.Class, true, data.SentData)
+            end
+        end)
+        
+        if isSuccess and data._entity2 ~= nil then
+            data._entity2:setColor(data.Color)
+            data._entity2:setMaterial(data.Material)
+        end
+        
+        i = i + 1
+        if i > #DataEnts then
+            timer.simple(0.1, function()
+                --linkWireAll()
+                parentAll()
+                constraintAll()
+                collisionGroupAll()
+                freezingAll()
+                processing = false
+                print("Dupe finished")
+            end)
+        end
+    end)
+end
+
+function setScale(x)
+    Scale = Scale + x
+    _scale = _scaleBase * Scale
+end
+
+function isOldVersion(data)
+    return data.DataEnts == nil
+end
+function verifyForOriginalPaste(data)
+    if PasteAtOriginalPos and (isOldVersion(data) or data.MapName ~= game.getMap()) then
+        print("You can't paste build at original position on this map")
+        return false
+    end
+    return true
+end
+function setLoadedData(data)
+    initData()
+    if isOldVersion(data) then
+        DataEnts = data
+    else
+        DupeData = data
+        DataEnts = data.DataEnts
+    end
+end
+
+hook.add("ClientInitialized", "cl_init", function(ply)
+end)
+
+net.receive("DataEnts", function (len, ply)
+    if verifyWait() then return end
+    local isAccess = true
+    net.readStream(function(fileData)
+        data = json.decode(fileData)
+        if verifyForOriginalPaste(data) then
+            setLoadedData(data)
+            print("Downloaded local data from file with name '"..LoadFile.."'")
+        end
+        processing = false
+    end)
+    
+end)
+
+net.receive("GetSavedDupes", function (len, ply)
+    local t = net.readTable()
+    local t2 = table.map(t, function(i, x)
+        return string.match(x, "^([a-zA-Z0-9_]+).json")
+    end, true)
+    printTable(t2)
+end)
+
+net.receive("keyHandler", function (len, ply)
+    local key = net.readInt(8)
+    
+    if key == KEY.UPARROW then
+        setScale(1)
+        
+    end
+    if key == KEY.DOWNARROW then
+        setScale(-1)
+    end
+    
+    if key == MOUSE.MOUSE2 then
+        copy(key)
+    end
+    if key == MOUSE.MOUSE1 then
+        dupe(key)
+    end
+    
+    if key == KEY.P then
+        _waitChangeTargetFileName = true
+        print("Write to chat new file name")
+    end
+    
+    if key == KEY.L then
+        if #DataEnts == 0 then return end
+        
+        print("Are you sure to save file with name \""..SaveFile.."\"? Press Enter to continue...")
+        _waitSaveData = true
+        return
+        
+    end
+    if key == KEY.ENTER and _waitSaveData then
+        DupeData.DataEnts = DataEnts
+        net.start("DataEnts")
+        net.writeStream(json.encode(DupeData))
+        net.send(owner())
+        
+        print("You saved file with name: '"..SaveFile.."' ")
+        
+        _waitSaveData = false
+        return
+    end
+    
+    if _waitSaveData then
+        _waitSaveData = false
+        print("Canseled saving")
+    end
+end)
+
+
+hook.add("PlayerSay","Say",function(ply, txt)
+    if ply ~= O then return end
+    if !_waitChangeTargetFileName then
+        if txt:sub(1, 11) == "!dupedelay " then            
+                DelayDupe = tonumber(txt:sub(11)) or 0.6
+                print("DelayDupe changed to "..DelayDupe)
+                return ''
+        end
+        return
+    end
+    _waitChangeTargetFileName = false
+    
+    if !isValidFileName(txt) then
+        print("Bad file name")
+        return ''
+    end
+    
+    LoadFile = txt
+    SaveFile = LoadFile
+    
+    net.start("ChangeTargetFileName")
+    net.writeString(LoadFile)
+    net.send(owner())
+    
+    print("Changed FileName to '"..LoadFile.."'")
+    return ''
+end)
+

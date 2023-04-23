@@ -1,0 +1,59 @@
+@name Slime Minecraft
+@persist Z Timer On Tick [E O]:entity
+
+"BY CODER"
+
+if(first()|duped()){
+E=entity()
+O=owner()
+
+holoCreate(1,E:toWorld(vec(0,0,2)),vec(1.3,1.3,1.3),E:toWorld(ang(0,0,0)),vec(255),"models/sprops/cuboids/height12/size_1/cube_12x12x12.mdl")
+holoParent(1,E)
+holoMaterial(1,"engine/vmtview_background")
+holoAlpha(1,120)
+holoColor(1,(vec(100,100,255)))#Color edit
+
+holoCreate(2,E:toWorld(vec(0,0,2)),vec(0.9,0.9,0.9),E:toWorld(ang(0,0,0)),vec(255),"models/sprops/cuboids/height12/size_1/cube_12x12x12.mdl")
+holoParent(2,E)
+holoMaterial(2,"engine/vmtview_background")
+holoAlpha(2,255)
+holoColor(2,(vec(100,100,255)))#Color edit
+
+holoCreate(3,E:toWorld(vec(4,-4,4)),vec(0.3,0.3,0.3),E:toWorld(ang(0,0,0)),vec(255),"models/sprops/cuboids/height12/size_1/cube_12x12x12.mdl")
+holoParent(3,E)
+holoMaterial(3,"engine/vmtview_background")
+holoAlpha(3,255)
+holoColor(3,(vec(0,0,0)))#Color edit
+
+holoCreate(4,E:toWorld(vec(4,4,4)),vec(0.3,0.3,0.3),E:toWorld(ang(0,0,0)),vec(255),"models/sprops/cuboids/height12/size_1/cube_12x12x12.mdl")
+holoParent(4,E)
+holoMaterial(4,"engine/vmtview_background")
+holoAlpha(4,255)
+holoColor(4,(vec(0,0,0)))#Color edit
+
+holoCreate(5,E:toWorld(vec(5,1,0)),vec(0.15,0.15,0.15),E:toWorld(ang(0,0,0)),vec(255),"models/sprops/cuboids/height12/size_1/cube_12x12x12.mdl")
+holoParent(5,E)
+holoMaterial(5,"engine/vmtview_background")
+holoAlpha(5,255)
+holoColor(5,(vec(0,0,0)))#Color edit
+
+E:setAlpha(1)
+
+}
+#Heavy cods
+timer("pos",1000)
+if(clk("pos")){
+Timer+=0.1
+Z = sinr(Timer)/5
+E:setPos(E:pos()+vec(10,10,Z))
+E:setAng(ang(0))
+if(E:pos():distance(O:toWorld(vec(0,0,100)))>1){
+E:applyForce((O:toWorld(vec(0,0,250)))-E:pos())
+}else{
+E:applyForce(vec(100,100,E:mass()*100))
+}
+}
+
+if((O:pos()-E:pos()):length()>1000){
+E:setPos(O:shootPos())
+}

@@ -1,0 +1,94 @@
+
+local function load_from_type(file2,window)
+    local data = {}
+    data.is_valid_file = false
+    if file2.type == "folder" then
+        //check for folder
+        data.app = computer.app["GComputer/sys_app/file_explorer.txt"]
+        data.open_app = "GComputer/sys_app/file_explorer.txt"
+        data.file_info = file2
+        
+        if window and window.folder_path then
+            data.folder_path = window.folder_path .. file2.name .. "/"
+        else
+            data.folder_path = "GComputer/desktop/" .. file2.name .. "/"
+        end
+        data.is_valid_file = true
+    end
+    if file2.type == "file" then
+        //check for all type of data
+        data.app = table.copy(computer.app["GComputer/sys_app/file.txt"])
+        data.open_app = "GComputer/sys_app/file.txt"
+        data.file_info = file2
+        data.is_valid_file = true
+
+        //check for app
+        if string.endsWith(file2.name, ".dat") then
+            data.open_app = nil
+            data.app.app_logo = function(app,x,y,w,h)
+                render.setFilterMag(1)
+                render.setFilterMin(1)
+                render.setColor(Color(255,255,255))
+                render.setMaterial(computer.icon["error"])
+                render.drawTexturedRect(x,y,w,h)
+                render.setMaterial()
+                render.setFilterMag(3)
+                render.setFilterMin(3)
+            end
+            
+            if string.startWith(file2.content,"SHORTCUT") then
+                data.app = computer.app[string.replace(file2.content,"SHORTCUT\n","")]
+                data.open_app = string.replace(file2.content,"SHORTCUT\n","")
+                data.is_valid_file = true
+            elseif string.startWith(file2.content,"APPSYS") then
+                data.is_valid_file = false
+                local header = file2.content:split("\n")[1]
+                local version = header:split(" ")[2]
+
+                if version == "1" then
+                    data.load,data.load_error = loadstring(file2.content:replace(header,""))
+                    if type(data.load) == "function" then
+                        computer.app["user_app/"..file2.name:replace(" ","_")] = data.load()
+                        data.app = computer.app["user_app/"..file2.name:replace(" ","_")]
+                        data.open_app = "user_app/"..file2.name:replace(" ","_")
+                        
+                        data.is_valid_file = true
+                    end
+                end
+            end
+            data.file_info = file2
+            data.file_info.type = "app"
+        end
+
+        //check for type of photo
+        if string.endsWith(file2.name, ".png") or string.endsWith(file2.name, ".jpg") or string.endsWith(file2.name, ".jpeg") then
+            data.app = computer.app["GComputer/sys_app/photo.txt"]
+            data.open_app = "GComputer/sys_app/photo.txt"
+            data.file_info = file2
+            data.file_info.type = "photo"
+        end
+        
+        //check for type of music
+        if string.endsWith(file2.name, ".mp3") then
+            data.app = computer.app["GComputer/sys_app/audio_player.txt"]
+            data.open_app = "GComputer/sys_app/audio_player.txt"
+            data.file_info = file2
+            data.file_info.type = "music"
+        end
+    end
+    return data
+end
+
+local function on_open(from,cur_app)
+    //if from.is_valid_file == false then computer.dialogMessage("Error","The app you trying to open doesn't exist\nor is not a valid data app",{3},function() end) end
+    if from.file_info.type == "folder" then
+        cur_app.file_info = from.file_info
+        cur_app.folder_path = from.folder_path
+    end
+    if from.file_info.type == "file" then cur_app.file_info = from.file_info end
+    if from.file_info.type == "app" then cur_app.file_info = from.file_info end
+    if from.file_info.type == "music" then cur_app.file_info = from.file_info end
+    if from.file_info.type == "photo" then cur_app.file_info = from.file_info end
+end
+
+return {on_open=on_open,load_from_type=load_from_type}

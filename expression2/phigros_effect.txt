@@ -1,0 +1,179 @@
+@name Phigros Effect
+@persist Start Tick Speed Pos:vector SparkNum LastN JustClipWeapon Melee HitSound:string SparkArr:array
+@model models/props_junk/cardboard_box004a.mdl 
+
+runOnTick(1)
+
+#Auther https://steamcommunity.com/id/Zmmark/
+#just a simple E2
+#
+
+if (first()|duped())
+{
+    
+    Speed = 0.1
+    SparkNum = 8
+    JustClipWeapon = 1
+    Melee = 0
+    
+    HitSound = "Buttons.snd17"
+    
+    
+    function holomodelsc(Index,Model:string,Pos:vector,Alpha,Scale:vector){
+        if (!holoEntity(Index):isValid()){ holoCreate(Index) }
+        holoModel(Index,Model)
+        holoPos(Index,Pos)
+        holoAlpha(Index,Alpha)
+        holoScale(Index,Scale)
+        holoAng(Index,owner():eyeAngles())
+        holoColor(Index,vec(random(255),random(255),random(255)))
+        holoMaterial(Index,"debug/debugportals")
+        holoDisableShading(Index,1)
+    }
+    
+}
+
+if (Melee==0)
+{
+    Pos = owner():aimPos()
+}elseif (Melee==1){
+    
+    holoCreate(0)
+    holoPos(0,owner():boxCenterW()+vec(0,0,25))
+    holoAng(0,owner():eyeAngles())
+    holoAlpha(0,0)
+    
+    Pos = holoEntity(0):toWorld(vec(100,0,0))
+}
+
+if (JustClipWeapon==0)
+{
+if (changed(owner():keyAttack1())&owner():keyAttack1()|changed(owner():keyAttack2())&owner():keyAttack2())
+    {
+
+    Start= 1
+    Tick = 0
+    #Delay=1
+    
+    
+    holomodelsc(1,"models/holograms/hq_sphere.mdl",Pos,255,vec(1.5))
+    holomodelsc(2,"models/holograms/hq_sphere.mdl",Pos,50,vec(0.5))
+    holomodelsc(3,"models/holograms/hq_stube_thin.mdl",Pos,255,vec(3,3,0.5))
+    holoAng(3,holoEntity(3):toWorld(ang(90,0,0)))
+    holomodelsc(4,"models/holograms/hq_stube.mdl",Pos,50,vec(2.25,2.25,0.5))
+    holoAng(4,holoEntity(4):toWorld(ang(45,90,90)))
+    
+    holomodelsc(5,"models/hunter/tubes/tube2x2x025d.mdl",Pos,255,vec(0.5,0.5,1))
+    holomodelsc(6,"models/hunter/tubes/tube2x2x025d.mdl",Pos,255,vec(0.5,0.5,1))
+    holoAng(5,holoEntity(5):toWorld(ang(135,90,90)))
+    holoAng(6,holoEntity(6):toWorld(ang(-45,90,90)))
+    
+    LastN = 4
+    SparkArr:clear()
+    for (I=1,SparkNum)
+    { 
+        LastN =  LastN+2
+        holomodelsc(LastN+1,"models/holograms/cube.mdl",holoEntity(1):pos(),0,vec(0.01))
+        holomodelsc(LastN+2,"models/holograms/cube.mdl",holoEntity(1):pos(),255,vec(1))
+        
+        SparkArr:pushNumber(LastN+1)
+        
+        holoAng(LastN+1,holoEntity(1):toWorld(ang(random(360,0),90,0)))
+        
+    }
+    
+    
+    holoEntity(1):soundPlay(1,0,HitSound)
+    #soundPitch(1,130)
+    }
+    
+}
+
+
+if (JustClipWeapon==1)
+{
+    if (changed(owner():weapon():clip1())&owner():keyAttack1())
+    {
+        Start= 1
+    Tick = 0
+    #Delay=1
+    
+    
+    holomodelsc(1,"models/holograms/hq_sphere.mdl",Pos,255,vec(1.5))
+    holomodelsc(2,"models/holograms/hq_sphere.mdl",Pos,50,vec(0.5))
+    holomodelsc(3,"models/holograms/hq_stube_thin.mdl",Pos,255,vec(3,3,0.5))
+    holoAng(3,holoEntity(3):toWorld(ang(90,0,0)))
+    holomodelsc(4,"models/holograms/hq_stube.mdl",Pos,50,vec(2.25,2.25,0.5))
+    holoAng(4,holoEntity(4):toWorld(ang(45,90,90)))
+    
+    holomodelsc(5,"models/hunter/tubes/tube2x2x025d.mdl",Pos,255,vec(0.5,0.5,1))
+    holomodelsc(6,"models/hunter/tubes/tube2x2x025d.mdl",Pos,255,vec(0.5,0.5,1))
+    holoAng(5,holoEntity(5):toWorld(ang(135,90,90)))
+    holoAng(6,holoEntity(6):toWorld(ang(-45,90,90)))
+    
+    LastN = 4
+    SparkArr:clear()
+    for (I=1,SparkNum)
+    { 
+        LastN =  LastN+2
+        holomodelsc(LastN+1,"models/holograms/cube.mdl",holoEntity(1):pos(),0,vec(0.01))
+        holomodelsc(LastN+2,"models/holograms/cube.mdl",holoEntity(1):pos(),255,vec(1))
+        
+        SparkArr:pushNumber(LastN+1)
+        
+        holoAng(LastN+1,holoEntity(1):toWorld(ang(random(360,0),90,0)))
+        
+    }
+    
+    
+    holoEntity(1):soundPlay(1,0,HitSound)
+    #soundPitch(1,130)
+    }
+}
+
+
+
+if (Start==1)
+{
+    Tick=Tick+Speed
+    holoScale(1,vec(1.5-Tick/3.5))
+    holoScale(2,vec(0.5+Tick/1.75))
+    holoScale(3,vec(3+Tick/2.25,3+Tick/2.25,0.5))
+    holoScale(4,vec(2.75+Tick/1.5,2.75+Tick/1.5,0.5))
+    
+    holoAlpha(3,holoEntity(3):getAlpha()-Tick*4)
+    holoAlpha(5,holoEntity(5):getAlpha()-Tick*4)
+    holoAlpha(6,holoEntity(6):getAlpha()-Tick*4)
+    
+    for (I=1,SparkArr:count())
+    {
+        
+    holoPos(SparkArr[I,number],holoEntity(SparkArr[I,number]):toWorld(vec(3.5-Tick/1.2,0,0)))
+    holoPos(SparkArr[I,number]+1,holoEntity(SparkArr[I,number]):toWorld(vec(0)))
+    }
+
+    if (Tick>=3.5)
+    {
+        for (I=1,LastN+2)
+        {
+            holoAlpha(I,holoEntity(I):getAlpha()-Tick*3)
+        }
+        
+        if (Tick>=6){
+            Start=0
+            Tick=0
+        }
+    }else{
+        if (Tick<=1)
+        {
+        holoAng(5,holoEntity(5):toWorld(ang(0,3.5,0)))
+        holoAng(6,holoEntity(6):toWorld(ang(0,3.5,0)))
+        }
+    }
+}
+
+#[if (clk("delay"))
+{
+    Delay=0
+}
+]#

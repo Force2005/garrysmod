@@ -1,0 +1,40 @@
+--@name Spawner Zombie
+--@author Markiz
+--@include ../npc_spawner.txt
+--@server
+
+dofile("../npc_spawner.txt")
+
+local Vars = {
+    Limit = 5,
+    Interval = 2,  -- sek
+
+    SpawnRadiusH = 500, -- horizontal
+    SpawnRadiusV = 200, -- vertical
+    CanSpawnRadius = 20,
+    CanSpawnBottomDistance = 1000, -- need better CanSpawnRadius
+    SpawnUnder = false,
+    SpawnOnFloorAlways = true,
+    SetFrozen = false,
+    
+    OffsetZ = Vector(0, 0, 50),
+    OffsetX = Vector(0,0,0),
+    
+    RelationShip = "hate", -- String of the relationship. ("hate", "fear", "like", "neutral")
+    
+    //Class = "npc_antlionguard",
+    --Class = "npc_fastzombie",
+    --Class = "npc_vj_hla_antlion",
+    Class = "npc_antlion",
+    --Class = "npc_headcrab",
+    
+    --CheckClass = "npc_combine_s",
+    
+    //Model = "models/items/healthkit.mdl",
+    
+    E = chip(),
+    O = owner(),
+}
+
+obj = NpcSpawner:new(Vars)
+obj:run()

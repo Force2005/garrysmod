@@ -1,0 +1,30 @@
+@name Follower
+@inputs  
+@outputs Force:vector AngForce:angle TargetPosX TargetPosY Dir:vector Angles:angle NewAng:angle
+@persist Angles:angle Pos:vector Self:entity PosZ PosX PosY Pitch Yaw Roll HoverHeight FollowDistance
+@trigger 
+
+# For information about quaternion rotation handling:  http://www.wiremod.com/forum/expression-2-discussion-help/14103-short-quaternions-guide.html
+
+#if(first()) {
+    Self = entity()
+    HoverHeight = 60
+    FollowDistance = 20
+    Self:setMass(1000)
+#}
+
+Angles = owner():eyeAngles() + ang(vec(-5, 0, 0))
+
+# Gyroscope
+CurrentQuat = quat(Self:angles()) #or just quat(Turret)
+TargetQuat = quat(Angles)
+Q = TargetQuat/CurrentQuat
+Torque = Self:toLocal(rotationVector(Q) + Self:pos())
+
+N = 100
+M = 40
+Self:applyTorque((Torque * N - Self:angVelVector() * M) * Self:inertia())
+
+
+runOnChat(1)
+runOnTick(1)

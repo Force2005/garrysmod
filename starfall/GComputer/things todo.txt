@@ -1,0 +1,10 @@
+--[[
+
+# Fix todo
+- Fix app spawn
+- Also fix optimisation (50% optimised)
+
+# Make new ui components
+-
+
+]]

@@ -1,0 +1,864 @@
+@name APC A2800_ver3
+@inputs [W,A,S,D,Shift,Alt,Mouse1,Mouse2,Active Space]:number [Seat]:entity [EGP1,EGP2]:wirelink
+@outputs [Dist1]:number 
+@persist [Main,Target]:entity [N128,Int]:number [Model]:string
+@persist [Mass,Power,Hight,Dumping,AngMul,Max,Speed,Steer,Scale,Rad,Thick,SpeedMul,SteerMul JumpPower]:number
+@persist [ForceMul,VelR,VelL,RollR,RollL]:number
+@persist [Mul1,Mul2,Mul3,Mul4,Mul5,Mul6]:number
+@persist [Dist1,Dist2,Dist3,Dist4,Dist5,Dist6]:number
+@persist [LockOn,Lock,Sel,Ang,First]:number
+@persist [Ang11,Ang21,F1]:number
+@persist [Ang12,Ang22,F2]:number
+@persist [Flip1,Flip2,Flip3]:number
+@persist [Open,X,SoundPlay,SUpMul,Powered]:number
+@persist [Tick,EnLoad]:number
+@persist [Color,ColorO]:vector
+@persist [Changed]:table
+@model models/hunter/blocks/cube2x4x025.mdl
+
+if(duped()|dupefinished()){reset()}
+entity():propFreeze(0)
+if(N128<62){
+
+interval(30)
+
+N128=N128+1
+
+holoCreate(N128)
+
+
+if(N128==1){
+
+
+#Settings
+JumpPower=800
+Int=2
+Scale=entity():boxSize():y()
+Main=holoCreate(0)
+Mass=10000
+Power=0.2
+Hight=70
+Dumping=0.12
+AngMul=15
+Max=70
+SpeedMul=5
+SteerMul=5
+Rad=12/36.087
+Thick=7/36.087
+First=1
+Model="Full"
+
+entity():setMass(Mass)
+#entity():setAlpha(1)
+
+holoPos(0,entity():massCenter()+entity():up()*25)
+holoAng(0,entity():angles())
+holoParent(0,entity())
+holoScaleUnits(0,vec(0,0,0))
+
+
+#EGP-Stuff
+
+Color=vec(180,0,0)
+ColorO=vec(15,15,15)
+EGP1:egpClear()
+EGP1:egpResolution(vec2(0,0),vec2(2000,1000))
+
+Add=47
+
+EGP1:egpBox(1,vec2(175+Add,200),vec2(250,50))
+EGP1:egpBox(2,vec2(450+Add,200),vec2(250,50))
+EGP1:egpBox(3,vec2(183+Add,260),vec2(240,50))
+EGP1:egpBox(4,vec2(445+Add,260),vec2(240,50))
+EGP1:egpBox(5,vec2(188+Add,320),vec2(230,50))
+EGP1:egpBox(6,vec2(440+Add,320),vec2(230,50))
+EGP1:egpBox(7,vec2(190+Add,380),vec2(220,50))
+EGP1:egpBox(8,vec2(435+Add,380),vec2(220,50))
+EGP1:egpBox(9,vec2(195+Add,440),vec2(210,50))
+EGP1:egpBox(10,vec2(430+Add,440),vec2(210,50))
+EGP1:egpBox(11,vec2(203+Add,500),vec2(200,50))
+EGP1:egpBox(12,vec2(425+Add,500),vec2(200,50))
+EGP1:egpBox(13,vec2(208+Add,560),vec2(190,50))
+EGP1:egpBox(14,vec2(420+Add,560),vec2(190,50))
+EGP1:egpBox(15,vec2(210+Add,620),vec2(180,50))
+EGP1:egpBox(16,vec2(415+Add,620),vec2(180,50))
+EGP1:egpBox(17,vec2(215+Add,680),vec2(170,50))
+EGP1:egpBox(18,vec2(410+Add,680),vec2(170,50))
+EGP1:egpBox(19,vec2(223+Add,740),vec2(160,50))
+EGP1:egpBox(20,vec2(405+Add,740),vec2(160,50))
+EGP1:egpBox(21,vec2(225+Add,800),vec2(150,50))
+EGP1:egpBox(22,vec2(400+Add,800),vec2(150,50))
+EGP1:egpText(23,"Km/h",vec2(340,40))
+EGP1:egpText(24,"999",vec2(20,40))
+EGP1:egpBoxOutline(25,vec2(1000,330),vec2(300,300))
+EGP1:egpBoxOutline(26,vec2(1000,330),vec2(300,1))
+EGP1:egpBoxOutline(27,vec2(1000,800),vec2(300,300))
+EGP1:egpBoxOutline(28,vec2(1000,800),vec2(150,150))
+EGP1:egpText(29,"Pitch",vec2(850,120))
+EGP1:egpText(30,"Orientation",vec2(850,600))
+EGP1:egpPolyOutline(31,
+vec2(1450,180),
+vec2(1850,180),
+vec2(1850,230),
+vec2(1790,230),
+vec2(1790,420),
+vec2(1850,420),
+vec2(1850,470),
+vec2(1790,470),
+vec2(1790,660),
+vec2(1850,660),
+vec2(1850,710),
+vec2(1790,710),
+vec2(1790,900),
+vec2(1850,900),
+vec2(1850,950),
+
+vec2(1390,950),
+vec2(1390,900),
+vec2(1450,900),
+vec2(1450,710),
+vec2(1390,710),
+vec2(1390,660),
+vec2(1450,660),
+vec2(1450,470),
+vec2(1390,470),
+vec2(1390,420),
+vec2(1450,420),
+vec2(1450,230),
+vec2(1390,230),
+vec2(1390,180)
+)
+
+EGP1:egpText(32,"Wheel load",vec2(1340,120))
+EGP1:egpBoxOutline(33,vec2(1620,700),vec2(250,380))
+EGP1:egpText(34,"Engine load",vec2(1500,450))
+EGP1:egpBoxOutline(35,vec2(1380,326),vec2(110,156))
+EGP1:egpBoxOutline(36,vec2(1380,566),vec2(110,156))
+EGP1:egpBoxOutline(37,vec2(1380,806),vec2(110,156))
+EGP1:egpBoxOutline(38,vec2(1860,326),vec2(110,156))
+EGP1:egpBoxOutline(39,vec2(1860,566),vec2(110,156))
+EGP1:egpBoxOutline(40,vec2(1860,806),vec2(110,156))
+EGP1:egpText(41,"N",vec2(1000,700)-vec2(23,23))
+EGP1:egpText(42,"E",vec2(1100,800)-vec2(15,23))
+EGP1:egpText(43,"S",vec2(1000,900)-vec2(23,23))
+EGP1:egpText(44,"W",vec2(900,800)-vec2(33,25))
+
+
+EGP1:egpFont(23,"default",50)
+EGP1:egpFont(24,"default",50)
+EGP1:egpFont(29,"default",30)
+EGP1:egpFont(30,"default",15)
+EGP1:egpFont(32,"default",30)
+EGP1:egpFont(34,"default",13)
+
+
+EGP1:egpSize(25,5)
+EGP1:egpSize(26,2)
+EGP1:egpSize(27,5)
+EGP1:egpSize(28,1)
+EGP1:egpSize(31,1)
+EGP1:egpSize(33,1)
+
+
+EGP1:egpColor(1,ColorO*1)
+EGP1:egpColor(2,ColorO*1)
+EGP1:egpColor(3,ColorO*1)
+EGP1:egpColor(4,ColorO*1)
+EGP1:egpColor(5,ColorO*1)
+EGP1:egpColor(6,ColorO*1)
+EGP1:egpColor(7,ColorO*1)
+EGP1:egpColor(8,ColorO*1)
+EGP1:egpColor(9,ColorO*1)
+EGP1:egpColor(10,ColorO*1)
+EGP1:egpColor(11,ColorO*1)
+EGP1:egpColor(12,ColorO*1)
+EGP1:egpColor(13,ColorO*1)
+EGP1:egpColor(14,ColorO*1)
+EGP1:egpColor(15,ColorO*1)
+EGP1:egpColor(16,ColorO*1)
+EGP1:egpColor(17,ColorO*1)
+EGP1:egpColor(18,ColorO*1)
+EGP1:egpColor(19,ColorO*1)
+EGP1:egpColor(20,ColorO*1)
+EGP1:egpColor(21,ColorO*1)
+EGP1:egpColor(22,ColorO*1)
+EGP1:egpColor(23,Color*1)
+
+EGP1:egpColor(24,Color*1)
+EGP1:egpColor(25,Color*1)
+EGP1:egpColor(26,Color*1)
+EGP1:egpColor(27,Color*1)
+EGP1:egpColor(28,Color*1)
+EGP1:egpColor(29,Color*1)
+EGP1:egpColor(30,Color*1)
+EGP1:egpColor(31,Color*1)
+EGP1:egpColor(32,Color*1)
+EGP1:egpColor(33,Color*1)
+EGP1:egpColor(34,Color*1)
+EGP1:egpColor(35,vec(255,0,0))
+EGP1:egpColor(36,vec(255,0,0))
+EGP1:egpColor(37,vec(255,0,0))
+EGP1:egpColor(38,vec(255,0,0))
+EGP1:egpColor(39,vec(255,0,0))
+EGP1:egpColor(40,vec(255,0,0))
+
+
+}
+
+holoModel(1,"models/mechanics/wheels/tractors.mdl")
+holoModel(2,"models/mechanics/wheels/tractors.mdl")
+holoModel(3,"models/mechanics/wheels/tractors.mdl")
+holoModel(4,"models/mechanics/wheels/tractors.mdl")
+holoModel(5,"models/mechanics/wheels/tractors.mdl")
+holoModel(6,"models/mechanics/wheels/tractors.mdl")
+holoModel(7,"models/hunter/triangles/trapezium3x3x1a.mdl")
+holoModel(8,"models/hunter/triangles/trapezium3x3x1a.mdl")
+holoModel(9,"models/hunter/triangles/trapezium3x3x1a.mdl")
+holoModel(10,"models/hunter/triangles/trapezium3x3x1a.mdl")
+holoModel(11,"models/hunter/triangles/trapezium3x3x1a.mdl")
+holoModel(12,"models/hunter/triangles/trapezium3x3x1a.mdl")
+holoModel(13,"models/hunter/triangles/trapezium3x3x1a.mdl")
+holoModel(14,"models/hunter/triangles/trapezium3x3x1a.mdl")
+holoModel(15,"models/hunter/triangles/trapezium3x3x1b.mdl")
+holoModel(16,"models/hunter/triangles/trapezium3x3x1c.mdl")
+holoModel(17,"models/hunter/triangles/trapezium3x3x1b.mdl")
+holoModel(18,"models/hunter/triangles/trapezium3x3x1b.mdl")
+holoModel(19,"models/hunter/triangles/trapezium3x3x1c.mdl")
+holoModel(20,"models/hunter/triangles/trapezium3x3x1b.mdl")
+holoModel(21,"models/hunter/triangles/trapezium3x3x1c.mdl")
+holoModel(22,"models/hunter/triangles/trapezium3x3x1c.mdl")
+holoModel(24,"models/hunter/triangles/trapezium3x3x1c.mdl")
+holoModel(25,"models/hunter/triangles/trapezium3x3x1c.mdl")
+holoModel(27,"models/Tools/camera/camera.mdl")
+holoModel(28,"models/Tools/camera/camera.mdl")
+holoModel(29,"models/Tools/camera/camera.mdl")
+holoModel(30,"models/Tools/camera/camera.mdl")
+holoModel(31,"models/Tools/camera/camera.mdl")
+holoModel(32,"models/Tools/camera/camera.mdl")
+holoModel(33,"models/Tools/camera/camera.mdl")
+holoModel(34,"models/Tools/camera/camera.mdl")
+holoModel(35,"models/props_wasteland/exterior_fence002a.mdl")
+holoModel(36,"models/props_wasteland/exterior_fence002a.mdl")
+holoModel(37,"models/props_wasteland/exterior_fence002a.mdl")
+holoModel(38,"models/props_wasteland/exterior_fence002a.mdl")
+holoModel(39,"models/props_wasteland/exterior_fence002a.mdl")
+holoModel(41,"prism")
+holoModel(42,"prism")
+holoModel(44,"hexagon")
+holoModel(47,"hq_cylinder")
+holoModel(48,"hq_cylinder")
+holoModel(53,"models/props_trainstation/BenchOutdoor01a.mdl")
+holoModel(54,"models/props_trainstation/BenchOutdoor01a.mdl")
+holoModel(55,"models/props_combine/combine_light002a.mdl")
+holoModel(56,"models/props_combine/combine_light002a.mdl")
+holoModel(57,"hq_stube_thin")
+holoModel(58,"models/props_lab/walllight001a.mdl")
+holoModel(59,"models/props_lab/walllight001a.mdl")
+holoModel(60,"hq_cylinder")
+holoModel(62,"prism")
+
+
+holoMaterial(7,"models/props_lab/door_klab01")
+holoMaterial(8,"models/props_lab/door_klab01")
+holoMaterial(9,"models/props_lab/door_klab01")
+holoMaterial(10,"models/props_lab/door_klab01")
+holoMaterial(11,"models/props_lab/door_klab01")
+holoMaterial(12,"models/props_lab/door_klab01")
+holoMaterial(13,"models/props_lab/door_klab01")
+holoMaterial(14,"models/props_lab/door_klab01")
+holoMaterial(15,"models/props_combine/metal_combinebridge001")
+holoMaterial(16,"models/props_combine/metal_combinebridge001")
+holoMaterial(17,"models/props_combine/metal_combinebridge001")
+holoMaterial(18,"models/props_combine/metal_combinebridge001")
+holoMaterial(19,"models/props_combine/metal_combinebridge001")
+holoMaterial(20,"models/props_combine/metal_combinebridge001")
+holoMaterial(21,"models/props_combine/metal_combinebridge001")
+holoMaterial(22,"models/props_combine/metal_combinebridge001")
+holoMaterial(23,"models/props_combine/metal_combinebridge001")
+holoMaterial(24,"models/props_combine/metal_combinebridge001")
+holoMaterial(25,"models/props_combine/metal_combinebridge001")
+
+holoMaterial(40,"models/props_combine/metal_combinebridge001")
+holoMaterial(41,"models/props_combine/metal_combinebridge001")
+holoMaterial(42,"models/props_combine/metal_combinebridge001")
+holoMaterial(43,"models/props_combine/metal_combinebridge001")
+holoMaterial(44,"models/props_combine/metal_combinebridge001")
+holoMaterial(45,"models/props_combine/metal_combinebridge001")
+holoMaterial(46,"models/props_combine/metal_combinebridge001")
+holoMaterial(47,"models/props_combine/metal_combinebridge001")
+holoMaterial(48,"models/props_combine/metal_combinebridge001")
+holoMaterial(49,"models/props_combine/metal_combinebridge001")
+holoMaterial(50,"models/props_combine/metal_combinebridge001")
+holoMaterial(51,"models/props_combine/metal_combinebridge001")
+holoMaterial(52,"models/props_combine/metal_combinebridge001")
+holoMaterial(53,"models/props_combine/metal_combinebridge001")
+holoMaterial(54,"models/props_combine/metal_combinebridge001")
+
+holoMaterial(57,"models/props_combine/metal_combinebridge001")
+
+
+holoScaleUnits(1,vec(Rad,Rad,Thick)*Scale)
+holoScaleUnits(2,vec(Rad,Rad,Thick)*Scale)
+holoScaleUnits(3,vec(Rad,Rad,Thick)*Scale)
+holoScaleUnits(4,vec(Rad,Rad,Thick)*Scale)
+holoScaleUnits(5,vec(Rad,Rad,Thick)*Scale)
+holoScaleUnits(6,vec(Rad,Rad,Thick)*Scale)
+holoScaleUnits(7,vec(60,40,30))
+holoScaleUnits(8,vec(70,40,30))
+holoScaleUnits(9,vec(70,40,30))
+holoScaleUnits(10,vec(60,40,30))
+holoScaleUnits(11,vec(60,40,30))
+holoScaleUnits(12,vec(70,40,30))
+holoScaleUnits(13,vec(70,40,30))
+holoScaleUnits(14,vec(60,40,30))
+holoScaleUnits(15,vec(30,100,30))
+holoScaleUnits(16,vec(30,145,30))
+holoScaleUnits(17,vec(100,30,30))
+holoScaleUnits(18,vec(100,30,30))
+holoScaleUnits(19,vec(30,145,30))
+holoScaleUnits(20,vec(30,100,30))
+holoScaleUnits(21,vec(40,93,30))
+holoScaleUnits(22,vec(40,93,30))
+holoScaleUnits(23,vec(110,261,29.5))
+holoScaleUnits(24,vec(70,111,30))
+holoScaleUnits(25,vec(60,120,40))
+holoScaleUnits(26,vec(10,10,10)) Size=1.3
+holoScaleUnits(27,vec(45,27,45)*Size)
+holoScaleUnits(28,vec(45,27,45)*Size)
+holoScaleUnits(29,vec(45,27,45)*Size)
+holoScaleUnits(30,vec(45,27,45)*Size)
+holoScaleUnits(31,vec(45,27,45)*Size)
+holoScaleUnits(32,vec(45,27,45)*Size)
+holoScaleUnits(33,vec(45,27,45)*Size)
+holoScaleUnits(34,vec(45,27,45)*Size)
+holoScaleUnits(35,holoEntity(35):boxSize())
+holoScaleUnits(36,holoEntity(36):boxSize())
+holoScaleUnits(37,holoEntity(35):boxSize())
+holoScaleUnits(38,holoEntity(36):boxSize())
+holoScaleUnits(39,holoEntity(35):boxSize())
+holoScaleUnits(40,vec(60,45,5))
+holoScaleUnits(41,vec(52,5,45))
+holoScaleUnits(42,vec(52,5,45))
+holoScaleUnits(43,vec(60,80,5))
+holoScaleUnits(44,vec(75,119,5))
+holoScaleUnits(45,vec(50,240,5))
+holoScaleUnits(46,vec(50,240,5))
+holoScaleUnits(47,vec(5.5,5.5,50))
+holoScaleUnits(48,vec(5.5,5.5,50))
+holoScaleUnits(49,vec(45,50,5))
+holoScaleUnits(50,vec(45,50,5))
+holoScaleUnits(51,vec(45,39,5))
+holoScaleUnits(52,vec(45,39,5))
+holoScaleUnits(53,vec(30,240,22))
+holoScaleUnits(54,vec(30,240,22))
+holoScaleUnits(55,vec(20,12,45))
+holoScaleUnits(56,vec(20,12,45))
+holoScaleUnits(57,vec(12,109,25))
+holoScaleUnits(58,vec(7,20,13))
+holoScaleUnits(59,vec(7,20,13))
+holoScaleUnits(60,vec(0.6,0.6,0.6))
+holoScaleUnits(61,vec(0.6,6,0.6))
+holoScaleUnits(62,vec(0.6,0.6,3))
+
+
+holoAlpha(40,100)
+
+
+holoColor(60,Color*0.5)
+holoColor(61,Color)
+holoColor(62,Color)
+holoColor(7,vec(0,255,0))
+holoColor(8,vec(0,255,0))
+holoColor(9,vec(0,255,0))
+holoColor(10,vec(0,255,0))
+holoColor(11,vec(0,255,0))
+holoColor(12,vec(0,255,0))
+holoColor(13,vec(0,255,0))
+holoColor(14,vec(0,255,0))
+holoColor(15,vec(0,255,0))
+holoColor(16,vec(0,255,0))
+holoColor(17,vec(0,255,0))
+holoColor(18,vec(0,255,0))
+holoColor(19,vec(0,255,0))
+holoColor(20,vec(0,255,0))
+holoColor(21,vec(0,255,0))
+holoColor(22,vec(0,255,0))
+holoColor(23,vec(0,255,0))
+holoColor(24,vec(0,255,0))
+holoColor(25,vec(0,255,0))
+holoColor(26,vec(0,255,0))
+#holoColor(27,vec(0,255,0))
+#holoColor(28,vec(0,255,0))
+#holoColor(29,vec(0,255,0))
+#holoColor(30,vec(0,255,0))
+#holoColor(31,vec(0,255,0))
+#holoColor(32,vec(0,255,0))
+#holoColor(33,vec(0,255,0))
+#holoColor(34,vec(0,255,0))
+#holoColor(35,vec(0,255,0))
+#holoColor(36,vec(0,255,0))
+#holoColor(37,vec(0,255,0))
+#holoColor(38,vec(0,255,0))
+#holoColor(39,vec(0,255,0))
+#holoColor(40,vec(0,255,0))
+holoColor(41,vec(0,255,0))
+holoColor(42,vec(0,255,0))
+holoColor(43,vec(0,255,0))
+holoColor(44,vec(0,255,0))
+holoColor(45,vec(0,255,0))
+holoColor(46,vec(0,255,0))
+holoColor(47,vec(0,255,0))
+holoColor(48,vec(0,255,0))
+holoColor(49,vec(0,255,0))
+holoColor(50,vec(0,255,0))
+holoColor(51,vec(0,255,0))
+holoColor(52,vec(0,255,0))
+holoColor(53,vec(0,255,0))
+#holoColor(35,vec(100,100,100))
+#holoColor(36,vec(100,100,100))
+#holoColor(37,vec(100,100,100))
+#holoColor(38,vec(100,100,100))
+#holoColor(39,vec(100,100,100))
+
+holoParent(1,Main)
+holoParent(2,Main)
+holoParent(3,Main)
+holoParent(4,Main)
+holoParent(5,Main)
+holoParent(6,Main)
+holoParent(7,Main)
+holoParent(8,Main)
+holoParent(9,Main)
+holoParent(10,Main)
+holoParent(11,Main)
+holoParent(12,Main)
+holoParent(13,Main)
+holoParent(14,Main)
+holoParent(15,Main)
+holoParent(16,Main)
+holoParent(17,Main)
+holoParent(18,Main)
+holoParent(19,Main)
+holoParent(20,Main)
+holoParent(21,Main)
+holoParent(22,Main)
+holoParent(23,Main)
+holoParent(24,Main)
+holoParent(25,Main)
+holoParent(26,Main)
+holoParent(27,26)
+holoParent(28,26)
+holoParent(29,26)
+holoParent(30,26)
+holoParent(31,26)
+holoParent(32,26)
+holoParent(33,26)
+holoParent(34,26)
+holoParent(35,Main)
+holoParent(36,Main)
+holoParent(37,Main)
+holoParent(38,Main)
+holoParent(39,Main)
+holoParent(40,Main)
+holoParent(41,Main)
+holoParent(42,Main)
+holoParent(43,Main)
+holoParent(44,Main)
+holoParent(45,Main)
+holoParent(46,Main)
+holoParent(47,Main)
+holoParent(48,Main)
+holoParent(49,47)
+holoParent(50,48)
+holoParent(51,Main)
+holoParent(52,Main)
+holoParent(53,Main)
+holoParent(54,Main)
+holoParent(55,Main)
+holoParent(56,Main)
+holoParent(57,Main)
+holoParent(58,Main)
+holoParent(59,Main)
+holoParent(60,EGP1:entity())
+holoParent(61,EGP1:entity())
+holoParent(62,60)
+
+
+holoPos(1,Main:toWorld(vec( 0.4, 0.5,-0)*Scale))
+holoPos(2,Main:toWorld(vec(-0.4, 0.5,-0)*Scale))
+holoPos(3,Main:toWorld(vec( 0.4, 0.0,-0)*Scale))
+holoPos(4,Main:toWorld(vec(-0.4, 0.0,-0)*Scale))
+holoPos(5,Main:toWorld(vec( 0.4,-0.5,-0)*Scale))
+holoPos(6,Main:toWorld(vec(-0.4,-0.5,-0)*Scale))
+holoPos(7,Main:toWorld(vec(55,140,-30)))
+holoPos(8,Main:toWorld(vec(55,45,-30)))
+holoPos(9,Main:toWorld(vec(55,-45,-30)))
+holoPos(10,Main:toWorld(vec(55,-140,-30)))
+holoPos(11,Main:toWorld(vec(-55,140,-30)))
+holoPos(12,Main:toWorld(vec(-55,45,-30)))
+holoPos(13,Main:toWorld(vec(-55,-45,-30)))
+holoPos(14,Main:toWorld(vec(-55,-140,-30)))
+holoPos(15,Main:toWorld(vec(69.28,120,-0.55)))
+holoPos(16,Main:toWorld(vec(69.28,0,-0.55)))
+holoPos(17,Main:toWorld(vec(69.28,-120,-0.55)))
+holoPos(18,Main:toWorld(vec(-69.28,120,-0.55)))
+holoPos(19,Main:toWorld(vec(-69.28,0,-0.55)))
+holoPos(20,Main:toWorld(vec(-69.28,-120,-0.55)))
+holoPos(21,Main:toWorld(vec(0,149.6,-30)))
+holoPos(22,Main:toWorld(vec(0,-149.6,-30)))
+holoPos(23,Main:toWorld(vec(0,0,-30)))
+holoPos(24,Main:toWorld(vec(0,120,-0.55)))
+holoPos(25,Main:toWorld(vec(0,-139.2,4)))
+holoPos(26,Main:toWorld(vec(0,-63,10))) Dist=7.5*Size
+holoPos(27,holoEntity(26):toWorld(vec(-18.3, 0+Dist*3,0)))
+holoPos(28,holoEntity(26):toWorld(vec( 18.3,-5+Dist*3,0)))
+holoPos(29,holoEntity(26):toWorld(vec(-18.3, 0+Dist,0)))
+holoPos(30,holoEntity(26):toWorld(vec( 18.3,-5+Dist,0)))
+holoPos(31,holoEntity(26):toWorld(vec(-18.3, 0-Dist,0)))
+holoPos(32,holoEntity(26):toWorld(vec( 18.3,-5-Dist,0)))
+holoPos(33,holoEntity(26):toWorld(vec(-18.3, 0-Dist*3,0)))
+holoPos(34,holoEntity(26):toWorld(vec( 18.3,-5-Dist*3,0)))
+holoPos(35,Main:toWorld(vec(-8,-85,26)))
+holoPos(36,Main:toWorld(vec(8,-85,26)))
+holoPos(37,Main:toWorld(vec(-8,-45,26)))
+holoPos(38,Main:toWorld(vec(8,-45,26)))
+holoPos(39,Main:toWorld(vec(0,-62,26)))
+holoPos(40,Main:toWorld(vec(0,90,28)))
+holoPos(41,Main:toWorld(vec(-37.3,83.5,25.5)))
+holoPos(42,Main:toWorld(vec(37.3,83.5,25.5)))
+holoPos(43,Main:toWorld(vec(0,36.1,43.05)))
+holoPos(44,Main:toWorld(vec(0,-10,13.8)))
+holoPos(45,Main:toWorld(vec(41,0,-6)))
+holoPos(46,Main:toWorld(vec(-41,0,-6)))
+holoPos(47,Main:toWorld(vec(29,51,43.05)))
+holoPos(48,Main:toWorld(vec(-29,51,43.05)))
+holoPos(49,holoEntity(47):toWorld(vec(23,0,0)))
+holoPos(50,holoEntity(48):toWorld(vec(-23,0,0)))
+holoPos(51,Main:toWorld(vec(41,8,28)))
+holoPos(52,Main:toWorld(vec(-41,8,28)))
+holoPos(53,Main:toWorld(vec(78,0,0)))
+holoPos(54,Main:toWorld(vec(-78,0,0)))
+holoPos(55,Main:toWorld(vec(52,151,-10)))
+holoPos(56,Main:toWorld(vec(-52,151,-10)))
+holoPos(57,Main:toWorld(vec(0,148,-9.6)))
+holoPos(58,Main:toWorld(vec(-51.9,89.5,20)))
+holoPos(59,Main:toWorld(vec(51.9,89.5,20)))
+holoPos(60,EGP1:entity():toWorld(vec(7.15,0,1.5)))
+holoPos(61,EGP1:entity():toWorld(vec(-4.04,0,1.5)))
+holoPos(62,holoEntity(60):toWorld(vec(1,0,-0.09)))
+
+
+holoAng(1,Main:toWorld(ang(90,0,0)))
+holoAng(2,Main:toWorld(ang(90,0,0)))
+holoAng(3,Main:toWorld(ang(90,0,0)))
+holoAng(4,Main:toWorld(ang(90,0,0)))
+holoAng(5,Main:toWorld(ang(90,0,0)))
+holoAng(6,Main:toWorld(ang(90,0,0)))
+holoAng(7,Main:toWorld(ang(180,90,0)))
+holoAng(8,Main:toWorld(ang(180,90,0)))
+holoAng(9,Main:toWorld(ang(180,90,0)))
+holoAng(10,Main:toWorld(ang(180,90,0)))
+holoAng(11,Main:toWorld(ang(180,-90,0)))
+holoAng(12,Main:toWorld(ang(180,-90,0)))
+holoAng(13,Main:toWorld(ang(180,-90,0)))
+holoAng(14,Main:toWorld(ang(180,-90,0)))
+holoAng(15,Main:toWorld(ang(0,180,0)))
+holoAng(16,Main:toWorld(ang(0,180,0)))
+holoAng(17,Main:toWorld(ang(180,270,180)))
+holoAng(18,Main:toWorld(ang(180,90,180)))
+holoAng(19,Main:toWorld(ang(180,180,180)))
+holoAng(20,Main:toWorld(ang(180,180,180)))
+holoAng(21,Main:toWorld(ang(180,90,0)))
+holoAng(22,Main:toWorld(ang(180,-90,0)))
+holoAng(23,Main:toWorld(ang(0,0,0)))
+holoAng(24,Main:toWorld(ang(0,-90,0)))
+holoAng(25,Main:toWorld(ang(0,90,0)))
+holoAng(26,Main:toWorld(ang(0,0,0)))
+holoAng(27,holoEntity(26):toWorld(ang(135,0,0)))
+holoAng(28,holoEntity(26):toWorld(ang(135,180,0)))
+holoAng(29,holoEntity(26):toWorld(ang(135,0,0)))
+holoAng(30,holoEntity(26):toWorld(ang(135,180,0)))
+holoAng(31,holoEntity(26):toWorld(ang(135,0,0)))
+holoAng(32,holoEntity(26):toWorld(ang(135,180,0)))
+holoAng(33,holoEntity(26):toWorld(ang(135,0,0)))
+holoAng(34,holoEntity(26):toWorld(ang(135,180,0)))
+holoAng(35,Main:toWorld(ang(90,0,0)))
+holoAng(36,Main:toWorld(ang(90,180,0)))
+holoAng(37,Main:toWorld(ang(90,0,0)))
+holoAng(38,Main:toWorld(ang(90,180,0)))
+holoAng(39,Main:toWorld(ang(90,270,0)))
+holoAng(40,Main:toWorld(ang(0,0,-45)))
+holoAng(41,Main:toWorld(ang(0,45,35)))
+holoAng(42,Main:toWorld(ang(0,-45,35)))
+holoAng(43,Main:toWorld(ang(0,0,0)))
+holoAng(44,Main:toWorld(ang(75,-90,0)))
+holoAng(45,Main:toWorld(ang(-45,0,0)))
+holoAng(46,Main:toWorld(ang(45,0,0)))
+holoAng(47,Main:toWorld(ang(45,0,90)))
+holoAng(48,Main:toWorld(ang(-45,0,90)))
+holoAng(49,holoEntity(47):toWorld(ang(0,0,90)))
+holoAng(50,holoEntity(48):toWorld(ang(0,0,90)))
+holoAng(51,Main:toWorld(ang(45,0,0)))
+holoAng(52,Main:toWorld(ang(-45,0,0)))
+holoAng(53,Main:toWorld(ang(64,0,0)))
+holoAng(54,Main:toWorld(ang(-64,0,0)))
+holoAng(55,Main:toWorld(ang(0,-90,90)))
+holoAng(56,Main:toWorld(ang(0,-90,-90)))
+holoAng(57,Main:toWorld(ang(90,90,0)))
+holoAng(58,Main:toWorld(ang(-35,135,0)))
+holoAng(59,Main:toWorld(ang(-35,45,0)))
+
+holoAng(60,EGP1:entity():toWorld(ang(0,0,0)))
+holoAng(61,EGP1:entity():toWorld(ang(0,0,0)))
+holoAng(62,holoEntity(60):toWorld(ang(0,90,90)))
+
+
+holoClipEnabled(35,1,1)
+holoClipEnabled(36,1,1)
+holoClipEnabled(37,1,1)
+holoClipEnabled(38,1,1)
+holoClipEnabled(39,1,1)
+holoClipEnabled(51,1,1)
+holoClipEnabled(52,1,1)
+
+
+holoClip(35,1,vec(0,0,22.15),vec(0,0,1),0)
+holoClip(36,1,vec(0,0,22.15),vec(0,0,1),0)
+holoClip(37,1,vec(0,0,22.15),vec(0,0,1),0)
+holoClip(38,1,vec(0,0,22.15),vec(0,0,1),0)
+holoClip(39,1,vec(0,0,-60),vec(0,0,1),0)
+holoClip(51,1,vec(0,-14,0),vec(0.2,1,0),0)
+holoClip(52,1,vec(0,-14,0),vec(-0.2,1,0),0)
+
+if(Model=="None"){if(N128==6){N128=59}}
+if(Model=="Engine"){
+if(N128==6){N128=25}
+if(N128==34){N128=59}
+}
+
+}
+else{
+
+interval(10*Int)
+
+if(!changed(W+A+S+D+Shift+Alt+Mouse1+Mouse2+Active+Space)){
+
+#Controlls
+
+Speed=SpeedMul*5 Steer=SteerMul*0.8
+if(Shift){Speed=SpeedMul*10 Steer=SteerMul*0.5}
+if(Alt){Speed=SpeedMul*1.25 Steer=SteerMul*1}
+if(changed(Space) & Space){entity():soundPlay(128,130,"doors/heavy_metal_stop1.wav"),soundStop(129,130)} 
+#if(changed(Space)&Space){"doors/heavy_metal_stop1.wav"}
+if(Powered==0){W=S=0}
+
+
+#Hovering
+
+rangerHitWater(1) rangerFilter(entity()) Dist1=rangerOffset(Max+10,entity():toWorld(vec( 0.4, 0.5,-0)*Scale),-entity():up()):distance()
+rangerHitWater(1) rangerFilter(entity()) Dist2=rangerOffset(Max+10,entity():toWorld(vec(-0.4, 0.5,-0)*Scale),-entity():up()):distance()
+rangerHitWater(1) rangerFilter(entity()) Dist3=rangerOffset(Max+10,entity():toWorld(vec( 0.4, 0.0,-0)*Scale),-entity():up()):distance()
+rangerHitWater(1) rangerFilter(entity()) Dist4=rangerOffset(Max+10,entity():toWorld(vec(-0.4, 0.0,-0)*Scale),-entity():up()):distance()
+rangerHitWater(1) rangerFilter(entity()) Dist5=rangerOffset(Max+10,entity():toWorld(vec( 0.4,-0.5,-0)*Scale),-entity():up()):distance()
+rangerHitWater(1) rangerFilter(entity()) Dist6=rangerOffset(Max+10,entity():toWorld(vec(-0.4,-0.5,-0)*Scale),-entity():up()):distance()
+rangerHitWater(1) rangerFilter(entity()) SaDist1=rangerOffset(200,entity():pos(),entity():forward()):distance()
+rangerHitWater(1) rangerFilter(entity()) SaDist2=rangerOffset(200,entity():pos(),-entity():forward()):distance()
+rangerHitWater(1) rangerFilter(entity()) SaDist3=rangerOffset(200,entity():pos(),entity():up()):distance()
+
+
+if(SaDist1<150){Flip1=Flip1+1*Int} else{Flip1=0}
+if(SaDist2<150){Flip2=Flip2+1*Int} else{Flip2=0}
+if(SaDist3<100){Flip3=Flip3+1*Int} else{Flip3=0}
+
+
+#if(Flip1>=100){entity():applyAngForce(ang(-1,0,0)*25000*entity():mass()*0.05) entity():applyForce(vec(0,0,20000*entity():mass()*0.015)) Flip1=0}
+#if(Flip2>=100){entity():applyAngForce(ang( 1,0,0)*25000*entity():mass()*0.05) entity():applyForce(vec(0,0,20000*entity():mass()*0.015)) Flip2=0}
+if(Flip3>=100){
+if(round(random(-1,1))>0){entity():applyAngForce(ang( 1,0,0)*25000*entity():mass()*0.13) entity():applyForce(vec(0,0,20000*entity():mass()*0.015))}
+else{entity():applyAngForce(ang(-1,0,0)*25000*entity():mass()*0.13) entity():applyForce(vec(0,0,20000*entity():mass()*0.015))}
+Flip3=0
+}
+
+
+#if(Dist1<Max&Dist2<Max){entity():applyOffsetForce((entity():up()*(Hight-Dist1)-entity():right()*(Steer*( A-D)+(W-S)*Speed))*Power*Mass*Int,entity():toWorld(vec( 0.4, 0.5,-0)*Scale)) Mul1=1} else{Mul1=0}
+#if(Dist1<Max&Dist2<Max){entity():applyOffsetForce((entity():up()*(Hight-Dist2)-entity():right()*(Steer*(-A+D)+(W-S)*Speed))*Power*Mass*Int,entity():toWorld(vec(-0.4, 0.5,-0)*Scale)) Mul2=1} else{Mul2=0}
+#if(Dist3<Max&Dist4<Max){entity():applyOffsetForce((entity():up()*(Hight-Dist3)-entity():right()*(Steer*( A-D)+(W-S)*Speed))*Power*Mass*Int,entity():toWorld(vec( 0.4, 0.0,-0)*Scale)) Mul3=1} else{Mul3=0}
+#if(Dist3<Max&Dist4<Max){entity():applyOffsetForce((entity():up()*(Hight-Dist4)-entity():right()*(Steer*(-A+D)+(W-S)*Speed))*Power*Mass*Int,entity():toWorld(vec(-0.4, 0.0,-0)*Scale)) Mul4=1} else{Mul4=0}
+#if(Dist5<Max&Dist6<Max){entity():applyOffsetForce((entity():up()*(Hight-Dist5)-entity():right()*(Steer*( A-D)+(W-S)*Speed))*Power*Mass*Int,entity():toWorld(vec( 0.4,-0.5,-0)*Scale)) Mul5=1} else{Mul5=0}
+#if(Dist5<Max&Dist6<Max){entity():applyOffsetForce((entity():up()*(Hight-Dist6)-entity():right()*(Steer*(-A+D)+(W-S)*Speed))*Power*Mass*Int,entity():toWorld(vec(-0.4,-0.5,-0)*Scale)) Mul6=1} else{Mul6=0}
+
+if(Dist1<Max&Dist2<Max){FrForce12=1} else{FrForce12=0}
+if(Dist3<Max&Dist4<Max){FrForce34=1} else{FrForce34=0}
+if(Dist5<Max&Dist6<Max){FrForce56=1} else{FrForce56=0}
+
+if(Dist1<Max){entity():applyOffsetForce((entity():up()*(Hight-Dist1)-entity():right()*(Steer*( A-D)+(W-S)*Speed)*FrForce12)*Power*Mass*Int,entity():toWorld(vec( 0.4, 0.5,-0)*Scale)) Mul1=1} else{Mul1=0}
+if(Dist2<Max){entity():applyOffsetForce((entity():up()*(Hight-Dist2)-entity():right()*(Steer*(-A+D)+(W-S)*Speed)*FrForce12)*Power*Mass*Int,entity():toWorld(vec(-0.4, 0.5,-0)*Scale)) Mul2=1} else{Mul2=0}
+if(Dist3<Max){entity():applyOffsetForce((entity():up()*(Hight-Dist3)-entity():right()*(Steer*( A-D)+(W-S)*Speed)*FrForce34)*Power*Mass*Int,entity():toWorld(vec( 0.4, 0.0,-0)*Scale)) Mul3=1} else{Mul3=0}
+if(Dist4<Max){entity():applyOffsetForce((entity():up()*(Hight-Dist4)-entity():right()*(Steer*(-A+D)+(W-S)*Speed)*FrForce34)*Power*Mass*Int,entity():toWorld(vec(-0.4, 0.0,-0)*Scale)) Mul4=1} else{Mul4=0}
+if(Dist5<Max){entity():applyOffsetForce((entity():up()*(Hight-Dist5)-entity():right()*(Steer*( A-D)+(W-S)*Speed)*FrForce56)*Power*Mass*Int,entity():toWorld(vec( 0.4,-0.5,-0)*Scale)) Mul5=1} else{Mul5=0}
+if(Dist6<Max){entity():applyOffsetForce((entity():up()*(Hight-Dist6)-entity():right()*(Steer*(-A+D)+(W-S)*Speed)*FrForce56)*Power*Mass*Int,entity():toWorld(vec(-0.4,-0.5,-0)*Scale)) Mul6=1} else{Mul6=0}
+
+ForceMul=(Mul1+Mul2+Mul3+Mul4+Mul5+Mul6)/6
+
+if(ForceMul>0){entity():applyAngForce(-entity():angVel()*ang(4,3,10)*Dumping*Mass*ForceMul*AngMul*Int*0.60)}
+if(ForceMul>0){entity():applyForce((-entity():forward()*entity():velL():x()+entity():right()*entity():velL():y()*(0.2+(W+S)*0.05)-entity():up()*entity():velL():z()*1.5)*Dumping*Mass*ForceMul*Int)}
+if(changed(Space)&Space&Dist1<70){entity():applyForce((entity():up())*Mass*JumpPower)}
+
+#Holos
+
+Dir=0
+if(entity():velL():y()>100){Dir=1}
+if(entity():velL():y()<-100){Dir=-1}
+
+RollR=RollR+(+entity():angVel():yaw()*0.5+entity():velL():y()*0.15)*0.2*Int*(ForceMul+abs(W-S))*0.5
+RollL=RollL+(-entity():angVel():yaw()*0.5+entity():velL():y()*0.15)*0.2*Int*(ForceMul+abs(W-S))*0.5
+if(RollR> 360){RollR=RollR-360}
+if(RollR<-360){RollR=RollR+360}
+if(RollL> 360){RollL=RollL-360}
+if(RollL<-360){RollL=RollL+360}
+
+if(changed(Dist1)){holoPos(1,entity():toWorld(vec( 0.4, 0.5,-(clamp(Dist1,48.5,Max+10))/Scale+Rad*0.45)*Scale))}
+if(changed(Dist2)){holoPos(2,entity():toWorld(vec(-0.4, 0.5,-(clamp(Dist2,48.5,Max+10))/Scale+Rad*0.45)*Scale))}
+if(changed(Dist3)){holoPos(3,entity():toWorld(vec( 0.4, 0.0,-(clamp(Dist3,48.5,Max+10))/Scale+Rad*0.45)*Scale))}
+if(changed(Dist4)){holoPos(4,entity():toWorld(vec(-0.4, 0.0,-(clamp(Dist4,48.5,Max+10))/Scale+Rad*0.45)*Scale))}
+if(changed(Dist5)){holoPos(5,entity():toWorld(vec( 0.4,-0.5,-(clamp(Dist5,48.5,Max+10))/Scale+Rad*0.45)*Scale))}
+if(changed(Dist6)){holoPos(6,entity():toWorld(vec(-0.4,-0.5,-(clamp(Dist6,48.5,Max+10))/Scale+Rad*0.45)*Scale))}
+
+if(changed(RollR+Steer)){holoAng(1,entity():toWorld(ang(RollR,90+(A-D)*15*Steer/SteerMul*Dir,90)))}
+if(changed(RollL+Steer)){holoAng(2,entity():toWorld(ang(RollL,90+(A-D)*15*Steer/SteerMul*Dir,90)))}
+if(changed(RollR)){holoAng(3,entity():toWorld(ang(RollR,90,90)))}
+if(changed(RollL)){holoAng(4,entity():toWorld(ang(RollL,90,90)))}
+if(changed(RollR+Steer)){holoAng(5,entity():toWorld(ang(RollR,90+(A-D)*15*Steer/SteerMul*-Dir,90)))}
+if(changed(RollL+Steer)){holoAng(6,entity():toWorld(ang(RollL,90+(A-D)*15*Steer/SteerMul*-Dir,90)))}
+holoAng(26,Main:toWorld(ang(0+random(-0.2,0.2)*(Speed/2*(W-S)+1),0,0)))
+
+
+if(!Active&Open<90){Open=Open+1*Int}
+if(Active&Open>0){Open=Open-1*Int}
+
+if(changed(Open)){
+holoAng(47,Main:toWorld(ang( 45-Open,0,90)))
+holoAng(48,Main:toWorld(ang(-45+Open,0,90)))
+}
+
+#EGP
+
+SpeedY=round(abs(toUnit("km/h",sqrt(sqrt(entity():vel():x()^2+entity():vel():y()^2)^2+entity():vel():z()^2))))
+SpeedR=round(abs(toUnit("km/h",+entity():angVel():yaw()/0.3+entity():velL():y()*1)))
+SpeedL=round(abs(toUnit("km/h",-entity():angVel():yaw()/0.3+entity():velL():y()*1)))
+
+if(SpeedY<1){SpeedY=0}
+if(SpeedY>999){SpeedY=0}
+
+if(changed(SpeedY)){EGP1:egpText(24,SpeedY:toString(),vec2(20,40))}
+
+
+if(SpeedR> 10){Changed[ "1R",number]=1} else{Changed[ "1R",number]=0}
+if(SpeedR> 20){Changed[ "2R",number]=1} else{Changed[ "2R",number]=0}
+if(SpeedR> 30){Changed[ "3R",number]=1} else{Changed[ "3R",number]=0}
+if(SpeedR> 40){Changed[ "4R",number]=1} else{Changed[ "4R",number]=0}
+if(SpeedR> 50){Changed[ "5R",number]=1} else{Changed[ "5R",number]=0}
+if(SpeedR> 60){Changed[ "6R",number]=1} else{Changed[ "6R",number]=0}
+if(SpeedR> 70){Changed[ "7R",number]=1} else{Changed[ "7R",number]=0}
+if(SpeedR> 80){Changed[ "8R",number]=1} else{Changed[ "8R",number]=0}
+if(SpeedR> 90){Changed[ "9R",number]=1} else{Changed[ "9R",number]=0}
+if(SpeedR>100){Changed["10R",number]=1} else{Changed["10R",number]=0}
+if(SpeedR>110){Changed["11R",number]=1} else{Changed["11R",number]=0}
+
+if(SpeedL> 10){Changed[ "1L",number]=1} else{Changed[ "1L",number]=0}
+if(SpeedL> 20){Changed[ "2L",number]=1} else{Changed[ "2L",number]=0}
+if(SpeedL> 30){Changed[ "3L",number]=1} else{Changed[ "3L",number]=0}
+if(SpeedL> 40){Changed[ "4L",number]=1} else{Changed[ "4L",number]=0}
+if(SpeedL> 50){Changed[ "5L",number]=1} else{Changed[ "5L",number]=0}
+if(SpeedL> 60){Changed[ "6L",number]=1} else{Changed[ "6L",number]=0}
+if(SpeedL> 70){Changed[ "7L",number]=1} else{Changed[ "7L",number]=0}
+if(SpeedL> 80){Changed[ "8L",number]=1} else{Changed[ "8L",number]=0}
+if(SpeedL> 90){Changed[ "9L",number]=1} else{Changed[ "9L",number]=0}
+if(SpeedL>100){Changed["10L",number]=1} else{Changed["10L",number]=0}
+if(SpeedL>110){Changed["11L",number]=1} else{Changed["11L",number]=0}
+
+
+if(changed(Changed[ "1R",number])){EGP1:egpColor(22,Color*0.10*Changed[ "1R",number]+ColorO*(1-Changed[ "1R",number]))}
+if(changed(Changed[ "2R",number])){EGP1:egpColor(20,Color*0.15*Changed[ "2R",number]+ColorO*(1-Changed[ "2R",number]))}
+if(changed(Changed[ "3R",number])){EGP1:egpColor(18,Color*0.20*Changed[ "3R",number]+ColorO*(1-Changed[ "3R",number]))}
+if(changed(Changed[ "4R",number])){EGP1:egpColor(16,Color*0.30*Changed[ "4R",number]+ColorO*(1-Changed[ "4R",number]))}
+if(changed(Changed[ "5R",number])){EGP1:egpColor(14,Color*0.40*Changed[ "5R",number]+ColorO*(1-Changed[ "5R",number]))}
+if(changed(Changed[ "6R",number])){EGP1:egpColor(12,Color*0.50*Changed[ "6R",number]+ColorO*(1-Changed[ "6R",number]))}
+if(changed(Changed[ "7R",number])){EGP1:egpColor(10,Color*0.60*Changed[ "7R",number]+ColorO*(1-Changed[ "7R",number]))}
+if(changed(Changed[ "8R",number])){EGP1:egpColor( 8,Color*0.70*Changed[ "8R",number]+ColorO*(1-Changed[ "8R",number]))}
+if(changed(Changed[ "9R",number])){EGP1:egpColor( 6,Color*0.80*Changed[ "9R",number]+ColorO*(1-Changed[ "9R",number]))}
+if(changed(Changed["10R",number])){EGP1:egpColor( 4,Color*0.90*Changed["10R",number]+ColorO*(1-Changed["10R",number]))}
+if(changed(Changed["11R",number])){EGP1:egpColor( 2,Color*1.00*Changed["11R",number]+ColorO*(1-Changed["11R",number]))}
+
+if(changed(Changed[ "1L",number])){EGP1:egpColor(21,Color*0.10*Changed[ "1L",number]+ColorO*(1-Changed[ "1L",number]))}
+if(changed(Changed[ "2L",number])){EGP1:egpColor(19,Color*0.15*Changed[ "2L",number]+ColorO*(1-Changed[ "2L",number]))}
+if(changed(Changed[ "3L",number])){EGP1:egpColor(17,Color*0.20*Changed[ "3L",number]+ColorO*(1-Changed[ "3L",number]))}
+if(changed(Changed[ "4L",number])){EGP1:egpColor(15,Color*0.30*Changed[ "4L",number]+ColorO*(1-Changed[ "4L",number]))}
+if(changed(Changed[ "5L",number])){EGP1:egpColor(13,Color*0.40*Changed[ "5L",number]+ColorO*(1-Changed[ "5L",number]))}
+if(changed(Changed[ "6L",number])){EGP1:egpColor(11,Color*0.50*Changed[ "6L",number]+ColorO*(1-Changed[ "6L",number]))}
+if(changed(Changed[ "7L",number])){EGP1:egpColor( 9,Color*0.60*Changed[ "7L",number]+ColorO*(1-Changed[ "7L",number]))}
+if(changed(Changed[ "8L",number])){EGP1:egpColor( 7,Color*0.70*Changed[ "8L",number]+ColorO*(1-Changed[ "8L",number]))}
+if(changed(Changed[ "9L",number])){EGP1:egpColor( 5,Color*0.80*Changed[ "9L",number]+ColorO*(1-Changed[ "9L",number]))}
+if(changed(Changed["10L",number])){EGP1:egpColor( 3,Color*0.90*Changed["10L",number]+ColorO*(1-Changed["10L",number]))}
+if(changed(Changed["11L",number])){EGP1:egpColor( 1,Color*1.00*Changed["11L",number]+ColorO*(1-Changed["11L",number]))}
+
+
+Tick=Tick+0.1
+CMax=120
+EMax=50
+
+if(changed(round(Tick))){EGP1:egpColor(35,vec(255*(1-clamp(Dist2,1,CMax)/CMax),255*((clamp(Dist2,1,CMax/2))/(CMax-CMax/2)),0))}
+if(changed(round(Tick))){EGP1:egpColor(36,vec(255*(1-clamp(Dist4,1,CMax)/CMax),255*((clamp(Dist4,1,CMax/2))/(CMax-CMax/2)),0))}
+if(changed(round(Tick))){EGP1:egpColor(37,vec(255*(1-clamp(Dist6,1,CMax)/CMax),255*((clamp(Dist6,1,CMax/2))/(CMax-CMax/2)),0))}
+if(changed(round(Tick))){EGP1:egpColor(38,vec(255*(1-clamp(Dist1,1,CMax)/CMax),255*((clamp(Dist1,1,CMax/2))/(CMax-CMax/2)),0))}
+if(changed(round(Tick))){EGP1:egpColor(39,vec(255*(1-clamp(Dist3,1,CMax)/CMax),255*((clamp(Dist3,1,CMax/2))/(CMax-CMax/2)),0))}
+if(changed(round(Tick))){EGP1:egpColor(40,vec(255*(1-clamp(Dist5,1,CMax)/CMax),255*((clamp(Dist5,1,CMax/2))/(CMax-CMax/2)),0))}
+
+
+if((W+A+S+D)&EnLoad<(Speed-SpeedY*0.2)){EnLoad=EnLoad+0.3} else{if(EnLoad>0){EnLoad=EnLoad-0.3}}
+
+if(changed(EnLoad)){EGP1:egpColor(33,vec(255*(1-clamp(50-EnLoad,1,EMax)/EMax),255*((clamp(50-EnLoad,1,EMax/2))/(EMax-EMax/2)),0))}
+
+EGP1:entity():setColor(vec(255,255,255))
+
+holoAng(60,EGP1:entity():toWorld(ang(0,entity():angles():yaw(),0)))
+holoAng(61,EGP1:entity():toWorld(ang(0,entity():angles():pitch(),0)))
+
+
+#Sound
+
+if(changed(Active)&Active==0&First==0){
+soundStop(129)
+soundStop(130)
+entity():soundPlay(131,100,"vehicles/v8/v8_stop1.wav")
+}
+
+if(Active){SoundPlay=SoundPlay+1 if(SUpMul<1){SUpMul=SUpMul+0.01}} else{SoundPlay=0 First=0 Powered=0 if(SUpMul>0){SUpMul=SUpMul-0.01}}
+
+if(SoundPlay==1){
+soundStop(131)
+entity():soundPlay(128,100,"vehicles/crane/crane_magnet_switchon.wav")
+}
+if(SoundPlay==15){
+soundStop(129)
+soundStop(130)
+Powered=1
+}
+
+if(SoundPlay==20){
+entity():soundPlay(129,100,"vehicles/crane/crane_idle_loop3.wav")
+entity():soundPlay(130,100,"vehicles/v8/third.wav")
+}
+
+
+if(SoundPlay>3000){SoundPlay=14}
+
+soundPitch(129,(50+(SpeedY*0.7+(15-15*ForceMul)*abs(W-S)))*SUpMul)
+soundPitch(130,(30+clamp((SpeedY*0.7+(15-15*ForceMul)*abs(W-S)),0,50))*SUpMul)
+
+
+
+}
+}
+
+

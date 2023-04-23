@@ -1,0 +1,32 @@
+@name MiniTurret
+@inputs Turret:entity Pod:wirelink 
+@outputs Fire
+@model models/hunter/plates/plate1x1.mdl 
+@persist START Active Number
+
+Number=1
+if(Number==1){
+        Turret:setPos(entity():pos()+vec(0,0,35))
+    }
+
+START=Pod["Active",number]
+DRIVER=Pod["Driver",entity]
+if(START)
+    {
+    runOnTick(1)
+    Active=Active==0
+    if(Active)
+        {
+        Turret:setAng(DRIVER:eyeAngles())
+        }
+    }
+
+runOnTick(1)
+E = entity() 
+
+if(Active & START){
+      Fire = 1
+}
+else{
+        Fire = 0
+}

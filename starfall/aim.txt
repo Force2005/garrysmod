@@ -1,0 +1,132 @@
+--@name AIM
+--@author Markiz
+--@shared
+
+
+local Target = owner()
+Target = find.playersByName("Force2005")[1]
+/*Target = find.allPlayers(function(p)
+    if p:getSteamID() == "STEAM_0:0:582893321" then
+        return true
+    end
+end)[1]*/
+//print(Target)
+
+
+
+O = owner()
+OO = player()
+local curastate = false
+local aimed = false
+local tar = nil
+
+local screenW = 100
+local screenH = 100
+
+
+function gethead(ent)
+    if ent:lookupBone("ValveBiped.Bip01_Spine4") then
+        local pos = ent:getBonePosition(ent:lookupBone("ValveBiped.Bip01_Spine4"))
+        return pos
+    end
+    return ent:localToWorld(ent:obbCenter())
+end
+ 
+function getclosest(r)
+    local min = 999999
+    local lox
+    for i, v in ipairs(find.allPlayers())
+    do
+        local kek = gethead(v)
+        --print(kek)
+        local tbl = kek:toScreen()
+        local x = tbl.x
+        local y = tbl.y
+        local dist = math.sqrt((x - screenW / 2)^2 + (y - screenH / 2)^2)
+        if v != Target and dist <= r and dist < min then
+            lox = v
+            min = dist
+                end
+    end
+    return lox
+end
+ 
+
+
+if SERVER then
+
+    hook.add("Think", "aim Markiz",    function()
+        local angle
+        if curastate then                                
+            if tar != nil then
+                angle = (gethead(tar) + tar:getVelocity() * game.getTickInterval() * -3 - Target:getShootPos() - Target:getVelocity() * game.getTickInterval() * 1.5+ Vector(0,0,0)):getAngle()
+            end
+            if angle != nil then        
+                Target:setEyeAngles(angle)      
+            end
+        end
+    end)
+    
+    hook.add("ClientInitialized", "cl_init", function(ply)
+    end)
+    
+    net.receive("keyPressedHandler", function (len, ply)
+        tar = net.readEntity()
+        curastate = true
+    end)
+    net.receive("keyReleasedHandler", function (len, ply)
+        curastate = false
+    end)
+    
+    net.receive("Resolution", function(len)
+        screenW = net.readInt(16)
+        screenH = net.readInt(16)
+        print(''..Target:getName()..' - '..tostring(screenW)..', '..tostring(screenH))
+    end)
+    
+else
+
+    if Target == OO then
+        hook.add("inputPressed", "", function(button)
+            if button == KEY.X then
+                curastate = true
+                tar = getclosest(200)
+                --print(tar)
+                
+                if tar == nil then return end
+                
+                net.start("keyPressedHandler")
+                net.writeEntity(tar)
+                net.send()
+            end
+            
+        end)
+        
+        hook.add("inputReleased", "", function(button)
+            if button == KEY.X then
+                curastate = true
+                --tar = getclosest(200)
+                --print(tar)
+                
+                net.start("keyReleasedHandler")
+                net.send()
+            end
+        end)
+        
+        
+        if player() == Target then
+            hook.add("renderoffscreen", "Resolution", function()
+                hook.remove("renderoffscreen", "Resolution")
+                screenW, screenH = render.getGameResolution()
+                --print(Width, Height, ' - ', Fov)
+                
+                net.start("Resolution")
+                net.writeInt(screenW, 16)
+                net.writeInt(screenH, 16)
+                net.send()
+            end)
+        end
+    end
+    
+end
+

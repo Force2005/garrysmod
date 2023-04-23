@@ -1,0 +1,56 @@
+--@name KeyHandler
+--@author
+--@shared
+
+local O = owner()
+local OO = player()
+
+
+if SERVER then
+
+    function printKey(key, keyName)
+        print(""..key.." - "..keyName)
+    end
+    function printWheel(delta)
+        print("wheel delta =  "..delta)
+    end
+    
+    hook.add("ClientInitialized", "cl_init", function(ply)
+    end)
+    
+    net.receive("keyHandler", function (len, ply)
+        local key = net.readInt(7)
+        local keyName = net.readString()
+        printKey(key, keyName)
+    end)
+    
+    net.receive("wheelHandler", function (len, ply)
+        local delta = net.readInt(7)
+        printWheel(delta)
+    end)
+    
+else
+    if O == OO then
+        
+        local oldPressedKey;
+
+        hook.add("inputPressed", "", function(button)
+            if oldPressedKey == button then return end
+            
+            oldPressedKey = button
+            net.start("keyHandler")
+            net.writeInt(button, 7)
+            net.writeString(input.getKeyName(button))
+            net.send()
+        end)
+        
+        hook.add("mouseWheeled", "", function(delta)
+            net.start("wheelHandler")
+            net.writeInt(delta, 7)
+            net.send()
+        end)
+        
+    
+    end
+end
+

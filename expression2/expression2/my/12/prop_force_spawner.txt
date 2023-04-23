@@ -1,0 +1,131 @@
+@name Prop Force Spawner
+@inputs
+@outputs [ActiveProps]:table
+@persist [O E]:entity LivingTime DistanceSpawn Force Mass Model:string IsKeyPressed AttackDelay IsNoCollide
+
+if(first() | dupefinished()) {
+    O = owner(), E = entity()
+    
+    Model = "models/props_junk/watermelon01.mdl"
+    LivingTime = 4 # Seconds
+    DistanceSpawn = 100
+    Force = 1000
+    Mass = 10
+    AttackDelay = 0.4 # Seconds
+    
+    IsNoCollide = 1  # Boolean
+    
+    
+    timer("checkRemove", 10)
+    runOnKeys(owner(),1)
+    
+    #ifdef runOnLast(number) 
+        runOnLast(1) 
+    #endif
+    
+    function number table:indexEnt(Ent:entity) {
+        local OK = 0
+        for(I=1,This:count()) {
+            if(This[I, array]:entity(1) == Ent) { OK = I break}
+        } 
+        return OK
+    }
+    function number table:checkAr(Ent:entity) {
+        local OK = 0
+        for(I=1,This:count()) {
+            if(This[I, array]:entity(1) == Ent) { OK = 1 break }
+        }
+        return OK
+    }
+    function number table:addEnt(Ent:entity) {
+        local OK = 0
+        if(!This:checkAr(Ent)) { 
+            This:pushArray(array(Ent, curtime() + LivingTime)) 
+            OK=1 
+        } else {
+            for(I=1,This:count()) {
+                if(This[I, array]:entity(1) == Ent) { 
+                    This[I, array][2, number] = curtime() + LivingTime 
+                    break 
+                }
+            }
+        }
+        return OK
+    }
+    function number table:removeEnt(Ent:entity) {
+        local OK = 0
+        if(This:checkAr(Ent)) { This:remove(This:indexEnt(Ent)) OK=1}
+        return OK
+    }
+    
+    function void attack() {
+        local EyePos = owner():shootPos()
+        local EyeAngles = owner():eyeAngles()
+        local Dir = owner():eye()
+        
+        P = propSpawn(Model, EyePos + Dir * DistanceSpawn, 0)
+        
+        if (P:isValid()) {
+            P:setAng(EyeAngles)
+            P:setMass(Mass)
+            #:setAlpha(0)
+            P:propFreeze(0)
+            P:propSetVelocity(Dir * Force)
+            P:propNotSolid(0)
+            noCollideAll(P,0)
+            noCollide(P, O)
+            
+            Color = hsv2rgb(randint(0,360), 1, 1)
+            P:setTrails(100, 1, 2, "trails/laser", Color, 255)
+            
+            if (IsNoCollide) {
+                for(I=1, ActiveProps:count()) {
+                    local Ent = ActiveProps[I, array][1, entity]
+                    if (Ent:isValid() & P:isValid()) {
+                        noCollide(P, Ent)
+                    }
+                }
+            }
+            ActiveProps:addEnt(P)
+        }
+    }
+}
+
+
+#ifdef last()
+    if(last()) { print("GoodBye :)") }
+#endif
+
+
+
+if (changed(O:keyPressed("e"))) {
+    IsKeyPressed = O:keyPressed("e")
+    if (IsKeyPressed) {
+        timer("Attack", 10)
+    } else {
+        stoptimer("Attack")
+    }
+}
+
+
+if (clk("Attack")) {
+    if (IsKeyPressed) {
+        timer("Attack", AttackDelay*1000)
+    }
+    attack()
+}
+
+
+if (clk("checkRemove")) {
+    timer("checkRemove", 100)
+    
+    local CurTime = curtime()
+    for (I=1, ActiveProps:count()) {
+        local Ar = ActiveProps[I, array]
+        if(Ar:number(2) < CurTime) {
+            ActiveProps:removeEnt(Ar:entity(1))
+            Ar:entity(1):propDelete()
+            #print(Ar:entity(1))
+        }
+    }
+}

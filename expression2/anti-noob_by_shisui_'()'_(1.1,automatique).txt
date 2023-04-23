@@ -1,0 +1,24 @@
+@name Anti-Noob by Shisui '()' (1.1,Automatique)
+@inputs
+@outputs
+@persist
+@trigger
+runOnTick(10)
+#
+S = owner():lastSaid():explode(" ")
+#
+if(S:string(1)=="!target"){
+#
+hideChat(1)
+#
+TempPlayer = findPlayerByName(S:string(2))
+if(TempPlayer:isPlayer()){
+Noob = TempPlayer
+#
+hideChat(1)
+}
+}
+if(Noob:isAlive()){
+P = propSpawn("models/props_c17/oildrum001_explosive.mdl",Noob:pos(),1)
+P:propBreak()
+}

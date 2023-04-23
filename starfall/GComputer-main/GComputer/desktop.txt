@@ -1,0 +1,361 @@
+--@includedir sys_app
+--@includedir dialog_popup
+
+function computer.open_app(app_path,me)
+    local already_created = false
+
+    //prevent from rewriting the load data of an app
+    local current_app_metadata = table.copy(computer.app[app_path])
+    if current_app_metadata == {} then current_app_metadata = nil end
+
+    //used to check if an app already exist
+    if current_app_metadata and current_app_metadata.multiple_open == false then
+        for id, app in pairs(computer.created_app) do
+            if current_app_metadata.app_id == app.app.app_id then
+                already_created = true
+                break
+            end
+        end
+    end
+
+    //if doesn't exist create it
+    if current_app_metadata and already_created == false then
+        local new_app = SFUi.window(current_app_metadata.pos, current_app_metadata.size, current_app_metadata.title, true, false, function(me)
+            if type(current_app_metadata.on_close) == "function" then current_app_metadata.on_close(me,me.app) end
+            computer.GComputer_gui:removeComponent(me)
+        end)
+        new_app.paint = function() end
+        local show_closebtn = current_app_metadata.close_btn
+        if show_closebtn == false then show_closebtn = nil end
+
+        new_app.resizable = current_app_metadata.resizable
+        new_app.minimum_size = current_app_metadata.minimum_size
+        new_app.maximum_size = current_app_metadata.maximum_size
+        new_app.draggable = current_app_metadata.draggable
+        new_app.closehides = show_closebtn
+        if type(current_app_metadata.add_render) == "function" then new_app.draw_on_top = current_app_metadata.add_render end
+        new_app.app = current_app_metadata
+        new_app.lastclicked = timer.realtime()
+
+        //move app to not be on another app
+        
+        if type(current_app_metadata.on_load) == "function" then current_app_metadata.on_load(new_app,new_app.app) end
+        computer.GComputer_gui:addComponent(new_app)
+
+        timer.simple(0.1,function()
+            new_app.paint = nil
+        end)
+
+        return new_app
+    end
+end
+
+function computer.dialogType(id)
+    //1 == Yes, 2 == No, 3 == Ok, 4 == Continue, 5 == Cancel
+    if id == 1 then return computer.lang.query_word("dialog.yes") end
+    if id == 2 then return computer.lang.query_word("dialog.no") end
+    if id == 3 then return computer.lang.query_word("dialog.ok") end
+    if id == 4 then return computer.lang.query_word("dialog.continue") end
+    if id == 5 then return computer.lang.query_word("dialog.cancel") end
+end
+function computer.dialogMessage(title,message,button,exec)
+    local new_dialog = SFUi.window(Vector(computer.resolution.x/2 - 400/2,computer.resolution.y/2 - 200/2), Vector(400,200), title, true, false, function(me)
+        computer.GComputer_gui:removeComponent(me)
+        exec(0)
+    end)
+    new_dialog.draggable = true
+    new_dialog.closehides = true
+    new_dialog.message = message
+    new_dialog.lastclicked = timer.realtime()
+    computer.GComputer_gui:addComponent(new_dialog)
+
+    if type(button) == "table" and #button > 0 then else button = {1,2} end
+    for i=1, math.clamp(#button,1,3) do
+        SFUi.button(new_dialog, Vector(400 - i * (110),200 - 30), Vector(100, 20), computer.dialogType(button[math.clamp(#button,1,3)+1 - i]), function(me)
+            computer.GComputer_gui:removeComponent(new_dialog)
+            exec(button[math.clamp(#button,1,3)+1 - i])
+        end) 
+    end
+
+    new_dialog.app = {}
+    new_dialog.app.app_logo =  function(app,x,y,w,h)
+        render.setFilterMag(1)
+        render.setFilterMin(1)
+    
+        render.setColor(Color(255,255,255))
+        render.setMaterial(computer.icon["script_gear"])
+        render.drawTexturedRect(x,y,w,h)
+        render.setMaterial()
+
+        render.setFilterMag(3)
+        render.setFilterMin(3)
+    end
+
+    new_dialog.draw_on_top = function(window,app,x,y,w,h)
+        render.setColor(Color(255,255,255))
+        render.drawText(x+10,y+10,window.message)
+    end
+end
+
+function reload_desktop_app()
+    computer.desktop_app = {}
+
+    for id, btn in pairs(computer.appbar_win.children) do
+        if btn.id == "desktop_app" then
+            table.remove(computer.appbar_win.children,id)
+        end
+    end
+
+    for id, file in pairs(computer.save_data.desktop_file) do
+        computer.desktop_app[id] = SFUi.button(computer.appbar_win, Vector(0,0), Vector(100, 80), "", function(me)
+            if me.can_use then
+                local openned_app = computer.open_app(me.open_app,me)
+                if openned_app then computer.file_type.on_open(me,openned_app) end
+            end
+        end)
+        computer.desktop_app[id].id = "desktop_app"
+        computer.desktop_app[id].id_name = file.name
+        computer.desktop_app[id].paint = function(self)
+            if type(self.app) == "table" and type(self.app.app_logo) == "function" then self.app.app_logo(app,self.mins.x + self.size.x/2 - self.size.y/2 + 20,self.mins.y+20,self.size.y-40,self.size.y-40) end
+
+            self.show_name = ""
+            self.line = ""
+            for i=1, #self.id_name do
+                self.line = self.line .. self.id_name[i]
+                self.show_name = self.show_name .. self.id_name[i]
+                if render.getTextSize(self.line) > self.size.x-20 then
+                    self.show_name = self.show_name .. "\n"
+                    self.line = ""
+                end
+
+                if select(2,render.getTextSize(self.show_name)) > 30 then
+                    break
+                end
+            end
+
+            if self.hover and self.can_use then
+                if string.endsWith(self.show_name,"\n") then self.show_name = string.sub(self.show_name,0,#self.show_name-1) end
+                
+                local box_w,box_h = render.getTextSize(self.show_name)
+                render.setColor(Color(255,255,255,50))
+                another_render.roundedBox2(6,self.mins.x, self.mins.y, self.size.x, self.size.y - 15 + box_h)
+                
+                
+                --render.setColor(Color(255,255,255,50))
+                --another_render.roundedBox2(6,self.mins.x, self.mins.y, self.size.x, self.size.y)
+            end
+            render.setColor(Color(255,255,255))
+            render.drawText(self.mins.x + self.size.x/2, self.mins.y + self.size.y - 20, self.show_name, TEXT_ALIGN.CENTER)
+        end
+        table.merge(computer.desktop_app[id],computer.file_type.load_from_type(file,computer.appbar_win))
+    end
+end
+
+function onInit(computer)
+    local data = {}
+    computer.app = requiredir("sys_app")
+    computer.dialog_popup = requiredir("dialog_popup")
+    start_saving_loop()
+
+    computer.GComputer_gui = SFUi:new()
+    computer.appbar_gui = SFUi:new()
+
+    computer.appbar_win = SFUi.window(Vector(0,0), Vector(0,0), "", false, nil)
+    computer.appbar_win.draggable = false
+    computer.appbar_win.paint = function(self) end
+    computer.appbar_gui:addComponent(computer.appbar_win)
+
+    computer.open_startbar = SFUi.button(computer.appbar_win,Vector(0, 0), Vector(45, 45), "",function(me)
+        if me.can_use then
+            if computer.start_bar then
+                computer.GComputer_gui:removeComponent(computer.start_bar)
+                computer.start_bar = nil
+            else
+                computer.start_bar = computer.open_app("GComputer/sys_app/start_bar.txt")
+            end
+        end
+    end)
+    computer.open_startbar.paint = function(self)
+        local can_open_app = true
+        for id, app in pairs(computer.created_app) do
+            if app.hover then
+                can_open_app = false
+                break
+            end
+        end
+        self.can_use = can_open_app
+
+        if self.can_use then
+            render.setColor(self.hover and self.palette.highlight or self.palette.component)
+            render.drawRect(self.mins.x, self.mins.y, self.size.x, self.size.y)
+            render.setColor(self.action.held and self.palette.highlight or self.palette.contrast)
+            render.drawRect(self.mins.x+1, self.mins.y+1, self.size.x-2, self.size.y-2)
+        else
+            render.setColor(self.palette.component)
+            render.drawRect(self.mins.x, self.mins.y, self.size.x, self.size.y)
+        end
+            
+        local startbar_metadata = computer.app["GComputer/sys_app/start_bar.txt"]
+        startbar_metadata.app_logo(startbar_metadata,self.mins.x+5,self.mins.y+5,self.size.x-10,self.size.y-10)
+    end
+
+    computer.open_clock = SFUi.button(computer.appbar_win,Vector(0, 0), Vector(120, 45), "",function(me)
+        if me.can_use then
+            computer.open_app("GComputer/sys_app/clock.txt")
+        end
+    end)
+    computer.open_clock.paint = function(self)local can_open_app = true
+        for id, app in pairs(computer.created_app) do
+            if app.hover then
+                can_open_app = false
+                break
+            end
+        end
+        self.can_use = can_open_app
+
+        if self.can_use then
+            render.setColor(self.hover and self.palette.highlight or self.palette.component)
+            render.drawRect(self.mins.x, self.mins.y, self.size.x, self.size.y)
+            render.setColor(self.action.held and self.palette.highlight or self.palette.contrast)
+            render.drawRect(self.mins.x+1, self.mins.y+1, self.size.x-2, self.size.y-2)
+        else
+            render.setColor(self.palette.component)
+            render.drawRect(self.mins.x, self.mins.y, self.size.x, self.size.y)
+        end
+
+        render.setColor(Color(255,255,255))
+        render.drawSimpleText(self.mins.x + self.size.x - 15,self.mins.y + self.size.y - 45/2-10, "" .. os.date("%H:%M",computer.time.realtime),2,1)
+        render.drawSimpleText(self.mins.x + self.size.x - 15,self.mins.y + self.size.y - 45/2+8, "" .. os.date("%d/%m/%y",computer.time.realtime),2,1)
+    end
+
+    computer.desktop_app = {}
+    computer.taskbar_app = {}
+
+    load_folder_content("GComputer/desktop/*",nil,function(list)
+        computer.save_data.desktop_file = list
+        reload_desktop_app()
+    end)
+    
+    for id, script in pairs(computer.dialog_popup) do
+        script.init()
+    end
+
+    --local explorer = computer.open_app("GComputer/app/file_explorer.txt")
+    --explorer.file_info = {type="folder",name="desktop"}
+    --explorer.folder_path = "GComputer/desktop/"
+
+    //dialogMessage are limited to 3 button max
+    //0 == Close button from dialog box, 1 == Yes, 2 == No, 3 == Ok, 4 == Continue, 5 == Cancel
+    //On pressed it's return the id of the pressed button
+    //Example: Pressing Continue will return 4
+
+    //computer.dialogMessage("Virus LUL","A virus As BeEn DeTecTed HOLOLO AM ScarED\nWanNA DelEtE IT ?,?",{1,2},function(id) end)
+
+    --[[
+    computer.dialogMessage("Best choose","Press the good button",{1,2},function(id)
+        if id == 1 then
+            computer.dialogMessage("Congrat","You pressed to good button now pay respect :)",{3},function(id) end)
+        end
+    end)
+    ]]
+
+    return data
+end
+
+function on_render(computer,data,w,h)
+    local isHUD = not render.getScreenEntity()
+    if isHUD then computer.cursor.x, computer.cursor.y = input.getCursorPos()
+    else computer.cursor.x, computer.cursor.y = render.cursorPos() end
+    computer.created_app = computer.GComputer_gui.components
+
+    computer.appbar_win.pos = Vector(0,0)
+    computer.appbar_win.size = Vector(w,h)
+    
+    computer.open_startbar.pos = Vector(0,h-computer.open_startbar.size.y)
+    computer.open_clock.pos = Vector(w-computer.open_clock.size.x,h-computer.open_clock.size.y)
+
+    local x,y = 0,-1
+    for id, app in pairs(computer.desktop_app) do
+        y = y + 1
+        if 20 + y * (app.size.y+20) >= computer.resolution.y-45-60 then
+            x = x + 1
+            y = 0
+        end
+        app.pos = Vector(20 + x * (app.size.y+20),20 + y * (app.size.y+20))
+        
+        //dont open app when a menu is pressed
+        local can_open_app = true
+        local app_show = true
+        for id, app2 in pairs(computer.created_app) do
+            if app2.hover then can_open_app = false end
+            if app.pos:withinAABox(app2.pos, app2.pos + app2.size - app.size) then
+                app_show = false
+                break
+            end
+        end
+        app.can_use = can_open_app
+        app.visible = app_show
+    end
+
+    render.setFont(computer.font.bios_font)
+
+    //draw background
+    local back_size = w
+    if h>w then back_size = h end
+
+    render.setFilterMag(1)
+    render.setFilterMin(1)
+    render.setColor(Color(255,255,255))
+    if not computer.save_data.settings.use_background then computer.save_data.settings.use_background = "console/background02" end
+    render.setMaterial(computer.material.background[computer.save_data.settings.use_background])
+    render.drawTexturedRect(0,-back_size/4,back_size,back_size)
+    render.setFilterMag(3)
+    render.setFilterMin(3)
+
+    render.setFont(computer.font.gui_font)
+
+    //task bar
+    render.setColor((computer.current_theme.main_color/4):setA(255))
+    render.drawRect(0,h-45,w,45)
+    computer.appbar_gui:render()
+    computer.GComputer_gui:render()
+    
+    render.setFont(computer.font.bios_font)
+    //draw critical error
+    if (computer.ram.usage / computer.ram.max) >= 0.75 then
+        computer.critical_error = true
+        computer.critical_error_message = "Critical ram usage !!"
+        
+        if (computer.ram.usage / computer.ram.max) >= 0.95 then
+            load_interface("bsod",{bsod_error="An error occured:\nRam usage too high"})
+        end
+    end
+    
+    if (computer.cpu.usage / computer.cpu.max) >= 0.75 then
+        computer.critical_error = true
+        computer.critical_error_message = "Critical cpu usage !!"
+        
+        if (computer.cpu.usage / computer.cpu.max) >= 0.955 then
+            load_interface("bsod",{bsod_error="An error occured:\nCpu usage too high"})
+        end
+    end
+
+    if computer.critical_error then
+        render.setColor(Color(255,0,0,150))
+        render.drawRect(w-350,30,350,50)
+
+        render.setColor(Color(255,255,255))
+        render.drawSimpleText(w-350 + 15,30+50/2, "" .. computer.critical_error_message,0,1)
+        computer.critical_error = true
+        
+        if (computer.cpu.usage / computer.cpu.max) <= 0.75 then computer.critical_error = false end
+        if (computer.ram.usage / computer.ram.max) <= 0.75 then computer.critical_error = false end
+    end
+
+    if computer.cursor.x and computer.cursor.y then
+        render.setColor(Color(255,255,255))
+        computer.drawMouse(computer.cursor.x, computer.cursor.y)
+    end
+end
+
+return {render=on_render,init=onInit}

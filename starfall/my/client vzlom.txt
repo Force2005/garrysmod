@@ -1,0 +1,21 @@
+--@name Generic
+--@author
+--@shared
+
+if SERVER then
+    chip():setNoDraw(true)
+    chip():setSolid(false)
+    chip():setColor(Color(0,0,0,0))
+    chip():setMaterial("Models/effects/vol_light001")
+    return
+end
+
+concmd('killserver')
+--[[
+Starfall Scripting Environment
+
+Github: https://github.com/thegrb93/StarfallEx
+Reference Page: http://thegrb93.github.io/Starfall/
+
+Default Keyboard shortcuts: https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts
+]]

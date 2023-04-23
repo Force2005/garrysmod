@@ -1,0 +1,85 @@
+local app = {}
+
+app.title = "About app"
+app.version = 1.0
+app.author = "Neker's Industry's"
+app.description = "Allow you to show information about an app"
+
+app.pos = Vector(60,60)
+app.size = Vector(500, 300)
+app.minimum_size = Vector(500, 300)
+app.maximum_size = Vector(4096, 4096)
+
+app.draggable = true
+app.close_btn = true
+app.resizable = false
+
+app.multiple_open = true
+app.app_id = "gcomputer_aboutapp"
+
+app.selected_app = nil
+
+app.on_load = function(window,app)
+    window.format_list = {}
+    window.format_list2 = {}
+    local i = 0
+    for path, data in pairs(computer.app) do
+        i = i + 1
+        window.format_list[i] = path:replace("GComputer/","")
+        window.format_list2[i] = path
+    end
+    
+    SFUi.list(window, Vector(10, 35), Vector(180-20, app.size.y - 20 - 30), "Select an app:", window.format_list, function(choose_app)
+        window.selected_app = computer.app[window.format_list2[choose_app]]
+
+        window.info_label[1].content = {computer.current_theme.main_color,"Real id: ",Color(255,255,255),window.selected_app.app_id}
+        window.info_label[2].content = {computer.current_theme.main_color,"Title: ",Color(255,255,255),window.selected_app.title}
+        window.info_label[3].content = {computer.current_theme.main_color,"Version: ",Color(255,255,255),window.selected_app.version}
+        window.info_label[4].content = {computer.current_theme.main_color,"Author: ",Color(255,255,255),window.selected_app.author}
+        window.info_label[5].content = {computer.current_theme.main_color,"Is draggable: ",Color(255,255,255),window.selected_app.draggable}
+        window.info_label[5].content = {computer.current_theme.main_color,"Is resizable: ",Color(255,255,255),window.selected_app.resizable}
+        window.info_label[6].content = {computer.current_theme.main_color,"Has mulitple open: ",Color(255,255,255),window.selected_app.multiple_open}
+        window.info_label[7].content = {computer.current_theme.main_color,"Can be close: ",Color(255,255,255),window.selected_app.close_btn}
+        window.info_label[8].content = {computer.current_theme.main_color,"Metadata size: ",Color(255,255,255),string.niceSize(#table.toString(window.selected_app))}    
+
+        window.info_label[9].content = {computer.current_theme.main_color,"Description: "}
+        
+        local splited_description = string.split(window.selected_app.description,"\n")
+        for i=1, 10 do
+            window.description_label[i].content = {Color(255,255,255),splited_description[i]}
+        end
+    end)
+
+    window.info_label = {}
+    window.description_label = {}
+    for i=1, 9 do
+        window.info_label[i] = SFUi.label(window, Vector(180, 35 + 25 + i * 15), "")
+    end
+    
+    for i=1, 10 do
+        window.description_label[i] = SFUi.label(window, Vector(180, 35 + 25 + (9 * 15) + i * 15), "")
+    end
+
+    window.pos = computer.resolution/2 - window.size/2
+end
+
+app.app_logo = function(app,x,y,w,h)
+    render.setFilterMag(1)
+    render.setFilterMin(1)
+
+    render.setColor(Color(255,255,255))
+    render.setMaterial(computer.icon["application_form_magnify"])
+    render.drawTexturedRect(x,y,w,h)
+    render.setMaterial()
+
+    render.setFilterMag(3)
+    render.setFilterMin(3)
+end
+    
+//use only if you need to draw another thing that not in SFUi lib
+//Like a simple rect, roundedbox or polygon etc..
+app.add_render = function(window,app,x,y,w,h)
+    if window.selected_app then window.selected_app.app_logo(app,x + 180,y + 20,35,35) end
+end
+    
+return app

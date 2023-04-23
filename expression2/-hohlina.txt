@@ -1,0 +1,90 @@
+@name Hologram7
+@persist [E O Prop]:entity Player:entity Blind A A2
+
+runOnTick(1)
+runOnChat(1)
+
+A=(A+15)%360
+A2=(A-5)%360
+
+LastSaid=owner():lastSaid():lower():explode(" ")
+LastSaid1=LastSaid:string(1)
+LastSaid2=LastSaid:string(2)
+
+
+
+
+if(chatClk(owner()) & LastSaid1 == "/t"){
+    hideChat(1)
+    TempPlayer=findPlayerByName(LastSaid2)
+    if(TempPlayer:isPlayer()){
+        Player=TempPlayer
+    }
+    
+    holoCreate(1)
+    holoScale(1,vec(-4))
+    holoModel(1,"models/holograms/hq_rcube.mdl")
+    Blind=1
+    
+    holoCreate(2)
+    holoScale(2,vec(-5))
+    holoModel(2,"models/holograms/icosphere2.mdl")
+    Blind=1
+    
+    holoCreate(3)
+    holoScale(3,vec(-6))
+    holoModel(3,"models/holograms/torus.mdl")
+    Blind=1
+    
+    holoCreate(4)
+    holoScale(4,vec(1.5))
+    holoModel(4,"models/props_rooftop/sign_letter_f001b.mdl")
+    holoMaterial(4,"models/debug/debugwhite")
+    Blind=1
+    
+}
+
+    if(Blind){
+        holoPos(1,Player:pos()+vec(0,0,50))
+        holoPos(2,Player:pos()+vec(0,0,50))
+        holoPos(3,Player:pos()+vec(0,0,50))
+        holoPos(4,Player:pos()+vec(0,0,80))
+        holoEntity(1):soundPlay(1,999,"synth/square.wav")
+        holoEntity(2):soundPlay(2,999,"synth/square.wav")
+        soundPitch(1,random(500))
+        soundPitch(2,random(500))
+        holoColor(1,vec4(random(255),random(255),random(255),255))
+        holoColor(2,vec4(random(255),random(255),random(255),255))
+        holoColor(3,vec4(random(255),random(255),random(255),255))
+        holoColor(4,vec4(255,215,0,255))
+        holoAng(3,ang(0,A,0))
+        holoAng(4,ang(0,A2,0))
+        holoDisableShading(1,1)
+        holoDisableShading(2,1)
+        holoDisableShading(3,1)
+        holoDisableShading(4,1)
+        holoParentAttachment(1,Player,"eyes")
+        holoParentAttachment(2,Player,"eyes")
+        holoParentAttachment(3,Player,"eyes")
+        holoParentAttachment(4,Player,"eyes")
+    }
+    
+if(chatClk(owner()) & LastSaid1 == "/ut"){
+    hideChat(1)
+    holoDelete(1)
+    holoDelete(2)
+    holoDelete(3)
+    holoDelete(4)
+    Blind=0
+}
+
+#[if(Player:isAlive()){
+    Prop=propSpawn("models/props_c17/oildrum001_explosive.mdl",Player:toWorld(vec(0,0,0)),1)
+    Prop:propBreak()
+    }]#
+    
+        
+        
+        
+    
+

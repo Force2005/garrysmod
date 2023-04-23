@@ -1,0 +1,823 @@
+@name SCAPE'S POWERSPHERE [v1.0]
+@persist SET [CAR USER TARGET]:entity [STABLE LOCK FOR RIG UP HOLD MOVE POS TARGETPOS TRIM]:vector GYRO:angle KTOGGLE KEY AMMO:array
+@persist F Y [BR FR LR RR AR]:ranger SPACE SHIFT ALT T S R TOGGLE RANGE LEFT RIGHT A B
+
+#NOTE TO READER: Feel free to share as you please, just don't claim it as your own. Have fun! 
+
+if(first()|duped()|!CAR){    
+    ###USER INPUT###
+    TRIM = vec(0,155,0) #TRIM COLOR
+    ###USER INPUT STOPS HERE###
+
+    entity():propFreeze(0)
+    CAR = entity():isWeldedTo()
+    runOnTick(1)
+    if(!(CAR:model() == "models/nova/airboat_seat.mdl")){
+        #print(_HUD_PRINTCENTER,"ERROR: E2 chip must be attached to an airboat.")
+        #selfDestruct()
+    }else{
+        hint("SCAPE'S POWERSPHERE\n\nSimply press [E] on the chair to use vehicle.\n\nHold [LALT] for on-foot features.",7)
+        CAR:setAlpha(0)
+        entity():setAlpha(0)
+    }
+    
+    FOR = CAR:forward()
+    RIG = CAR:right()
+    UP = CAR:up()
+
+
+    CAR:setAng(ang())
+    
+    holoCreate(1,CAR:pos() + UP*10,6.5*vec(1,1,1),CAR:angles(),200+0.2*TRIM)
+    holoModel(1,"icosphere3")
+    holoMaterial(1,"models/wireframe")
+    holoParent(1,CAR)
+    
+    holoCreate(100,CAR:pos() + UP*10,6.5*vec(1,1,1),CAR:angles(),TRIM*0.3)
+    holoAlpha(100,200)
+    holoModel(100,"icosphere3")
+    holoParent(100,1)
+    
+    holoCreate(200,CAR:pos() + UP*10,-6.5*vec(1,1,1),CAR:angles(),200+0.2*TRIM)
+    holoModel(200,"icosphere3")
+    holoMaterial(200,"models/wireframe")
+    holoParent(200,1)
+    
+    holoCreate(201,CAR:pos() + UP*10,-6.5*vec(1,1,1),CAR:angles(),TRIM*0.3)
+    holoAlpha(201,150)
+    holoModel(201,"icosphere3")
+    holoParent(201,1)
+    
+    holoCreate(2,CAR:pos() + UP*10,6.65*vec(1.1,1.1,0.08),CAR:angles(),vec(255,255,255))
+    holoModel(2,"hq_tube_thin")
+    holoMaterial(2,"models/props_combine/Combine_Citadel001")
+    holoParent(2,CAR)
+    
+    holoCreate(101,CAR:pos() + UP*14,6.6*vec(1.1,1.1,0.015),CAR:angles(),TRIM)
+    holoModel(101,"hq_tube_thin")
+    holoParent(101,2)
+    
+    holoCreate(102,CAR:pos() + UP*6,6.6*vec(1.1,1.1,0.015),CAR:angles(),TRIM)
+    holoModel(102,"hq_tube_thin")
+    holoParent(102,2)
+    
+    holoCreate(202,CAR:pos() + UP*10,6.65*vec(1.1,1.1,0.08),CAR:angles(),150+0.5*TRIM)
+    holoModel(202,"hq_tube_thin")
+    holoMaterial(202,"models/alyx/emptool_glow")
+    holoAlpha(202,0)
+    holoParent(202,2)
+    
+    holoCreate(7,CAR:pos() + UP*10 + RIG*26.5,6.6*vec(0.38,0.2,0.3),CAR:angles())
+    holoMaterial(7,"models/props_combine/Combine_Citadel001")
+    holoModel(7,"rcube_thick")
+    holoParent(7,CAR)
+    
+    holoCreate(8,CAR:pos() + UP*10 - RIG*26.5,6.6*vec(0.38,0.2,0.3),CAR:angles())
+    holoMaterial(8,"models/props_combine/Combine_Citadel001")
+    holoModel(8,"rcube_thick")
+    holoParent(8,CAR)
+    
+    holoCreate(9,CAR:pos() + UP*10 + RIG*26.5 + FOR*8,vec(1.1,1.1,0.8),CAR:angles() + ang(0,0,90),TRIM)
+    holoMaterial(9,"phoenix_storms/dome_side")
+    holoModel(9,"hq_tube_thin")
+    holoParent(9,7)
+    
+    holoCreate(10,CAR:pos() + UP*10 - RIG*26.5 + FOR*8,vec(1.1,1.1,0.8),CAR:angles() + ang(0,0,90),TRIM)
+    holoMaterial(10,"phoenix_storms/dome_side")
+    holoModel(10,"hq_tube_thin")
+    holoParent(10,8)
+    
+    holoCreate(11,CAR:pos() + UP*10 + FOR*50,3.3*vec(1,1,1),CAR:angles() + ang(0,0,90),TRIM)
+    holoMaterial(11,"phoenix_storms/dome_side")
+    holoModel(11,"hq_tube")
+    holoParent(11,CAR)
+
+    holoCreate(3,CAR:pos() + UP*10 + RIG*39,6.6*vec(0.38,0.38,0.2),CAR:angles()+ang(90,0,0),vec(255,255,255))
+    holoModel(3,"hq_dome")
+    holoMaterial(3,"models/props_combine/Combine_Citadel001")
+    holoParent(3,7)
+    
+    holoCreate(103,CAR:pos() + UP*10 + RIG*39.5,6.6*vec(0.4,0.4,0.06),CAR:angles()+ang(90,0,0),TRIM)
+    holoModel(103,"hq_tube_thin")
+    holoParent(103,3)
+    
+    holoCreate(203,CAR:pos() + UP*10 + RIG*39,6.65*vec(0.38,0.38,0.2),CAR:angles()+ang(90,0,0),150+0.5*TRIM)
+    holoModel(203,"hq_dome")
+    holoMaterial(203,"models/alyx/emptool_glow")
+    holoAlpha(203,0)
+    holoParent(203,3)
+    
+    holoCreate(4,CAR:pos() + UP*10 - RIG*39,6.6*vec(0.38,0.38,0.2),CAR:angles()+ang(-90,0,0),vec(255,255,255))
+    holoModel(4,"hq_dome")
+    holoMaterial(4,"models/props_combine/Combine_Citadel001")
+    holoParent(4,8)   
+    
+    holoCreate(104,CAR:pos() + UP*10 - RIG*39.5,6.6*vec(0.4,0.4,0.06),CAR:angles()+ang(-90,0,0),TRIM)
+    holoModel(104,"hq_tube_thin")
+    holoParent(104,4)
+   
+    holoCreate(204,CAR:pos() + UP*10 - RIG*39,6.65*vec(0.38,0.38,0.2),CAR:angles()+ang(-90,0,0),150+0.5*TRIM)
+    holoModel(204,"hq_dome")
+    holoMaterial(204,"models/alyx/emptool_glow")
+    holoAlpha(204,0)
+    holoParent(204,4)
+    
+    holoCreate(5,CAR:pos() + UP*10,6.6*vec(1.1,1.1,0.08),CAR:angles(),vec(255,255,255))
+    holoModel(5,"hq_tube_thin")
+    holoMaterial(5,"models/props_combine/Combine_Citadel001")
+    holoParent(5,CAR)
+    
+    holoCreate(105,CAR:pos() + UP*14,6.6*vec(1.1,1.1,0.015),CAR:angles(),TRIM)
+    holoModel(105,"hq_tube_thin")
+    holoParent(105,5)
+    
+    holoCreate(106,CAR:pos() + UP*6,6.6*vec(1.1,1.1,0.015),CAR:angles(),TRIM)
+    holoModel(106,"hq_tube_thin")
+    holoParent(106,5)
+    
+    holoCreate(6,CAR:pos() + UP*10,6.6*vec(1.1,1.1,0.08),CAR:angles(),vec(255,255,255))
+    holoModel(6,"hq_tube_thin")
+    holoMaterial(6,"models/props_combine/Combine_Citadel001")
+    holoParent(6,CAR)
+    
+    holoCreate(107,CAR:pos() + UP*14,6.6*vec(1.1,1.1,0.015),CAR:angles(),TRIM)
+    holoModel(107,"hq_tube_thin")
+    holoParent(107,6)
+    
+    holoCreate(108,CAR:pos() + UP*6,6.6*vec(1.1,1.1,0.015),CAR:angles(),TRIM)
+    holoModel(108,"hq_tube_thin")
+    holoParent(108,6)
+    
+    holoCreate(205,CAR:pos() + UP*10,10*vec(1,1,1),CAR:angles(),200+0.2*TRIM)
+    holoModel(205,"hq_sphere")
+    holoMaterial(205,"models/props_c17/fisheyelens")
+    holoParent(205,CAR)
+    holoAlpha(205,0)
+    holoShadow(205,1)
+    
+    holoCreate(206,CAR:pos() + UP*10,10*vec(1,1,1),CAR:angles()+ang(0,0,90),200+0.2*TRIM)
+    holoModel(206,"hq_sphere")
+    holoMaterial(206,"models/props_c17/fisheyelens")
+    holoParent(206,CAR)
+    holoAlpha(206,0)
+    holoShadow(206,1)
+    
+    holoCreate(301,CAR:pos() + UP*1,1.3*vec(1.2,1,0.2),CAR:angles(),100*vec(1,1,1))
+    holoModel(301,"rcube_thin")
+    holoMaterial(301,"phoenix_storms/mat/mat_phx_carbonfiber")
+    holoParent(301,CAR)
+    holoAlpha(301,255)    
+    
+    holoCreate(302,CAR:pos() + UP*10  + FOR*-10 ,1.3*vec(1.2,1.5,0.2), CAR:angles():rotateAroundAxis(RIG,-70),100*vec(1,1,1))
+    holoModel(302,"rcube_thin")
+    holoMaterial(302,"phoenix_storms/mat/mat_phx_carbonfiber")
+    holoParent(302,CAR)
+    holoAlpha(302,255) 
+    
+    holoCreate(303,CAR:pos() + UP*11  + FOR*-8 +  RIG*10 ,1.3*vec(0.2,1.5,0.4), CAR:angles():rotateAroundAxis(RIG,-70),TRIM)
+    holoModel(303,"rcube_thin")
+    #holoMaterial(301,"models/wireframe")
+    holoParent(303,CAR)
+    holoAlpha(303,255)
+    
+    holoCreate(304,CAR:pos() + UP*11  + FOR*-8 -  RIG*10 ,1.3*vec(0.2,1.5,0.4), CAR:angles():rotateAroundAxis(RIG,-70),TRIM)
+    holoModel(304,"rcube_thin")
+    #holoMaterial(301,"models/wireframe")
+    holoParent(304,CAR)
+    holoAlpha(304,255)
+    
+    holoCreate(305,CAR:pos() + UP*4 - RIG*10 ,1.3*vec(0.2,1,0.8),CAR:angles(),TRIM)
+    holoModel(305,"rcube_thin")
+    #holoMaterial(301,"models/wireframe")
+    holoParent(305,CAR)
+    holoAlpha(305,255)
+    
+    holoCreate(306,CAR:pos() + UP*4 + RIG*10 ,1.3*vec(0.2,1,0.8),CAR:angles(),TRIM)
+    holoModel(306,"rcube_thin")
+    #holoMaterial(301,"models/wireframe")
+    holoParent(306,CAR)
+    holoAlpha(306,255)
+    
+    
+    holoCreate(501,CAR:pos() + UP*10,1.3*vec(1,1,1),CAR:angles(),200+0.2*TRIM)
+    holoModel(501,"icosphere3")
+    holoMaterial(501,"models/wireframe")
+    holoParent(501,CAR)
+    holoAlpha(501,0)
+    
+    holoCreate(502,CAR:pos() + UP*10,1.3*vec(1,1,1),CAR:angles(),150+TRIM*0.3)
+    holoAlpha(502,200)
+    holoModel(502,"icosphere3")
+    holoParent(502,CAR)
+    holoAlpha(502,0)
+    
+    holoCreate(503,CAR:pos() + UP*10,1.3*vec(1.1,1.1,1.1),CAR:angles()+ang(30+180,0,0),vec(255,255,255))
+    holoModel(503,"hq_dome")
+    holoMaterial(503,"models/props_combine/Combine_Citadel001")
+    holoParent(503,CAR)
+    holoAlpha(503,0)
+    
+    holoCreate(504,CAR:pos() + UP*10,1.3*vec(1.1,1.1,1.1),CAR:angles()+ang(-30,0,0),vec(255,255,255))
+    holoModel(504,"hq_dome")
+    holoMaterial(504,"models/props_combine/Combine_Citadel001")
+    holoParent(504,CAR)
+    holoAlpha(504,0)
+    
+    holoCreate(505,CAR:pos() + UP*10 + RIG*6.5,1.6*vec(0.38,0.38,0.165),CAR:angles()+ang(90,0,0),vec(255,255,255))
+    holoModel(505,"hq_dome")
+    holoMaterial(505,"models/props_combine/Combine_Citadel001")
+    holoParent(505,CAR)
+    holoAlpha(505,0)
+    
+    holoCreate(506,CAR:pos() + UP*10 + RIG*6.5,1.65*vec(0.4,0.4,0.15),CAR:angles()+ang(90,0,0),TRIM)
+    holoModel(506,"hq_dome")
+    holoParent(506,505)
+    holoAlpha(506,0)
+    
+    holoCreate(507,CAR:pos() + UP*10,1.3*vec(1,1,1),CAR:angles(),200+0.2*TRIM)
+    holoModel(507,"icosphere3")
+    holoMaterial(507,"models/wireframe")
+    holoParent(507,CAR)
+    holoAlpha(507,0)   
+    holoVisible(507,players(),0) 
+    holoVisible(507,owner(),1) 
+    #holoCreate(999)
+    
+    rangerPersist(1)
+    rangerFlags("we") 
+    rangerHitWater(1)
+    SET = B = 0
+    entity():setMass(0) 
+}
+
+if(CAR:driver()){    
+    USER = CAR:driver()
+    F = USER:keyPressed("w") - USER:keyPressed("s")
+    Y = USER:keyPressed("a") - USER:keyPressed("d")
+    SPACE = USER:keyPressed("SPACE")
+    SHIFT = USER:keyPressed("LSHIFT")
+    if(USER:keyPressed("1")){SET = 1}elseif(USER:keyPressed("2")){SET = 2}elseif(USER:keyPressed("3")){SET = 3}elseif(USER:keyPressed("4")){SET = 4}
+    ALT = USER:keyPressed("LALT")
+}else{
+    F = Y = SPACE = SHIFT = 0 
+    USER = noentity()   
+    if(owner():keyPressed("I")|(SET > 1)|!SET){SET = 1}elseif(owner():keyPressed("O")){SET = -2}elseif(owner():keyPressed("P")){SET = -3}
+    KTOGGLE = owner():keyPressed("K")
+    KEY = (KEY + ($KTOGGLE>0))%2
+    if(owner():keyPressed("LALT")){ALT = 1}else{ALT = 0}
+}
+
+FOR = CAR:forward()
+RIG = CAR:right()
+UP = CAR:up()
+STABLE = -10*vec(CAR:angVel():roll(),CAR:angVel():pitch(),CAR:angVel():yaw())
+EYE = USER:eye()
+
+switch(SET){
+
+case 1, #PARKED/IDLE
+    if($SET & !B){
+        soundPurge()
+        CAR:soundPlay(3,1,"doors/doormove3.wav")
+        for(I = 1,5){holoAlpha(I,255)}
+        for(I = 6,11){holoAlpha(I,0)}
+        for(I = 101,106){holoAlpha(I,255)}
+        for(I = 202,206){holoAlpha(I,0)}
+        for(I = 301,306){holoAlpha(I,255)}
+        for(I = 501,509){holoAlpha(I,0)}
+        holoAlpha(107,0)
+        holoAlpha(108,0)
+        holoAlpha(100,200)
+        holoAlpha(201,150)
+        
+        holoClipEnabled(2,1)
+        holoClip(2,vec(0,0,0),vec(0,-1,0),0)
+        holoClipEnabled(101,1)
+        holoClip(101,vec(0,0,0),vec(0,-1,0),0)
+        holoClipEnabled(102,1)
+        holoClip(102,vec(0,0,0),vec(0,-1,0),0)
+        holoClipEnabled(1,1)
+        holoClip(1,vec(0,0,0),-vec(0,90,55),0)
+        holoClipEnabled(100,1)
+        holoClip(100,vec(0,0,0),-vec(0,90,55),0)
+        holoClipEnabled(200,1)
+        holoClip(200,vec(0,0,0),-vec(0,90,55),0)
+        holoClipEnabled(201,1)
+        holoClip(201,vec(0,0,0),-vec(0,90,55),0)
+        
+        holoAng(1,CAR:angles())
+        holoAng(100,CAR:angles())
+        holoAng(6,CAR:angles())
+        holoAng(2,CAR:angles():rotateAroundAxis(RIG,55))
+        holoAng(5,CAR:angles():rotateAroundAxis(RIG,-55))
+        holoPos(6,CAR:pos() + UP*10)
+        holoPos(507,holoEntity(501):pos())
+        holoPos(7,CAR:pos() + UP*10 + RIG*26.5)
+        holoPos(8,CAR:pos() + UP*10 - RIG*26.5)
+        
+        holoScale(3,6.6*vec(0.38,0.38,0.2)) 
+        holoScale(4,6.6*vec(0.38,0.38,0.2)) 
+        holoScale(103,6.6*vec(0.4,0.4,0.06)) 
+        holoScale(104,6.6*vec(0.4,0.4,0.06))
+        
+        holoScale(507,holoScale(501))
+        holoMaterial(507,"models/wireframe")
+        holoParent(507,CAR)
+        holoParent(6,CAR)
+        
+        AMMO:propDelete()
+        B++
+        if($SET > 1){
+            CAR:setPos(owner():pos() + owner():forward()*100 + vec(0,0,20))
+            CAR:setAng((-owner():right()):toAngle())
+        }
+        #CAR:printDriver(_HUD_PRINTCENTER,"___________SCAPE'S POWERSPHERE__________\n\nHold LALT for vechicle controls.")
+    }
+    if(USER | KEY){
+        CAR:lockPod(1)
+        holoClipEnabled(1,0)
+        holoClipEnabled(200,0)
+        holoClipEnabled(2,0)
+        holoClipEnabled(100,0)
+        holoClipEnabled(201,0)
+        holoClipEnabled(101,0)
+        holoClipEnabled(102,0)
+        holoAlpha(200,100)
+        if(USER){CAR:printDriver(_HUD_PRINTCENTER,"___________SCAPE'S POWERSPHERE__________\n\nUse your number keys [1-4] to change vehicle modes.\nHold [LALT] for specific setting controls.\n\n1. Parked/Idle\n\n2. Land Setting\n\n3. Time-Space Manipulator\n\n4. Climbing Gear")}
+    }else{
+        CAR:lockPod(0)
+        holoClipEnabled(1,1)
+        holoClipEnabled(200,1)
+        holoClipEnabled(2,1)
+        holoClipEnabled(100,1)
+        holoClipEnabled(201,1)
+        holoClipEnabled(101,1)
+        holoClipEnabled(102,1)
+        holoAlpha(200,255)
+        if(ALT){print(_HUD_PRINTCENTER,"ON-FOOT INSTRUCTIONS\n\n[I] = Parked/Idle\n\n[O] = All-Seeing Eye: Portable Teleporter and Target Finder\n\n[P] = Sentry Mode: Auto and Manual Prop Cannon\n\n[K] = Toggle Vehicle Lock")}
+
+    }
+    
+    BR = rangerOffset(1000,CAR:pos(),-UP) 
+    FR = rangerOffset(50,CAR:pos(),FOR*(F ? F : 1)) 
+    LR = rangerOffset(50,CAR:pos(),-RIG) 
+    RR = rangerOffset(50,CAR:pos(),RIG) 
+    LOCK = -100*vec(CAR:angles():roll(),CAR:angles():pitch(),0)
+    if(inrange((CAR:pos()-BR:position()):z(),0,40)){
+        HOLD = -10*CAR:vel() + 200*UP*-(CAR:pos()-BR:position() + vec(0,0,-30):z())
+    }else{
+        HOLD = -10*CAR:vel():setZ(0)
+    }
+    CAR:applyForce(HOLD)
+    CAR:applyTorque(STABLE + LOCK)
+    
+break case 2, #LAND
+    
+    if($SET){
+        S = SPACE = T = R = A = B = 0
+        CAR:soundPlay(0,0,"ambient/energy/force_field_loop1.wav") soundVolume(0,0.4)
+        CAR:soundPlay(1,0,"ambient/energy/electric_loop.wav")  
+        CAR:soundPlay(3,1,"doors/doormove3.wav")
+        for(I = 202,206){holoAlpha(I,0)}
+        holoAlpha(3,255)
+        holoAlpha(4,255)
+        holoAlpha(103,255)
+        holoAlpha(104,255)
+        holoAlpha(5,0)
+        holoAlpha(6,0)
+        holoAlpha(7,255)
+        holoAlpha(8,255)
+        holoAlpha(9,255)
+        holoAlpha(10,255)
+        holoAlpha(105,255)
+        holoAlpha(106,255)
+        holoAlpha(107,0)
+        holoAlpha(108,0)
+        holoAng(2,CAR:angles())
+        holoAng(5,CAR:angles())
+        holoAng(6,CAR:angles())
+        hint("LAND SETTING\nHold [LALT] for instructions.",5)
+        holoVisible(507,players(),0) 
+        holoVisible(507,owner(),1) 
+        holoUnparent(507)
+        
+        holoScale(3,6.6*vec(0.38,0.38,0.2)) 
+        holoScale(4,6.6*vec(0.38,0.38,0.2)) 
+        holoScale(103,6.6*vec(0.4,0.4,0.06)) 
+        holoScale(104,6.6*vec(0.4,0.4,0.06))
+        
+        AMMO:propDelete()
+    }  
+      
+    soundPitch(0,abs(F)*(200+55*SHIFT))
+    soundVolume(1,T/150)
+    
+    BR = rangerOffset(1000,CAR:pos()-15*UP,-UP) 
+    FR = rangerOffset(50,CAR:pos()+20*FOR*(F ? F : 1),FOR*(F ? F : 1)) 
+    LR = rangerOffset(50,CAR:pos()-20*RIG,-RIG) 
+    RR = rangerOffset(50,CAR:pos()+20*RIG,RIG) 
+    LOCK = -100*vec(CAR:angles():roll(),CAR:angles():pitch(),0)
+    
+    if(USER:keyAttack2()){
+        holoPos(7,CAR:pos() + UP*10 + RIG*53)
+        holoPos(8,CAR:pos() + UP*10 - RIG*53)
+        holoAng(7,ang(CAR:angles():roll(),CAR:angles():yaw(),-EYE:toAngle():pitch()))
+        holoAng(8,ang(CAR:angles():roll(),CAR:angles():yaw(),-EYE:toAngle():pitch()))
+        holoPos(507,USER:aimPos() + USER:aimNormal()*10)
+        holoAlpha(507,255)
+        holoScale(507,5*vec(1,1,1))
+        if(USER:keyAttack1() & !S){
+            CAR:soundPlay(2,2,"weapons/ar2/npc_ar2_altfire.wav")
+            for(I = A+1,A+2){
+                AMMO[I,entity]:propDelete()
+                AMMO[I,entity] = (propSpawn("models/holograms/icosphere2.mdl",holoEntity(8 + (I-A)):pos(),0))
+                AMMO[I,entity]:setMaterial("models/alyx/emptool_glow")
+                AMMO[I,entity]:propGravity(0)
+                AMMO[I,entity]:setMass(1000)
+                AMMO[I,entity]:setTrails(100,100,1,"trails/laser",vec(135,135,135) + 0.5*TRIM,255)
+                AMMO[I,entity]:applyForce(200000000*(holoEntity(507):pos()-holoEntity(8 + (I-A)):pos()):normalized()) 
+            }
+            A = mod(A+2,12)
+            S = 1
+        }elseif(!USER:keyAttack1() & S){S = 0}
+    }else{
+        holoPos(7,CAR:pos() + UP*10 + RIG*26.5)
+        holoPos(8,CAR:pos() + UP*10 - RIG*26.5)
+        holoAlpha(507,0)
+        holoPos(507,holoEntity(501):pos())
+        holoScale(507,holoScale(501))
+    }
+    
+    if(inrange(CAR:pos():distance(BR:position()),0,40)){
+        MOVE = 5000*(1+2*SHIFT)*(-F*RIG:cross(BR:hitNormal()) + FR:hitNormal() + RR:hitNormal() + LR:hitNormal())
+        HOLD = -10*CAR:vel() + 200*UP*-(CAR:pos()-BR:position() + vec(0,0,-29 - 2*!SPACE*(sign(T)*(T+40))):z())
+        if(T & !SPACE){CAR:soundPlay(2,2,"weapons/shock_impact.wav")}
+    }else{
+        MOVE = 5000*(1+2*SHIFT)*(F*FOR + FR:hitNormal() + RR:hitNormal() + LR:hitNormal())
+        HOLD = -10*CAR:vel():setZ(0)
+    }
+    CAR:applyForce(MOVE + HOLD)
+    CAR:applyTorque(STABLE + LOCK + (1+SHIFT)*1500*vec(0,0,Y))
+    
+    holoAng(1,GYRO:rotateAroundAxis(RIG,-8*(F*(1+SHIFT))))
+    GYRO = holoEntity(1):angles()
+    for(I = 202,204){holoAlpha(I,1.5*T)}
+    
+    if(SPACE){T++}else{T = 0}
+    
+    if(ALT){
+         CAR:printDriver(_HUD_PRINTCENTER,"INSTRUCTIONS\n\nMOVEMENT:\n[W/S] to move and [A/D] to turn.\n[LSHIFT] for boost and hold [SPACE] to jump.\n\nWEAPONS: Hold [MOUSE2] to Activate and [MOUSE1] to fire.")
+    }
+break case 3, #AIR
+
+    if($SET){
+        S = R = A = B = 0
+        CAR:soundPlay(0,0,"ambience/pulsemachine.wav") soundVolume(0,1)
+        CAR:soundPlay(1,0,"ambient/levels/citadel/field_loop2.wav") soundVolume(1,0) soundPitch(1,80)
+        for(I = 3,11){holoAlpha(I,0)}
+        for(I = 202,206){holoAlpha(I,0)}
+        holoAlpha(1,255)
+        holoAlpha(2,255)
+        holoAlpha(5,255)
+        holoAlpha(6,255)
+        holoAlpha(103,0)
+        holoAlpha(104,0)
+        holoAlpha(105,255)
+        holoAlpha(106,255)
+        holoAlpha(107,255)
+        holoAlpha(108,255)
+        hint("TIMESPACE NAGIVATOR\nHold [LALT] for isntructions.",5)
+        holoPos(507,holoEntity(501):pos())
+        holoScale(507,holoScale(501))
+        holoMaterial(507,"models/wireframe")
+        holoParent(507,CAR)
+        AMMO:propDelete()
+    }
+    
+    soundPitch(0,90*(1+0.5*SHIFT))
+    HOLD = -10*CAR:vel() + vec(0,0,200)
+    BR = rangerOffset(50,CAR:pos() + 20*EYE,EYE) 
+    if(SPACE){
+        POS = CAR:pos() + EYE*(1+2*SHIFT)*20*F
+        CAR:setPos(POS)
+        holoAlpha(205,255)
+        holoAlpha(206,255)
+        soundVolume(0,0.3)
+        soundVolume(1,1)
+    }elseif(owner():keyPressed("H")){
+        POS = CAR:pos()+100*(TARGET:pos()+vec(0,0,150)-CAR:pos()):normalized()
+        CAR:setPos(POS)
+        holoAlpha(205,255)
+        holoAlpha(206,255)
+        soundVolume(0,0.3)
+        soundVolume(1,1)
+    }else{   
+        MOVE = 10000*((1+2*SHIFT)*(EYE*F + Y*vec(-EYE:y(),EYE:x(),0):normalized() + BR:hitNormal()))
+        CAR:applyForce(MOVE + HOLD)
+        holoAlpha(205,0)
+        holoAlpha(206,0)
+        soundVolume(0,1)
+        soundVolume(1,0)
+    }
+
+    LOCK = -100*vec(CAR:angles():roll(),CAR:angles():pitch(),0)
+    CAR:applyTorque(STABLE + LOCK)
+
+    holoAng(2,ang(2*T+90,0,0))
+    holoAng(5,ang(90,2*T,90))
+    holoAng(6,ang(0,0,2*T))
+    T = T + 1 + SHIFT
+    RIGHT = owner():keyPressed("RIGHT")
+    LEFT = owner():keyPressed("LEFT")
+    R = R + ($RIGHT > 0) - ($LEFT > 0)
+    TARGET = players()[(floor(R) % players():count()+1),entity]
+    if(ALT){
+        CAR:printDriver(_HUD_PRINTCENTER,"INSTRUCTIONS\n\nMOVEMENT:\nMOUSE to aim and [WASD] to move.\n[LSHIFT] for boost and [SPACE] for No-Clip.\n\nHOMING MECHANISM:\nHold [H] to travel to target.\n[LEFT/RIGHT] arrows to select target.")
+    }elseif($R){ 
+        CAR:printDriver(_HUD_PRINTCENTER,"TARGET: " + TARGET:name() + " [" + TARGET:id() + "]")
+    }
+        
+    
+break case 4, #CLIMB
+    
+    if($SET){
+        S = SPACE = T = A = B = 0
+        CAR:soundPlay(0,0,"ambient/energy/force_field_loop1.wav") soundVolume(0,0.3)
+        CAR:soundPlay(1,0,"ambient/grinder/grinderloop_01.wav")  soundVolume(1,0.3)
+        CAR:soundPlay(3,1,"doors/doormove3.wav")
+        for(I = 202,206){holoAlpha(I,0)}
+        for(I = 103,108){holoAlpha(I,255)}       
+        for(I = 3,6){holoAlpha(I,255)}
+        for(I = 7,10){holoAlpha(I,0)}
+        holoAng(2,CAR:angles())
+        holoAng(5,CAR:angles():rotateAroundAxis(RIG,-90))
+        holoAng(6,CAR:angles())
+        hint("CLIMBING GEAR\nHold [LALT] for instructions.",5)
+        holoVisible(507,players(),0) 
+        holoVisible(507,owner(),1) 
+        holoUnparent(507)
+        holoScale(3,6.75*vec(1,1,0.4)) 
+        holoScale(4,6.75*vec(1,1,0.4)) 
+        holoScale(103,6.8*vec(1,1,0.1)) 
+        holoScale(104,6.8*vec(1,1,0.1))
+        AMMO:propDelete()
+        holoPos(7,CAR:pos() + UP*10 + RIG*18)
+        holoPos(8,CAR:pos() + UP*10 - RIG*18)
+    }  
+      
+    soundPitch(0,abs(F)*(200+55*SHIFT))
+    soundPitch(1,abs(F|Y)*(100+55*SHIFT))
+    
+    BR = rangerOffset(100,CAR:pos()-15*UP,-UP) 
+    FR = rangerOffset(100,CAR:pos()+20*FOR*(F ? F : 1),FOR*(F ? F : 1)) 
+    LR = rangerOffset(50,CAR:pos()-20*RIG,-RIG) 
+    RR = rangerOffset(50,CAR:pos()+20*RIG,RIG) 
+       
+    if(inrange(CAR:pos():distance(FR:position()),0,60)){
+        MOVE = 5000*(1+SHIFT)*(-F*RIG:cross(FR:hitNormal()) + 0*FR:hitNormal() + RR:hitNormal() + LR:hitNormal())
+        HOLD = -10*CAR:vel() + 200*FOR*(CAR:pos():distance(FR:position())-45) + vec(0,0,180)
+        LOCK = -100*vec(0*CAR:angles():roll(),0*CAR:angles():pitch(),0)
+        CAR:applyTorque(STABLE + LOCK + (1+SHIFT)*1500*vec(0,-Y,(CAR:toLocalAxis(FR:hitNormal())):x()))
+    }elseif(inrange(CAR:pos():distance(BR:position()),0,40)){
+        MOVE = 5000*(1+SHIFT)*(-F*RIG:cross(BR:hitNormal()) + 0*FR:hitNormal() + RR:hitNormal() + LR:hitNormal())
+        HOLD = -10*CAR:vel() + 200*UP*-(CAR:pos()-BR:position() + vec(0,0,-33))
+        LOCK = -100*vec(CAR:angles():roll(),CAR:angles():pitch(),0)
+        CAR:applyTorque(STABLE + LOCK + (1+SHIFT)*1500*vec(0,0,Y))
+    }else{
+        MOVE = 5000*(1+SHIFT)*(0.1*F*FOR + 0*FR:hitNormal() + RR:hitNormal() + LR:hitNormal())
+        HOLD = -1*CAR:vel():setZ(0)
+        LOCK = -100*vec(CAR:angles():roll(),CAR:angles():pitch(),0)
+        CAR:applyTorque(STABLE + LOCK + (1+SHIFT)*1500*vec(0,0,Y))
+    }
+    
+    CAR:applyForce(MOVE + HOLD)
+    
+    holoAng(5,CAR:angles():rotateAroundAxis(RIG,-15*T))
+    holoAng(6,CAR:angles():rotateAroundAxis(RIG,60-15*T))
+    holoAng(2,CAR:angles():rotateAroundAxis(RIG,120-15*T))
+    holoAng(7,CAR:angles():rotateAroundAxis(RIG,-15*(T+R)))
+    holoAng(8,CAR:angles():rotateAroundAxis(RIG,-15*(T-R)))
+
+    if(F){T = T + (1+SHIFT)*F}
+    if(Y){R = R + (1+SHIFT)*Y}
+    if(ALT){
+         CAR:printDriver(_HUD_PRINTCENTER,"INSTRUCTIONS\n\nMOVEMENT:\n[W/S] to move and [A/D] to turn.\n[LSHIFT] for boost.\n\nDrive up to wall to climb and press [S] to disengage.")
+    }
+break case -2, #ALL-SEEING EYE
+
+    if($SET){
+        AMMO:propDelete()
+        A = 0
+        CAR:soundPlay(0,0,"ambience/pulsemachine.wav") soundVolume(0,0.2) soundPitch(0,200)
+        T = S = B = 0
+        for(I = 1,11){holoAlpha(I,0)}
+        for(I = 100,109){holoAlpha(I,0)}
+        for(I = 200,209){holoAlpha(I,0)}
+        for(I = 300,309){holoAlpha(I,0)}
+        for(I = 500,509){holoAlpha(I,255)}
+        holoAlpha(502,200)
+        T++
+        POS = owner():pos() + vec(0,0,80) - owner():right()*20
+        holoVisible(507,players(),0) 
+        holoVisible(507,owner(),1) 
+        print(_HUD_PRINTCENTER,"THE ALL-SEEING EYE\n\nHold [LALT] for instructions.")
+        CAR:lockPod(0)
+    }
+
+    if(USER & (!S)){
+        POS = TARGETPOS
+        S++
+    }elseif(S){  CAR:ejectPod() S = 0
+    }else{POS = owner():pos() + vec(0,0,80) - owner():right()*20}
+    
+    CAR:setPos(POS)
+    CAR:setAng((owner():aimPos()-CAR:pos()):toAngle())
+    
+    if((randint(200) > 199) | T){ #BLINK
+        holoAng(503,CAR:angles()+ang(180,0,0)) 
+        holoAng(504,CAR:angles()+ang(0,0,0)) 
+        T++
+        if(T > 1){T = 0}
+    }else{
+        holoAng(503,CAR:angles()+ang(30+180,0,0)) 
+        holoAng(504,CAR:angles()+ang(-30,0,0)) 
+    }
+    if(owner():aimEntity():isPlayer()){
+        TARGET = owner():aimEntity()
+        print(_HUD_PRINTCENTER,"NAME: "+TARGET:name()+" ["+TARGET:id()+"]\nSTEAM ID: "
+            +TARGET:steamID()+"\nHEALTH: "+TARGET:health()+", ARMOR: "+TARGET:armor()+"\nKILLS: "
+            +TARGET:frags()+", DEATHS: "+TARGET:deaths()+" K/D RATIO: "+round(TARGET:frags()/TARGET:deaths(),1.00))
+    }
+    
+    if(owner():keyPressed("MOUSE_MIDDLE")){
+        if(owner():aimPos():distance(POS) < 5000){holoPos(507,owner():aimPos() + 70*owner():aimNormal())}
+        else{holoPos(507,owner():pos() + vec(0,0,64) + 5000*owner():eye())}
+        if(!USER){TARGETPOS = holoEntity(507):pos()}
+        holoScale(507,8*vec(1,1,1))
+        holoMaterial(507,"models/wireframe")
+        print(_HUD_PRINTCENTER,"SHORT RANGE TELEPORTER\n\nPress [E] to Jump to Location\n(5000 Units Max)\n\nDISTANCE: " + floor(POS:distance(TARGETPOS)))
+    }elseif(owner():keyPressed("LSHIFT")){
+        TOGGLE = owner():keyPressed("R")
+        if($TOGGLE > 0 | !TARGET){R++}
+        TARGET = players()[(floor(R) % players():count()+1),entity]
+        holoPos(507,TARGET:pos())
+        holoScale(507,-30*vec(1,1,1))
+        holoMaterial(507,"vgui/common/message_dialog_error")
+        print(_HUD_PRINTCENTER,"TARGET NAME: "+TARGET:name()+" ["+TARGET:id()+"]\nHEALTH: "+TARGET:health()+", ARMOR: "+TARGET:armor() 
+        + "\nDISTANCE: " + floor(POS:distance(TARGET:pos())) + "\n\nTELEPORT STATUS: " 
+        + ((POS:distance(TARGET:pos()) < 4000) ? ("READY") : ("TOO FAR!\nWARNING:Teleporting 5000 units closer. May not land in world.")) + "\nPress [R] to switch Target.\nPress [E] to Jump to Target")
+        holoParent(507,TARGET)
+        if(POS:distance(TARGET:pos()) < 4000){
+            if((TARGET:pos() - 60*TARGET:forward()):isInWorld()){TARGETPOS = TARGET:pos() - 60*TARGET:forward() - vec(0,0,40)}
+            else{TARGEPOS = TARGET:pos() + 60*TARGET:forward() - vec(0,0,40)}
+        }else{
+            TARGETPOS = POS + 4000*(TARGET:pos()-POS):normalized() - vec(0,0,40)
+        }
+    }else{
+        holoPos(507,holoEntity(501):pos())
+        holoScale(507,holoScale(501))
+        holoMaterial(507,"models/wireframe")
+        holoParent(507,CAR)
+        holoAng(507,holoEntity(501):angles())
+        TARGETPOS = POS + 200*owner():eye():setZ(0):normalized() - vec(0,0,40)
+        CAR:lockPod(0)
+    }
+    
+    if(ALT){
+        print(_HUD_PRINTCENTER,"INSTRUCTIONS\n\nCLOSE-RANGE TELEPORTATION:\nHold [MOUSE3] to aim and [E] to teleport\n\nPLAYER LOCATOR:\nHold [LSHIFT] to activate and tap [R] to cycle players")
+    }
+    
+break case -3, #SENTRY MODE
+
+    if($SET){
+        soundPurge()
+        CAR:lockPod(1)
+        AMMO:propDelete()
+        S = T = R = B = 0
+        for(I = 1,6){holoAlpha(I,255)}
+        for(I = 101,108){holoAlpha(I,255)}
+        for(I = 202,206){holoAlpha(I,0)}
+        for(I = 301,306){holoAlpha(I,0)}
+        for(I = 501,509){holoAlpha(I,0)}
+        holoAlpha(11,255)
+        holoAlpha(100,255)
+        holoAlpha(201,150)
+        holoClipEnabled(1,0)
+        holoClipEnabled(200,0)
+        holoClipEnabled(2,0)
+        holoClipEnabled(100,0)
+        holoClipEnabled(201,0)
+        holoClipEnabled(101,0)
+        holoClipEnabled(102,0)
+        holoAlpha(200,100)
+        holoAng(1,CAR:angles())
+        holoAng(100,CAR:angles())
+        holoAng(2,CAR:angles())
+        holoAng(5,CAR:angles())
+        holoAng(2,CAR:angles():rotateAroundAxis(RIG,35))
+        holoAng(5,CAR:angles():rotateAroundAxis(RIG,-35))
+        holoAng(503,CAR:angles()+ang(30+180,0,90)) 
+        holoAng(504,CAR:angles()+ang(-30,0,90))
+        holoScale(3,6.35*vec(1,1,0.4)) 
+        holoScale(4,6.35*vec(1,1,0.4)) 
+        holoScale(103,6.4*vec(1,1,0.1)) 
+        holoScale(104,6.4*vec(1,1,0.1)) 
+        RANGE = 10000
+        TARGETPOS = owner():aimPos() + 40*owner():aimNormal()
+        CAR:setPos(TARGETPOS)
+        holoUnparent(6)
+        holoScale(507,3*vec(1,1,1))
+        
+    }
+    
+    BR = rangerOffset(1000,CAR:pos(),-UP) 
+    CAR:setPos(TARGETPOS)
+    
+    TOGGLE = owner():keyPressed("R")
+    if($TOGGLE > 0){R = (R+1)%4
+        RANGE = 5000 - 5000*(R==2)
+    }
+    
+    switch(R){
+        
+    case 0,
+        CAR:setAng(ang(0,0,0))
+        
+    break case 1,
+        holoAlpha(507,255)
+        holoPos(507,owner():aimPos())
+        POS = (owner():aimPos()-CAR:pos()):normalized()
+        ANG = POS:toAngle()
+        CAR:setAng(ang(0,ANG:yaw(),-ANG:pitch()):rotateAroundAxis(BR:hitNormal(),-90))
+        if(owner():keyAttack1() & !S){
+                AMMO[A,entity]:propDelete()
+                AMMO[A,entity] = propSpawn("models/hunter/misc/sphere075x075.mdl",(holoEntity(11):pos()-POS*50),0)
+                AMMO[A,entity]:setMaterial("models/alyx/emptool_glow")
+                AMMO[A,entity]:propGravity(0)
+                AMMO[A,entity]:setMass(50000)
+                AMMO[A,entity]:setTrails(100,100,1,"trails/physbeam",vec(135,135,135) + 0.5*TRIM,255)
+                AMMO[A,entity]:propSetVelocity(POS*100000)
+                CAR:soundPlay(2,2,"weapons/physcannon/energy_sing_explosion2.wav")
+                S = 1
+                A = (A+1)%8
+        }elseif(!owner():keyAttack1() & S){S = 0}
+        
+    break case 2,
+        holoAlpha(507,255)
+        holoPos(507,CAR:pos() + vec(0,RANGE,10))
+        TARGET = entity(floor(T)%40)
+        ANG = POS:toAngle()
+        if((CAR:pos():distance(TARGET:pos()) < RANGE) & (TARGET:isAlive()) & !(TARGET:inGodMode()) & !(TARGET:inNoclip())){ # & !(TARGET == owner())
+            POS = (TARGET:pos()+(0.0002*CAR:pos():distance(TARGET:pos()))*TARGET:vel()+vec(0,0,30)-CAR:pos()):normalized()
+            FR = rangerOffset(RANGE,CAR:pos(),FOR)
+            if((FR:entity():isValid())& !S){
+                CAR:soundPlay(2,2,"weapons/physcannon/energy_sing_explosion2.wav")
+                AMMO[A,entity]:propDelete()
+                AMMO[A,entity] = propSpawn("models/hunter/misc/sphere075x075.mdl",(holoEntity(11):pos()-POS*50),0)
+                AMMO[A,entity]:setMaterial("models/alyx/emptool_glow")
+                AMMO[A,entity]:propGravity(0)
+                AMMO[A,entity]:setMass(50000)
+                AMMO[A,entity]:setTrails(100,100,1,"trails/physbeam",vec(135,135,135) + 0.5*TRIM,255)
+                AMMO[A,entity]:propSetVelocity(POS*100000)
+
+                A = (A+1)%10
+                S = 1
+            }
+            T = T + 0.2
+        }else{
+            S = 0
+            T++
+        }   
+        CAR:setAng(ang(0,ANG:yaw(),-ANG:pitch()):rotateAroundAxis(BR:hitNormal(),-90))
+        RANGE = clamp(RANGE+5*owner():keyPressed("UP")-5*owner():keyPressed("DOWN"),0,10000)
+        
+    break case 3,
+        holoAlpha(507,0)
+        RIGHT = owner():keyPressed("RIGHT")
+        LEFT = owner():keyPressed("LEFT")
+        T = T + ($RIGHT > 0) - ($LEFT > 0)
+        TARGET = players()[(floor(T) % players():count()+1),entity]
+        POS = (TARGET:pos()+(0.0002*CAR:pos():distance(TARGET:pos()))*TARGET:vel()+vec(0,0,30)-CAR:pos()):normalized()
+        ANG = POS:toAngle()
+        CAR:setAng(ang(0,ANG:yaw(),-ANG:pitch()):rotateAroundAxis(BR:hitNormal(),-90))
+        if(owner():keyAttack1() & !S){
+                CAR:soundPlay(2,2,"weapons/physcannon/energy_sing_explosion2.wav")
+                AMMO[A,entity]:propDelete()
+                AMMO[A,entity] = propSpawn("models/hunter/misc/sphere075x075.mdl",(holoEntity(11):pos()-POS*50),0)
+                AMMO[A,entity]:setMaterial("models/alyx/emptool_glow")
+                AMMO[A,entity]:propGravity(0)
+                AMMO[A,entity]:setMass(50000)
+                AMMO[A,entity]:setTrails(100,100,1,"trails/physbeam",vec(135,135,135) + 0.5*TRIM,255)
+                AMMO[A,entity]:propSetVelocity(POS*100000)
+                S = 1
+                A = (A+1)%8
+        }elseif(!owner():keyAttack1() & S){S = 0}
+
+    }
+    
+    print(_HUD_PRINTCENTER,"SENTRY MODE\n\n" + (R==3 ? ("AUTO-AIM: [LEFT/RIGHT] to cycle players and [MOUSE1] to fire.\n\nTARGET: " + TARGET:name() + " [" + TARGET:id() + "]") : (R==2 ? "AUTO-DEFENSE MODE: [UP/DOWN] to increase range" + "\n\nRANGE: " + RANGE : (R==1 ? "MANUAL OVERRIDE: Aim with mouse and fire with [MOUSE1]" : "OFFLINE: Press [R] to cycle settings"))) )
+    
+    holoPos(6,CAR:pos() - vec(0,0,30))
+    holoAng(6,BR:hitNormal():toAngle() + ang(90,0,0))
+
+}            

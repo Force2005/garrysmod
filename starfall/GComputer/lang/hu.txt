@@ -1,0 +1,45 @@
+local lang = {}
+lang.lang_name = "Hungarian"
+
+lang["%clock.name%"] = "Óra"
+lang["%clock.month.01%"] = "Január"
+lang["%clock.month.02%"] = "Február"
+lang["%clock.month.03%"] = "Március"
+lang["%clock.month.04%"] = "Április"
+lang["%clock.month.05%"] = "Május"
+lang["%clock.month.06%"] = "Június"
+lang["%clock.month.07%"] = "Július"
+lang["%clock.month.08%"] = "Augusztus"
+lang["%clock.month.09%"] = "Szeptember"
+lang["%clock.month.10%"] = "Október"
+lang["%clock.month.11%"] = "November"
+lang["%clock.month.12%"] = "December"
+lang["%clock.day.0%"] = "Hétfő"
+lang["%clock.day.1%"] = "Kedd"
+lang["%clock.day.2%"] = "Szerda"
+lang["%clock.day.3%"] = "Csütörtök"
+lang["%clock.day.4%"] = "Péntek"
+lang["%clock.day.5%"] = "Szombat"
+lang["%clock.day.6%"] = "Vasárnap"
+
+lang["%dialog.information%"] = "Információ"
+lang["%dialog.sure?%"] = "Biztos benne?"
+lang["%dialog.yes%"] = "Igen"
+lang["%dialog.no%"] = "Nem"
+lang["%dialog.ok%"] = "Ok"
+lang["%dialog.continue%"] = "Folytatás"
+lang["%dialog.cancel%"] = "Mégse"
+
+lang["%start_menu.name%"] = "Asztal"
+
+lang["%task_manager.name%"] = "Feladatkezelő"
+lang["%task_manager.manage_app%"] = "Programok kezelése"
+lang["%task_manager.end_task%"] = "Feladat befejezése"
+
+lang["%theme_manager.name%"] = "Téma szeméjreszabása"
+lang["%theme_manager.change_background%"] = "Háttérkép megváltoztatása"
+lang["%theme_manager.change_theme%"] = "Téma megváltoztatása"
+
+lang["%dialog_popup.gc_will_restart%"] = "Ok, a GComputer pár másodperc múlva újraindul"
+
+return lang

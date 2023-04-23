@@ -1,0 +1,20 @@
+@name Parent
+@inputs 
+@outputs [Vehicle Chip Turret]:entity
+@persist 
+@trigger Box
+
+
+findByClass("prop_vehicle_jeep")
+Vehicle = findClosest(entity():pos())
+
+findByClass("starfall_processor")
+Chip = findClosest(entity():pos())
+
+findByClass("gmod_wire_turret")
+Turret = findClosest(entity():pos())
+
+Turret:parentTo(Chip)
+Chip:parentTo(Vehicle)
+#Chip:unParent()
+#Turret:unParent()

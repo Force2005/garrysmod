@@ -1,0 +1,123 @@
+local app = {}
+
+app.title = "Theme manager"
+app.version = 1.0
+app.author = "Neker's Industry's"
+app.description = "Manage your theme"
+
+app.pos = Vector(10,10)
+app.size = Vector(490, 256)
+app.minimum_size = Vector(490, 256)
+app.maximum_size = Vector(4096, 4096)
+
+app.draggable = true
+app.close_btn = true
+app.resizable = true
+
+app.multiple_open = true
+app.app_id = "gcomputer_thememanager"
+
+app.choose_back_btn = {}
+app.choose_theme_btn = {}
+
+app.on_load = function(window,app)
+    for id, mat in pairs(computer.material.background) do
+        window.app.choose_back_btn[id] = SFUi.button(window, Vector(0,0), Vector(70, 70), "", function(me)
+            computer.save_data.settings.use_background = me.background_id
+            console.log({Color(80,255,80),"Change background to ",Color(80,255,255),"'"..computer.save_data.settings.use_background.."'"})
+        end)
+        window.app.choose_back_btn[id].background_id = id
+        window.app.choose_back_btn[id].paint = function(self)
+            if self.back_selected then
+                render.setColor(self.palette.hover)
+                render.drawRect(self.mins.x-1, self.mins.y-1, self.size.x+2, self.size.y+2)
+                render.setMaterial()
+            end
+            render.setColor(Color(255,255,255))
+            render.setMaterial(mat)
+            render.drawTexturedRect(self.mins.x, self.mins.y, self.size.x, self.size.y)
+            render.setMaterial()
+            
+            if self.hover then
+                render.setColor(Color(255,255,255,20))
+                render.drawRect(self.mins.x, self.mins.y, self.size.x, self.size.y)
+            end
+        end
+    end
+    
+    for path, data in pairs(computer.theme) do
+        window.app.choose_theme_btn[path] = SFUi.button(window, Vector(0,0), Vector(120, 30), data.theme.name, function(me)
+            computer.save_data.settings.use_theme = me.theme_id
+            computer.current_theme = computer.theme[computer.save_data.settings.use_theme].use()
+            console.log({Color(80,255,80),"Change theme to ",Color(80,255,255),"'"..computer.save_data.settings.use_theme.."'"})
+            
+            --this system is bad because it's can replace any color, same with custom element color
+            for key, win in pairs(computer.appbar_gui.components) do
+                win.palette = SFUi.static.palette
+                for key, child in pairs(win.children) do
+                    child.palette = SFUi.static.palette 
+                end
+            end
+            for key, win in pairs(computer.GComputer_gui.components) do
+                win.palette = SFUi.static.palette
+                for key, child in pairs(win.children) do
+                    child.palette = SFUi.static.palette 
+                end
+            end
+            console.log({Color(80,255,80),"Reloaded ui elements.. "})
+        end)
+        window.app.choose_theme_btn[path].theme_id = path
+    end
+    
+    window.pos = computer.resolution/2 - window.size/2
+end
+
+app.app_logo = function(app,x,y,w,h)
+    render.setFilterMag(1)
+    render.setFilterMin(1)
+
+    render.setColor(Color(255,255,255))
+    render.setMaterial(computer.icon["computer_edit"])
+    render.drawTexturedRect(x,y,w,h)
+    render.setMaterial()
+    
+    render.setFilterMag(3)
+    render.setFilterMin(3)
+end
+
+//use only if you need to draw another thing that not in SFUi lib
+//Like a simple rect, roundedbox or polygon etc..
+app.add_render = function(window,app,x,y,w,h)
+    window.title = computer.lang.query_word("theme_manager.name")
+
+    render.setColor(Color(255,255,255))
+    render.drawSimpleText(window.mins.x + 4,window.mins.y + window.barheight + 8,computer.lang.query_word("theme_manager.change_background")..":",0,0)
+    local next_height = 0
+    local grid_x,grid_y = -1, 0
+    for id, btn in pairs(window.app.choose_back_btn) do
+        grid_x = grid_x + 1
+        if 10 + (grid_x+1) * (btn.size.y+10) > w then
+            grid_y = grid_y + 1
+            grid_x = 0
+        end
+        btn.pos = Vector(10 + grid_x * 80,40 + next_height + grid_y * 80)
+        if id == computer.save_data.settings.use_background then btn.back_selected = true else btn.back_selected = false end
+    end
+    next_height = next_height + 80 + 20 + grid_y * 80
+    
+
+    render.setColor(Color(255,255,255))
+    render.drawSimpleText(window.mins.x + 4,window.mins.y + window.barheight + 8 + next_height,computer.lang.query_word("theme_manager.change_theme")..":",0,0)
+    local grid_x,grid_y = -1, 0
+    for path, btn in pairs(window.app.choose_theme_btn) do
+        grid_x = grid_x + 1
+        if 10 + (grid_x+1) * (btn.size.y+10) > w then
+            grid_y = grid_y + 1
+            grid_x = 0
+        end
+        btn.pos = Vector(10 + grid_x * 130,40 + next_height + grid_y * 40)
+    end
+    next_height = next_height + 30 + 20 + grid_y * 40
+end
+    
+return app

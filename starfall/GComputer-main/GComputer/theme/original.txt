@@ -1,0 +1,130 @@
+//important to add
+local theme = {}
+
+//set informations
+theme.name = "Original"
+theme.main_color = Color(255, 150, 255) //default color on first use
+
+//called when theme is use
+function init()
+    local ui = SFUi.static
+
+    //set ui color and design
+    ui.palette = {
+        foreground = Color(255, 255, 255),
+        background = (theme.main_color/8):setA(255),
+        hover = theme.main_color,
+        component = (theme.main_color/2):setA(255),
+        contrast = (theme.main_color/2):setA(255),
+        highlight = theme.main_color
+    }
+
+    function theme.update()
+    end
+
+    function ui.window.override_design(self)
+        render.setColor(self.dragging and self.palette.hover or self.palette.component)
+        another_render.roundedBox2(6,self.mins.x-1, self.mins.y-1, self.size.x+2, self.size.y+2)
+            
+        render.setColor(self.palette.background)
+        another_render.roundedBox2(5,self.mins.x, self.mins.y, self.size.x, self.size.y)
+
+        if type(self.draw_on_top) == "function" then
+            self.draw_on_top(self,self.app,self.mins.x,self.mins.y+self.barheight,self.size.x,self.size.y)
+        end
+
+        if self.draggable or #self.title > 0 then
+            render.setColor(self.dragging and self.palette.hover or self.palette.component)
+            another_render.roundedBoxEx2(5,self.mins.x, self.mins.y, self.size.x, self.barheight+1, true, true, false, false)
+        end
+
+        if self.title != "" and #self.title > 0 then
+            render.setColor(self.palette.foreground)
+            render.drawSimpleText(self.mins.x + 5 + 12, self.mins.y, string.trimLength(self.title,self.size.x-80), TEXT_ALIGN.LEFT, TEXT_ALIGN.TOP)
+
+            render.setColor(Color(255,255,255))
+            self.app.app_logo(self.app,self.mins.x + 1,self.mins.y + 1,self.barheight-2,self.barheight-2)
+        end
+        
+        //close
+        if self.closehides then
+            render.setColor(self.extrahover.close and Color(255,70,70) or Color(0,0,0,0))
+            another_render.roundedBoxEx(self.mins.x + self.size.x - self.barheight, self.mins.y, self.barheight, self.barheight, 0, 5, 0, 0)
+        
+            render.setColor((self.extrahover.close and self.action.held) and self.palette.highlight or self.palette.foreground)
+            render.drawLine(self.mins.x + self.size.x - self.barheight * 0.75, self.mins.y + self.barheight * 0.25, self.mins.x + self.size.x - self.barheight * 0.25, self.mins.y + self.barheight * 0.75)
+            render.drawLine(self.mins.x + self.size.x - self.barheight * 0.75, self.mins.y + self.barheight * 0.75, self.mins.x + self.size.x - self.barheight * 0.25, self.mins.y + self.barheight * 0.25)
+        end
+        //
+
+        //maximise
+        if self.can_maximise and self.resizable then
+            render.setColor(self.maximise_hover and self.palette.highlight or Color(0,0,0,0))
+            render.drawRect(self.mins.x + self.size.x - self.barheight*2, self.mins.y, self.barheight, self.barheight)
+    
+            render.setColor(Color(255,255,255))
+                
+            local start_pos = Vector(self.mins.x + 2 + self.size.x - self.barheight*2,self.mins.y+4)
+            another_render.drawStripLine({
+                start_pos,
+                start_pos + Vector(self.barheight-5,0),
+                start_pos + Vector(self.barheight-5,self.barheight-8),
+                start_pos + Vector(0,self.barheight-8)
+            })
+        end
+        //
+
+        if self.resizable then
+            render.setColor((self.resize_hover or self.hold_resize) and self.palette.highlight or Color(0,0,0,0))
+            another_render.roundedBoxEx(self.mins.x + self.size.x - self.barheight, self.mins.y + self.size.y - self.barheight, self.barheight, self.barheight, 0, 0, 0, 5)
+            
+            render.setColor(Color(255,255,255))
+            for i=1, 4 do
+                local x1,y1 = math.cos(math.pi/4 + (i/4) * (math.pi*2)) * (self.barheight/2-2),math.sin(math.pi/4 + (i/4) * (math.pi*2)) * (self.barheight/2-2)
+                local x2,y2 = math.cos(math.pi/4 + (i/4) * (math.pi*2)) * 2,math.sin(math.pi/4 + (i/4) * (math.pi*2)) * 2
+
+                local cx = self.mins.x+self.size.x - self.barheight/2
+                local cy = self.mins.y+self.size.y - self.barheight/2
+                
+                render.drawLine(cx + x1,cy + y1,cx + x2,cy + y2)
+            end
+        end
+    end
+
+    function ui.button.override_design(self)
+        render.setColor(self.hover and self.palette.highlight or self.palette.component)
+        another_render.roundedBox2(6,self.mins.x-1, self.mins.y-1, self.size.x+2, self.size.y+2)
+        
+        render.setColor(self.action.held and self.palette.highlight or self.palette.contrast)
+        another_render.roundedBox2(5,self.mins.x, self.mins.y, self.size.x, self.size.y)
+        
+        render.setColor(self.action.held and Color(0,0,0) or self.palette.foreground)
+        render.drawSimpleText(self.center.x, self.center.y, self.text, TEXT_ALIGN.CENTER, TEXT_ALIGN.CENTER)
+    end
+    
+    function ui.textbox.override_design(self)
+        render.setColor(self.active and self.typing and self.palette.highlight or self.palette.contrast)
+        another_render.roundedBox2(6,self.mins.x-1, self.mins.y-1, self.size.x+2, self.size.y+2)
+        
+        render.setColor(self.hover and self.palette.contrast or self.palette.component)
+        another_render.roundedBox2(5,self.mins.x, self.mins.y, self.size.x, self.size.y)
+        
+        render.setColor(usehint and self.palette.contrast or self.palette.foreground)
+        render.drawSimpleText(self.mins.x + 10, self.center.y, (usehint and not self.hover) and self.trimmed.hint or self.trimmed.text, nil, TEXT_ALIGN.CENTER)
+    end
+    
+    function ui.slider.override_design(self)
+        render.setColor(self.palette.component)
+        render.drawRect(self.mins.x-1,self.mins.y-1,self.size.x+2,self.size.y+2)
+
+        render.setColor(self.palette.highlight)
+        render.drawRect(self.mins.x,self.mins.y,self.valuesize,self.size.y)
+
+        render.setColor((self.hover or self.action.held) and self.palette.contrast or self.palette.component)
+        render.drawFilledCircle(self.mins.x + self.valuesize, self.center.y, self.size.y)
+    end
+
+    return theme
+end
+
+return {use=init,theme=theme}

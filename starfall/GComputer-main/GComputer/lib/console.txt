@@ -1,0 +1,20 @@
+
+local console = {}
+console.log_data = {}
+
+function console.log(log)
+    table.insert(console.log_data,log)
+    hook.run("console_log",log)
+end
+
+function console.error(error)
+    table.insert(console.log_data,{Color(255,80,80),error})
+    hook.run("console_error",error)
+end
+
+function console.clear()
+    console.log_data = {}
+    hook.run("console_clear")
+end
+
+return console

@@ -1,0 +1,13 @@
+@name laser  e2p
+
+@inputs
+
+@outputs
+
+@persist
+
+@trigger
+
+interval(1)
+
+if(owner():keyAttack2()){owner():shootTo(owner():pos()+vec(0,0,10),owner():aimPos()-owner():pos(),1,10,99999999999999999999999999,"ToolTracer")}

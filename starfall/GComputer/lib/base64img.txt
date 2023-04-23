@@ -1,0 +1,26 @@
+--@name base64 image loader
+//an base64 image loader by AstalNeker
+
+local function decode(file_name,content)
+    local decoded = {error=false,error_msg="No error occured"}
+
+    local data_type = ""
+    if string.endsWith(file_name, ".png") then
+        data_type = "data:image/png;base64,"
+    elseif string.endsWith(file_name, ".jpg") then
+        data_type = "data:image/jpg;base64,"
+    elseif string.endsWith(file_name, ".jpeg") then 
+        data_type = "data:image/jpeg;base64,"
+    end
+
+    local base64img = data_type .. http.base64Encode(content)
+    if #base64img > convar.getInt("sf_render_maxdatamaterialsize") then
+        decoded.error = true
+        decoded.error_msg = "Cannot load picture\nTexture Data too long!\n\nIf you wanna see it you can set\n'sf_render_maxdatamaterialsize "..(math.floor((#base64img+10000)/10000)*10000).."'\ninto console"
+    else
+        decoded.data = base64img
+    end
+    return decoded
+end
+
+return {decode=decode}

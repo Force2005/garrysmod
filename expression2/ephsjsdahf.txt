@@ -1,0 +1,20 @@
+@name EPHsjsdahf
+@persist EGP:wirelink T
+runOnTick(1)
+
+EGP = entity():isWeldedTo():wirelink()
+
+EGP:egpClear()
+
+EGP:egpBox(1,vec2(1,1),vec2(10000,10000))
+
+EGP:egpColor(1,vec(0,0,0))
+
+EGP:egpText(2,"Admin Zone",vec2(50,200))
+
+EGP:egpColor(2,hsv2rgb(curtime() * 100,1,1))
+
+T++
+
+EGP:egpSize(2,80)
+EGP:entity():setAng(ang(0,T,0))

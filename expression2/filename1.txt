@@ -1,0 +1,12 @@
+@name 
+@inputs 
+@outputs 
+@persist 
+@trigger 
+
+runOnTick(1) 
+findIncludeClass("item_healthcharger") 
+findIncludeClass("item_suitcharger") 
+findInSphere(entity():pos(),100000) 
+Ar=findToArray() 
+for(A=1,Ar:count()){Ar[A,entity]:use()} 

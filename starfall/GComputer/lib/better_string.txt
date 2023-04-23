@@ -1,0 +1,49 @@
+--@name Better string library
+
+// this lib i used to improve some default string function
+    
+local string = table.copy(string)
+
+//Same as string.find() but searching from chunk
+//Because default as a limit of regex size
+string.chunked_find = function(str, search, start, pattern)
+    local str = str or "Test string"
+    local search = search or "string"
+    local start = start or 0
+    local pattern = pattern or false
+    local start_, end_, found = nil, nil, nil
+    local rstart_, rend_, found = nil, nil, nil
+
+    local chunk_size = 10000
+    local chunk_pos,lst_chunk_pos = -chunk_size+start,0
+    
+    while chunk_pos < #str do
+        chunk_pos = chunk_pos + chunk_size
+        local chunk = string.sub(str,lst_chunk_pos,chunk_pos+30000)
+
+        start_, end_ = string.find(chunk, search, 0, pattern)
+        if start_ and end_ then
+            rstart_, rend_ = start_ + chunk_pos, end_ + chunk_pos
+            found = string.sub(str,rstart_,rend_)
+            break
+        end
+
+        lst_chunk_pos = chunk_pos
+    end
+    return rstart_, rend_, found
+end
+
+string.trimLength = function(str,size)
+    //need fix
+    local new_str = ""
+    for i=1, #str do
+        if render.getTextSize(new_str.."..") > size then
+            new_str = new_str .. ".."
+            break
+        end
+        new_str = new_str .. str[i]
+    end
+    return new_str
+end
+
+return string

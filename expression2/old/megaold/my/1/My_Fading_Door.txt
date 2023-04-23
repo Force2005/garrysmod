@@ -1,0 +1,25 @@
+@name My Fading Door
+@inputs Fade Door:entity
+@outputs FadeActive
+@persist [Material Sound]:string
+@trigger Fade
+
+if(first()) {
+    Material = "models/shadertest/shader5"
+    Sound = "ambient/machines/combine_shield_touch_loop1.wav"
+
+}
+
+if(Fade) {
+    FadeActive = 1
+    Door:soundPlay("Door",100000,Sound)
+    soundVolume("Door",0.4)
+    Door:propNotSolid(1)
+    Door:setMaterial(Material)
+}
+else {
+    FadeActive = 0
+    soundStop("Door")
+    Door:propNotSolid(0)
+    Door:setMaterial("")
+}

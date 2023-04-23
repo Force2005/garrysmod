@@ -1,0 +1,109 @@
+local app = {}
+
+app.title = "Photo"
+app.version = 1.0
+app.author = "Neker's Industry's"
+app.description = "Show photo"
+
+app.pos = Vector(0,0)
+app.size = Vector(400, 400)
+app.minimum_size = Vector(400, 400)
+app.maximum_size = Vector(4096, 4096)
+
+app.draggable = true
+app.close_btn = true
+app.resizable = true
+
+app.multiple_open = true
+app.app_id = "gcomputer_file"
+
+--@include ../lib/base64img.txt
+app.base64img = require("../lib/base64img.txt")
+
+app.on_load = function(window,app)
+    window.reload_image = SFUi.button(window, Vector(0,0), Vector(70, 20), "Reload", function(me) window.has_set_img = false end)
+    window.reload_image.paint = function(self)
+        render.setColor(self.hover and Color(255,255,255,50) or Color(255,255,255,10))
+        render.drawRect(self.mins.x-1, self.mins.y-1, self.size.x+2, self.size.y+2)
+            
+        render.setColor(self.action.held and Color(0,0,0) or self.palette.foreground)
+        render.drawSimpleText(self.center.x, self.center.y, self.text, TEXT_ALIGN.CENTER, TEXT_ALIGN.CENTER)
+    end
+    window.reload_image.visible = false
+                
+    window.pos = computer.resolution/2 - window.size/2
+    
+    window.cur_photo = nil
+    window.has_set_img = false
+    window.load_error = nil
+end
+
+app.app_logo = function(app,x,y,w,h)
+    render.setFilterMag(1)
+    render.setFilterMin(1)
+
+    render.setColor(Color(255,255,255))
+    render.setMaterial(computer.icon["images"])
+    render.drawTexturedRect(x,y,w,h)
+    render.setMaterial()
+
+    render.setFilterMag(3)
+    render.setFilterMin(3)
+end
+    
+//use only if you need to draw another thing that not in SFUi lib
+//Like a simple rect, roundedbox or polygon etc..
+app.add_render = function(window,app,x,y,w,h)
+    if window.file_info and window.file_info.type == "photo" then
+        window.title = "Photo | " .. window.file_info.name
+
+        if window.has_set_img == false then
+            window.cur_photo = material.create("UnlitGeneric")
+            local base64data = app.base64img.decode(window.file_info.name,window.file_info.content)
+
+            if base64data.error then
+                window.load_error = base64data.error_msg .. " and press button to reload image."
+                window.reload_image.visible = true
+            else
+                window.cur_photo:setTextureURL("$basetexture",base64data.data,function(_,_,w,h,layout)
+                    //fix size to 1024x1024 depending of proportion
+                    local fw, fh = w or 512, h or 512
+                    local scl = 1
+    
+                    scl = 1024 / fh
+                    if fh < fw then scl = 1024 / fw end
+                    fw = fw * scl
+                    fh = fh * scl
+                    layout(512 - fw/2,512 - fh/2,fw,fh)
+                end)
+                window.reload_image.visible = false
+                window.load_error = nil
+            end
+            window.has_set_img = true
+        end
+    end
+    
+    local img_size = window.size.x
+    if window.size.y-window.barheight < window.size.x then img_size = window.size.y-window.barheight end
+
+    if window.load_error then
+        render.setColor(Color(255,255,255))
+        render.drawText(x+w/2,y+h/2 - select(2,render.getTextSize(window.load_error))/2,window.load_error,1)
+        
+        window.reload_image.pos = Vector(w/2 - window.reload_image.size.x/2,h/2 - window.reload_image.size.y/2 + select(2,render.getTextSize(window.load_error)))
+    else
+        --render.setFilterMag(1)
+        --render.setFilterMin(1)
+        render.setColor(Color(0,0,0))
+        render.drawRect(x+w/2-img_size/2,y-window.barheight/2+h/2-img_size/2,img_size,img_size)
+        
+        render.setColor(Color(255,255,255))
+        render.setMaterial(window.cur_photo or computer.icon["picture_error"])
+        render.drawTexturedRect(x+w/2-img_size/2,y-window.barheight/2+h/2-img_size/2,img_size,img_size)
+        render.setMaterial()
+        --render.setFilterMag(3)
+        --render.setFilterMin(3)
+    end
+end
+    
+return app

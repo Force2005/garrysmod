@@ -1,0 +1,17 @@
+local lang = {}
+lang.lang_data = {}
+lang.lang_file = {}
+
+--@includedir ../lang
+lang.lang_file = requiredir("../lang")
+
+local function load_lang(id) lang.lang_data = lang.lang_file["GComputer/lang/"..id..".txt"] end
+local function query_word(query)
+    if lang.lang_data then
+        return lang.lang_data["%"..query.."%"] or "%"..query.."%"
+    else
+        return "%"..query.."%"
+    end
+end
+
+return {query_word=query_word,load_lang=load_lang}

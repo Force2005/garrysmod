@@ -1,0 +1,45 @@
+local lang = {}
+lang.lang_name = "English"
+
+lang["%clock.name%"] = "Clock"
+lang["%clock.month.01%"] = "January"
+lang["%clock.month.02%"] = "February"
+lang["%clock.month.03%"] = "March"
+lang["%clock.month.04%"] = "April"
+lang["%clock.month.05%"] = "May"
+lang["%clock.month.06%"] = "June"
+lang["%clock.month.07%"] = "July"
+lang["%clock.month.08%"] = "August"
+lang["%clock.month.09%"] = "September"
+lang["%clock.month.10%"] = "October"
+lang["%clock.month.11%"] = "November"
+lang["%clock.month.12%"] = "December"
+lang["%clock.day.0%"] = "Monday"
+lang["%clock.day.1%"] = "Tuesday"
+lang["%clock.day.2%"] = "Wednesday"
+lang["%clock.day.3%"] = "Thursday"
+lang["%clock.day.4%"] = "Friday"
+lang["%clock.day.5%"] = "Saturday"
+lang["%clock.day.6%"] = "Sunday"
+
+lang["%dialog.information%"] = "Information"
+lang["%dialog.sure?%"] = "Are you sure?"
+lang["%dialog.yes%"] = "Yes"
+lang["%dialog.no%"] = "No"
+lang["%dialog.ok%"] = "Ok"
+lang["%dialog.continue%"] = "Continue"
+lang["%dialog.cancel%"] = "Cancel"
+
+lang["%start_menu.name%"] = "Desktop"
+
+lang["%task_manager.name%"] = "Task manager"
+lang["%task_manager.manage_app%"] = "Manage app"
+lang["%task_manager.end_task%"] = "End task"
+
+lang["%theme_manager.name%"] = "Theme manager"
+lang["%theme_manager.change_background%"] = "Change background"
+lang["%theme_manager.change_theme%"] = "Change theme"
+
+lang["%dialog_popup.gc_will_restart%"] = "Ok, GComputer will restart in a seconds"
+
+return lang

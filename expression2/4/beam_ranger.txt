@@ -1,0 +1,36 @@
+@name Beam Ranger
+@inputs 
+@outputs Dist PosX PosY PosZ Pos:vector Entity:entity EntID
+@persist [E H B]:entity
+@trigger 
+
+if (first()) {
+    runOnTick(1)
+    runOnLast(1)
+    E = entity()
+    
+    H = holoCreate(1, E:pos(), vec(0.1), ang(), vec4())
+    holoAlpha(1, 0)
+    
+    B = E:drawBeam("effects/laser1", E:pos(), E:pos()+vec(0,0,100), vec(255), 255, 4)
+    #B:setParent(E)
+    B:setBeamEndEnt(H)
+}
+
+Ranger=rangerOffset(1000, E:pos(), E:up())
+#B:setBeamEndPos(Ranger:pos())
+H:setPos(Ranger:pos())
+
+Pos = Ranger:pos()
+
+if (!B:isValid()) {
+    selfDestructAll()
+}
+
+#ifdef last()
+if(last()) {
+    #ifdef entity:remove()
+    B:remove()
+    #endif
+}
+#endif

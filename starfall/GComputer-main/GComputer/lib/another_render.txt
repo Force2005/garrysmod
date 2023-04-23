@@ -1,0 +1,214 @@
+local tex_corner8 = material.load("gui/corner8")
+local tex_corner16 = material.load("gui/corner16")
+local tex_corner32 = material.load("gui/corner32")
+local tex_corner64 = material.load("gui/corner64")
+local tex_corner512 = material.load("gui/corner512")
+
+//a modification of the default roundedBox system
+local function RoundedBoxEx(x, y, w, h, btl, btr, bbl, bbr)
+    if btl == nil then btl = 0 end
+    if btr == nil then btr = 0 end
+    if bbl == nil then bbl = 0 end
+    if bbr == nil then bbr = 0 end
+    
+    btl = math.min(math.round(btl), w/2, h/2)
+    btr = math.min(math.round(btr), w/2, h/2)
+    bbl = math.min(math.round(bbl), w/2, h/2)
+    bbr = math.min(math.round(bbr), w/2, h/2)
+
+    render.drawRect(x + btl,y,w - btl - btr,h/2)
+    render.drawRect(x + w/2,y + btr,w/2,h - btr - bbr)
+    render.drawRect(x + bbl,y + h/2,w - bbl - bbr,h/2)
+    render.drawRect(x,y + btl,w/2,h - btl - bbl)
+
+    if btl > 0 then
+        render.setMaterial(tex_corner512)
+        render.drawTexturedRectUV(x,y,btl,btl,0,0,1,1)
+    else
+        render.drawRect(x,y,w/2,h/2)
+    end
+
+    if btr > 0 then
+        render.setMaterial(tex_corner512)
+        render.drawTexturedRectUV(x + w - btr,y,btr,btr,1,0,0,1)
+    else
+        render.drawRect(x + w - w/2,y,w/2,h/2)
+    end
+
+    if bbl > 0 then
+        render.setMaterial(tex_corner512)
+        render.drawTexturedRectUV(x,y + h - bbl,bbl,bbl,0,1,1,0)
+    else
+        render.drawRect(x,y + h - h/2,w/2,h/2)
+    end
+
+    if bbr > 0 then
+        render.setMaterial(tex_corner512)
+        render.drawTexturedRectUV(x + w - bbr,y + h - bbr,bbr,bbr,1,1,0,0)
+    else
+        render.drawRect(x + w - w/2,y + h - h/2,w/2,h/2)
+    end
+end
+local function RoundedBox(x, y, w, h, borderradius)
+    return RoundedBoxEx(x, y, w, h, borderradius, borderradius, borderradius, borderradius)
+end
+
+//the original roundedBox code but with a bit modification
+local function RoundedBoxEx2(bordersize, x, y, w, h, tl, tr, bl, br)
+    if (bordersize <= 0) then
+        render.drawRect(x, y, w, h)
+        return
+    end
+    bordersize = math.min(math.round(bordersize), math.floor(w/2), math.floor(h/2))
+
+    render.drawRect(x + bordersize, y, w - bordersize * 2, h)
+    render.drawRect(x, y + bordersize, bordersize, h - bordersize * 2)
+    render.drawRect(x + w - bordersize, y + bordersize, bordersize, h - bordersize * 2)
+
+    local tex = tex_corner512
+    --if (bordersize > 8) then tex = tex_corner16 end
+    --if (bordersize > 16) then tex = tex_corner32 end
+    --if (bordersize > 32) then tex = tex_corner64 end
+    --if (bordersize > 64) then tex = tex_corner512 end
+
+    render.setMaterial(tex)
+    if tl then
+        render.drawTexturedRectUV(x, y, bordersize, bordersize, 0, 0, 1, 1)
+    else
+        render.drawRect(x, y, bordersize, bordersize)
+    end
+    
+    if tr then
+        render.drawTexturedRectUV(x + w - bordersize, y, bordersize, bordersize, 1, 0, 0, 1)
+    else
+        render.drawRect(x + w - bordersize, y, bordersize, bordersize)
+    end
+    
+    if bl then
+        render.drawTexturedRectUV(x, y + h -bordersize, bordersize, bordersize, 0, 1, 1, 0)
+    else
+        render.drawRect(x, y + h - bordersize, bordersize, bordersize)
+    end
+    
+    if br then
+        render.drawTexturedRectUV(x + w - bordersize, y + h - bordersize, bordersize, bordersize, 1, 1, 0, 0)
+    else
+        render.drawRect(x + w - bordersize, y + h - bordersize, bordersize, bordersize)
+    end
+    render.setMaterial()
+end
+local function RoundedBox2(bordersize, x, y, w, h)
+    return RoundedBoxEx2(bordersize, x, y, w, h, true, true, true, true)
+end
+
+local function RoundedBoxOutlineEx(radius,x,y,w,h, btl, btr, bbl, bbr)
+    if radius == nil then radius = 0 end
+    radius = math.min(math.round(radius), w/2, h/2)
+    
+    render.drawRect(x + radius,y,w - radius*2,radius)
+    render.drawRect(x + w - radius,y + radius,radius,h - radius*2)
+    render.drawRect(x + radius,y + h - radius,w - radius*2,radius)
+    render.drawRect(x,y + radius,radius,h - radius*2)
+
+    if btl then
+        render.setMaterial(tex_corner512)
+        render.drawTexturedRectUV(x,y,radius,radius,0,0,1,1)
+    else
+        render.drawRect(x,y,w/2,h/2)
+    end
+
+    if btr then
+        render.setMaterial(tex_corner512)
+        render.drawTexturedRectUV(x + w - radius,y,radius,radius,1,0,0,1)
+    else
+        render.drawRect(x + w - w/2,y,w/2,h/2)
+    end
+
+    if bbl then
+        render.setMaterial(tex_corner512)
+        render.drawTexturedRectUV(x,y + h - radius,radius,radius,0,1,1,0)
+    else
+        render.drawRect(x,y + h - h/2,w/2,h/2)
+    end
+
+    if bbr then
+        render.setMaterial(tex_corner512)
+        render.drawTexturedRectUV(x + w - radius,y + h - radius,radius,radius,1,1,0,0)
+    else
+        render.drawRect(x + w - w/2,y + h - h/2,w/2,h/2)
+    end
+end
+local function RoundedBoxOutline(radius, x, y, w, h)
+    return RoundedBoxOutlineEx(radius, x, y, w, h, true, true, true, true)
+end
+
+local function star(x,y,size,add_ang)
+    local number_of_spikes = 10
+    local angle = math.pi * 2 / number_of_spikes
+    local star = {}
+    local radius = size
+    for i=0, number_of_spikes do
+        local x2 = radius * math.cos(add_ang + angle * i)
+        local y2 = radius * math.sin(add_ang + angle * i)
+        star[i] = {x=x + x2,y=y + y2}
+        radius = radius == size and size/2 or size
+    end
+    render.setMaterial()
+    render.drawPoly(star)
+end
+
+local function drawStripLine(table)
+    local lx,ly = table[1].x, table[1].y
+    for i=1, #table+1 do
+        if i >= #table+1 then
+            x = table[1].x
+            y = table[1].y
+        else
+            x = table[i].x
+            y = table[i].y
+        end
+        render.drawLine(x,y,lx,ly)
+        lx = x
+        ly = y
+    end
+end
+
+local function drawLayoutText(x,y,layout_width,txt)
+    local splited_text = string.split(txt," ")
+    local next_width, next_height = 0, 0
+    for _, t in pairs(splited_text) do
+        local add_width, add_height = render.drawSimpleText(x+next_width, y+next_height, t .. " ", 0, 0)        
+        next_width = next_width + add_width
+        
+        local fix_width, _ = render.getTextSize((splited_text[_+1] or "") .. " ")
+        if next_width+fix_width > layout_width then
+            next_height = next_height + add_height
+            next_width = 0
+        end
+    end
+
+    local _, fix_height = render.getTextSize(" ")
+    next_height = next_height + fix_height
+
+    return layout_width, next_height
+end
+
+local function stencil_mask()
+    render.setStencilWriteMask(0xFF)
+    render.setStencilTestMask(0xFF)
+    render.setStencilReferenceValue(1)
+    render.setStencilCompareFunction(3)
+    render.setStencilPassOperation(STENCIL.REPLACE)
+    render.setStencilFailOperation(STENCIL.REPLACE)
+    render.setStencilZFailOperation(STENCIL.REPLACE)
+    render.clearStencil()
+    
+    render.setStencilEnable(true)
+    render.setStencilReferenceValue(1)
+    render.setStencilCompareFunction(STENCIL.REPLACE)
+end
+local function stencil_pop()
+    render.setStencilEnable(false)
+end
+
+return {drawLayoutText=drawLayoutText,stencil_mask=stencil_mask,stencil_pop=stencil_pop,drawStripLine=drawStripLine,roundedBox=RoundedBox,roundedBoxEx=RoundedBoxEx,roundedBox2=RoundedBox2,roundedBoxEx2=RoundedBoxEx2,star=star,roundedBoxOutline=RoundedBoxOutline,roundedBoxOutlineEx=RoundedBoxOutlineEx}

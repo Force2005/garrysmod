@@ -1,0 +1,5 @@
+@name ANti_iNViZ
+runOnTick(1)
+owner():weapon():setColor(vec4(random(255),random(255),random(255),255))
+owner():weapon():setMaterial("models/debug/debugwhite")
+

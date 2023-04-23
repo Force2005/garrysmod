@@ -1,0 +1,118 @@
+--@name Cloak
+--@author Markiz
+--@client
+
+
+local Target = owner()
+Target = find.playersByName("force2005")[1]
+/*AFK = find.allPlayers(function(p)
+    if p:getSteamID() == "STEAM_0:0:582893321" then
+        return true
+    end
+end)[1]*/
+--print(Target)
+
+--if player() == Target then return end
+
+
+------------------------------------------------
+
+
+local HasGravity = true
+
+local _flag_force = "https://i.imgur.com/P105hRx.png"
+local _flag1 = "https://cdn.discordapp.com/attachments/1001221436360359937/1008444528044290048/2022-08-14_213657475.png"
+local _flag_belarus = "https://i.imgur.com/XUxgnEu.png"
+local _flag_ukraine = "https://i.imgur.com/xegOERy.png"
+local _flag_russia = "https://i.imgur.com/jR2vDAC.png"
+local _flag_usa = "https://i.imgur.com/lIfVWWm.png"
+local _flag_anime = "https://cdn.discordapp.com/attachments/510528712320483329/711301069413679154/received_1790417730979994.jpeg"
+local _flag_germ = "https://i.imgur.com/QXkoWDt.png"
+local _flag_gigachad = "https://cdn.discordapp.com/attachments/900794622878564362/1020975776096587776/unknown.png?size=4096"
+
+
+local URL = _flag_force
+
+
+------------------------------------------------
+
+
+
+local BoneScale = Vector(4,0.0001,0.0001)
+local Degree = 0
+local BoneHeight = 0.1
+
+local FlagModel = 'models/pac/jiggle/base_cloth_4'..(HasGravity and '_gravity' or '')..'.mdl'
+
+
+local head_bone = Target:lookupBone("ValveBiped.Bip01_Spine4")
+local pos1, ang1 = Target:getBonePosition(head_bone)
+--local pos2, ang2 = localToWorld(Vector(-50, 31, -7), Angle(90,-90,0), pos1, ang1)
+
+local HFlag = holograms.create(pos1, ang1, FlagModel, Vector(1))
+HFlag:setMaterial("brick/brick_model")
+--HFlag:setParent(Target, nil, head_bone)
+
+
+timer.simple(2, function()
+    --hook.remove("think","myshook")
+    --HFlag:setParent(Target, nil, head_bone)
+end)
+
+
+function moveCloak()
+    local pos1, ang1 = Target:getBonePosition(head_bone)
+    local pos2, ang2 = localToWorld(Vector(5, -3, 0), Angle(0,-90+10,90), pos1, ang1)
+    HFlag:setPos(pos2)
+    HFlag:setAngles(ang2)
+end
+
+hook.add("think","myshook", moveCloak)
+hook.add("hologrammatrix","myshook", moveCloak)
+
+
+for i = 0, HFlag:getBoneCount() - 1 do
+    HFlag:manipulateBoneScale(i, BoneScale)
+    HFlag:manipulateBonePosition(i, Vector(0,0, BoneHeight))
+end
+
+
+local mat = material.create("UnlitGeneric")
+
+mat:setInt("$flags", 256)
+
+mat:setTextureURL("$basetexture", URL, function(m, u, w, h, l)
+    if m == nil then return end
+
+    --ocal ratio = w / h
+
+    --local sh = maxh
+    --local sw = sh * ratio
+    --HFlag:setSize(Vector(sh, sw, 1))
+    
+    l(0, 0, m:getWidth(), m:getHeight())
+    
+    HFlag:setMaterial("!" .. mat:getName())
+end)
+
+
+
+
+hook.add("drawhud","myshook",function()
+    for i = 0, math.min(25, HFlag:getBoneCount() - 1) do
+        local pos = HFlag:getBonePosition(i):toScreen()
+        
+        local BoneName = HFlag:getBoneName(i)
+        --BoneName = string.sub(BoneName, 18)
+        local BonePos = HFlag:getManipulateBonePosition(i)
+        local BoneAngles = HFlag:getManipulateBoneAngles(i)
+        
+        local result = ''..i..' - '..BoneName
+        --local result = ''..i..' - '..BoneName.. ' = '..tostring(BonePos)
+        --local result = ''..i..' - '..BoneName.. ' = '..tostring(BoneAngles)
+        
+        --render.setFont(font)
+        render.setColor(Color(255,200,0))
+        render.drawText(pos.x, pos.y-10, result, 1)
+    end
+end)

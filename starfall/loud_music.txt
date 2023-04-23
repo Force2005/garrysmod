@@ -1,0 +1,155 @@
+--@name Loud Music
+--@author Markiz
+--@shared
+--@model models/props_lab/citizenradio.mdl
+
+local Volume = 5
+local Speed = 1
+local URL = "ar"
+local IsLooping = true
+
+local IsAllServer = true
+local Radius = 1000
+
+------------------------------------------------------------------------------------
+
+
+--local Target = find.playersByName("Markiz")[1]
+/*AFK = find.allPlayers(function(p)
+    if p:getSteamID() == "STEAM_0:0:582893321" then
+        return true
+    end
+end)[1]*/
+--print(Target)
+
+--if Target ~= nil and player() ~= Target then return end
+
+--if player() == Target then return end
+
+------------------------------------------------------------------------------------
+
+local _urls = {
+    ar = "https://cdn.discordapp.com/attachments/1081967820172181578/1099709842320527502/-_.mp3",
+    fn = "https://cdn.discordapp.com/attachments/1081967820172181578/1099705174836129912/-_.mp3",
+    bam = "https://cdn.discordapp.com/attachments/1081967820172181578/1096924000879382641/-_.mp3",
+    sanya1 = "https://cdn.discordapp.com/attachments/952924658456494111/1072894410104242176/-Mood-_full_.mp3",
+    goosling = "https://cdn.discordapp.com/attachments/846689259851350027/1072844386657894490/College_amp_Electric_Youth_-_A_Real_Hero.mp3",
+    hz = "https://cdn.discordapp.com/attachments/952924658456494111/1056845811318784061/Omission-Huma-Huma.mp3",
+    glorx = "https://cdn.discordapp.com/attachments/846689259851350027/1030814871853481994/Forsaken_Music_-_Glorx.mp3",
+    tenb = "https://u.teknik.io/LKjOg.mp3",
+    koshmar = "https://u.teknik.io/P52iG.mp3",
+    putnik = "https://u.teknik.io/GmK7o.mp3",
+    siski = "https://cdn.discordapp.com/attachments/846689259851350027/1028303670862938162/-_.mp3",
+    ban = "https://cdn.discordapp.com/attachments/846689259851350027/1028302724669915136/Unknown_artist_-__-__-_.mp3",
+    les = "https://cdn.discordapp.com/attachments/846689259851350027/1028291212656001054/FIASKO_-_THE_METAL_SHEET_WiBBLE_WABBLE_1.mp3",
+    dt2 = "https://cdn.discordapp.com/attachments/846689259851350027/1026112843977867284/CoMa_Electronic_ft._Feint_-_Snake_Eyes__cut_version__.mp3",
+    zebr = "https://cdn.discordapp.com/attachments/846689259851350027/1025867663299330109/Zebrahead_-_Dissatisfied_1.mp3",
+    miko = "https://cdn.discordapp.com/attachments/846689259851350027/1025715391831478282/-_INCELCORE.mp3",
+    anim = "https://cdn.discordapp.com/attachments/846689259851350027/1025489129833779270/-.mp3",
+    gachi = "https://cdn.discordapp.com/attachments/846689259851350027/1025448748131811348/DEAD_BLONDE_-_Right_Version_1.mp3",
+    phonk = "https://cdn.discordapp.com/attachments/846689259851350027/1025104962105114705/ZODIVK_-_Devil_Eyes.mp3",
+    coolio = "https://cdn.discordapp.com/attachments/846689259851350027/1025085081783631912/Coolio_feat._L.V._-_Gangstas_Paradise_feat._L.V._1.mp3",
+     fart = "https://cdn.discordapp.com/attachments/846689259851350027/1024382685990371368/minecraft_-_fart_meme_21_bababooey.mp3",
+    ryku = "https://cdn.discordapp.com/attachments/846689259851350027/1024360143565111326/----_-_.mp3",
+    sektor = "https://cdn.discordapp.com/attachments/846689259851350027/1023316541028188271/-_1.mp3",
+    yak = "https://cdn.discordapp.com/attachments/846689259851350027/1023315337124511824/-_.mp3",
+    kolhoz = "https://cdn.discordapp.com/attachments/846689259851350027/1023248279795933254/-_.mp3",
+    ment = "https://cdn.discordapp.com/attachments/846689259851350027/1023247445125255218/-_.mp3",
+    rozhdestvo = "https://cdn.discordapp.com/attachments/846689259851350027/1023246175375196250/-_1.mp3",
+    sk = "https://cdn.discordapp.com/attachments/846689259851350027/1023243233817538570/-_.mp3",
+    kazachya = "https://cdn.discordapp.com/attachments/846689259851350027/1023218569628110940/-_.mp3",
+    vesno = "https://cdn.discordapp.com/attachments/846689259851350027/1022892288965353512/-_1_1.mp3",
+    mao = "https://cdn.discordapp.com/attachments/846689259851350027/1022890606487404584/PRC_propaganda_-_Red_Sun_in_the_Sky.mp3",
+    govnovoz = "https://cdn.discordapp.com/attachments/1016746778537758803/1022877170714026004/-_1.mp3",
+    trin = "https://cdn.discordapp.com/attachments/846689259851350027/1022598721818591283/-_13-_.mp3",
+    rog = "https://cdn.discordapp.com/attachments/846689259851350027/1022597421299150948/-_.mp3",
+    omsk = "https://cdn.discordapp.com/attachments/846689259851350027/1022589865143062549/-_.mp3",
+    morgenshtern_1 = "https://u.teknik.io/o2Fly.mp3",
+    pornhub_intro = "https://cdn.discordapp.com/attachments/974678227362660395/1021517108997259284/Pornhub_.mp3",
+    pornhub_2 = "https://cdn.discordapp.com/attachments/974678227362660395/1021562126101393508/DIKIY_KRXT_-_Pornhub_71671016.mp3",
+    bs1 = "https://cdn.discordapp.com/attachments/952924658456494111/1023239769074962492/S.T.A.L.K.E.R.-Shadow-of-Chernobyl-Brain-Scorcher-Ambience.mp3",
+    pudge = "https://cdn.discordapp.com/attachments/952924658456494111/1066803899031367710/--y---3840x2160.mp3",
+    soldierMinus = "https://cdn.discordapp.com/attachments/974678227362660395/1061342876648345713/-__minus.mp3",
+    soldierMeme = "https://cdn.discordapp.com/attachments/974678227362660395/1061361274233036933/-_mp3-2020.com.mp3",
+    sidorovich_1 = "https://cdn.discordapp.com/attachments/974678227362660395/1062476888334946344/sidorovich-ya-tebya-spas.mp3",
+    mc_mom_came_remix = "https://cdn.discordapp.com/attachments/974678227362660395/1069328923114098819/oj-mama-prishla-miss-the-rage_456240694.mp3",
+    mc_mom_came = "https://cdn.discordapp.com/attachments/974678227362660395/1069328923491581952/oy-mama-prishla.mp3",
+    sanya2 = "https://cdn.discordapp.com/attachments/952924658456494111/1072907650460831745/--__-_saneking.mp4551.mp3",
+}
+
+-- =================================================================================
+
+
+if SERVER then
+    
+    local WW = chip():getWirelink()
+    
+    wire.adjustPorts(
+        {
+            ON="number",
+        },
+        {
+        }
+    )
+    
+    hook.add("input", "", function(input_name, value) 
+        if input_name == 'ON' then
+            net.start("Active")
+            net.writeBool(value != 0 and true or false)
+            net.send()
+        end
+    end)
+    
+    hook.add("ClientInitialized", "cl_init", function(ply)
+        net.start("Active")
+        net.writeBool(!WW:isWired('ON') or wire.ports.ON != 0)
+        net.send(ply)
+    end)
+    
+    return
+end
+
+---------------
+
+local _isActive = true
+local _sound
+
+
+net.receive("Active", function(len)
+    _isActive = net.readBool()
+    if isValid(_sound) then
+        if _isActive then
+            _sound:play()
+        else
+            
+            _sound:pause()
+        end
+    end
+end)
+
+
+bass.loadURL(_urls[URL], "3d noblock noplay", function(Sound)
+    _sound = Sound
+    _sound:setLooping(IsLooping)
+    _sound:setPitch(Speed)
+    
+    if _isActive then
+        _sound:play()
+    else
+        
+        _sound:pause()
+    end
+    
+    hook.add("think", "", function()
+        if IsAllServer then
+            _sound:setVolume(Volume)
+        else
+            local distance = chip():getPos():getDistance(player():getPos())
+            _sound:setVolume(math.min(1, ((Radius-distance) / Radius)) * Volume)
+        end
+
+        _sound:setPos(player():getPos())
+    end)
+        
+end)
+

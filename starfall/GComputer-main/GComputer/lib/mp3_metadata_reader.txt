@@ -1,0 +1,115 @@
+--@name mp3 metadata reader
+//lib by AstalNeker
+
+function clean_byte(from)
+    local cleanedStr = ""
+    for i = 1, #from do
+        local c = from:sub(i, i)
+        if string.byte(c) >= 32 and string.byte(c) <= 127 then
+            cleanedStr = cleanedStr .. c
+        end
+    end
+    return cleanedStr
+end
+
+function decode_id3(data)
+    local metadata = {}
+
+    local header = string.sub(data,0,10)
+    local version = string.byte(header, 4)
+    local revision = string.byte(header, 5)
+    local flags = string.byte(header, 6)
+    local size = 1000 //((string.byte(header, 7) * 128 + string.byte(header, 8)) * 128 + string.byte(header, 9)) * 128 + string.byte(header, 10)
+
+    local next_bytes = 0
+    local frame = {}
+
+    metadata.header = {
+        version = version,
+        revision = revision,
+        flags = flags
+    }
+        
+    if version == 1 then end
+    if version == 2 then end
+
+    if version == 3 then
+        while next_bytes < size do
+            next_bytes = next_bytes + 1
+            local frameHeader = string.sub(data,next_bytes,next_bytes+10)
+            local frameID = string.sub(frameHeader, 1, 4)
+    
+            -- Process the frame based on its ID
+            if frameID == "TIT2" then
+                frame[#frame+1] = {pos=next_bytes+4,id=frameID}
+            elseif frameID == "TPE1" then
+                frame[#frame+1] = {pos=next_bytes+4,id=frameID}
+            elseif frameID == "TALB" then
+                frame[#frame+1] = {pos=next_bytes+4,id=frameID}
+            elseif frameID == "APIC" then
+                //Used to get end of the last param of header
+                frame[#frame+1] = {pos=next_bytes+4,id=frameID}
+            end
+        end
+    
+        //Search for header information
+        for id, f in pairs(frame) do
+            local posA = frame[id].pos
+            local posB = (frame[id+1] or {pos=posA}).pos-4
+            if frame[id].id == "TIT2" then metadata.title = clean_byte(data:sub(posA,posB-1)) end
+            if frame[id].id == "TPE1" then metadata.artist = clean_byte(data:sub(posA,posB-1)) end
+            if frame[id].id == "TALB" then metadata.album = clean_byte(data:sub(posA,posB-1)) end
+        end
+    
+        //Search for APIC
+        local apic_offset, apic_size = data:find("APIC")
+        if apic_offset and false then //unused for the moment
+            local apic_header = data:sub(apic_offset, apic_offset + 9)
+            local apic_payload_size = apic_header:byte(5) * 0x1000000 + apic_header:byte(6) * 0x10000 + apic_header:byte(7) * 0x100 + apic_header:byte(8)
+            local apic_end_offset = apic_offset + 10 + apic_payload_size
+    
+            local APIC_Data = data:sub(apic_offset+4,apic_end_offset)
+            metadata.image = {}
+                
+            //CHECK MIME TYPE OF COVER
+            local mime_offset, mime_size = APIC_Data:sub(0,150):find("image/")
+            local mime_check = clean_byte(APIC_Data:sub(mime_offset, mime_offset+9))
+            local valid_type = {"image/png","image/jpg","image/jpeg"}
+            local has_found_cover = false
+            for id, type in pairs(valid_type) do
+                if mime_check:find(type) then
+                    metadata.image.mime = type
+                    has_found_cover = true
+                    break
+                end
+            end
+
+        if has_found_cover then
+                --metadata.image.description = "SOON"
+                    
+                //CHECK cover description
+                    
+                //metadata.image.imageBuffer = #APIC_Data
+            end
+        end
+    end
+
+    return metadata
+end
+
+local function readMusicInfo(data)
+    data = data or ""
+    local info = {error=false,error_code="No error occured"}
+    local encoding = string.sub(data,0,10)
+
+    if string.startWith(encoding,"ID3") then
+        info = table.merge(info,decode_id3(data))
+    else
+        info = {error=true,error_code="Cannot read data"}
+    end
+    return info
+end
+    
+return {
+    readMusicInfo = readMusicInfo
+}

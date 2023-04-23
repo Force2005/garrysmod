@@ -1,0 +1,32 @@
+@name Fail Kill
+if(first()) {
+    runOnKeys(owner(),1)
+}
+interval(200)
+if(changed(owner():keyPressed("r")) & owner():keyPressed("r"))
+{
+    owner():playerRagdoll()
+    #owner():plySetRunSpeed(450) owner():plySetJumpPower(300) owner():plySetMass(1) owner():propNotSolid(0) owner():plyGod(1)
+    timer("time", 1000)
+}
+
+if(owner():keyPressed("t"))
+{
+    #findExcludePlayer(owner())
+    #findIncludeClass("player")
+    #findIncludeClass("prop_ragdoll")
+    findByClass("prop_ragdoll")
+    #findByModel("models/player/skeleton.mdl")
+    F = findClosest(owner():pos())
+    F:ragdollGravity(0)
+    #F:setSkin(owner():getSkin())
+    #F:setBodygroup(2,2)
+    F:setVel(vec(0,0,1000))
+    F:setPos(F:toWorld(vec(0,0,50)))
+    holoCreate(1,F:attachmentPos("eyes"))
+    holoParentAttachment(1,F,"eyes")
+    #F:applyForce(vec(0,0,1000))
+    print(owner():pos())
+    print(F:pos())
+    #print(F:getBodygroup())
+}

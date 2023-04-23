@@ -1,0 +1,66 @@
+--@name Loud Music
+--@author Markiz
+--@client
+
+local Volume = 50000
+local Speed = 1
+local URL = "fart"
+local IsAllServer = true
+local IsLooping = true
+
+------------------------------------------------------------------------------------
+
+
+--local Target = find.playersByName("Markiz")[1]
+/*AFK = find.allPlayers(function(p)
+    if p:getSteamID() == "STEAM_0:0:582893321" then
+        return true
+    end
+end)[1]*/
+--print(Target)
+
+--if Target ~= nil and player() ~= Target then return end
+
+--if player() == Target then return end
+
+------------------------------------------------------------------------------------
+
+local _urls = {
+    fart = "https://cdn.discordapp.com/attachments/846689259851350027/1024382685990371368/minecraft_-_fart_meme_21_bababooey.mp3",
+    ryku = "https://cdn.discordapp.com/attachments/846689259851350027/1024360143565111326/----_-_.mp3",
+    sektor = "https://cdn.discordapp.com/attachments/846689259851350027/1023316541028188271/-_1.mp3",
+    yak = "https://cdn.discordapp.com/attachments/846689259851350027/1023315337124511824/-_.mp3",
+    kolhoz = "https://cdn.discordapp.com/attachments/846689259851350027/1023248279795933254/-_.mp3",
+    ment = "https://cdn.discordapp.com/attachments/846689259851350027/1023247445125255218/-_.mp3",
+    rozhdestvo = "https://cdn.discordapp.com/attachments/846689259851350027/1023246175375196250/-_1.mp3",
+    sk = "https://cdn.discordapp.com/attachments/846689259851350027/1023243233817538570/-_.mp3",
+    kazachya = "https://cdn.discordapp.com/attachments/846689259851350027/1023218569628110940/-_.mp3",
+     vesno = "https://cdn.discordapp.com/attachments/846689259851350027/1022892288965353512/-_1_1.mp3",
+    mao = "https://cdn.discordapp.com/attachments/846689259851350027/1022890606487404584/PRC_propaganda_-_Red_Sun_in_the_Sky.mp3",
+    govnovoz = "https://cdn.discordapp.com/attachments/1016746778537758803/1022877170714026004/-_1.mp3",
+    trin = "https://cdn.discordapp.com/attachments/846689259851350027/1022598721818591283/-_13-_.mp3",
+    rog = "https://cdn.discordapp.com/attachments/846689259851350027/1022597421299150948/-_.mp3",
+    omsk = "https://cdn.discordapp.com/attachments/846689259851350027/1022589865143062549/-_.mp3",
+    morgenshtern_1 = "https://u.teknik.io/o2Fly.mp3",
+    pornhub_intro = "https://cdn.discordapp.com/attachments/974678227362660395/1021517108997259284/Pornhub_.mp3",
+    pornhub_2 = "https://cdn.discordapp.com/attachments/974678227362660395/1021562126101393508/DIKIY_KRXT_-_Pornhub_71671016.mp3",
+    kvas = "https://u.teknik.io/OPuUw.mp3",
+    uzbek = "https://cdn.discordapp.com/attachments/952924658456494111/1022570427920437309/50-Cent-feat.-Black-Style-In-Da-.mp3",
+    zapah_vesni = "https://cdn.discordapp.com/attachments/952924658456494111/1022905937884893264/online-audio-converter.com.mp3",
+    shaurma = "https://cdn.discordapp.com/attachments/952924658456494111/1022590196207861832/---_Official-Video_.mp3",
+}
+
+-- =================================================================================
+
+
+bass.loadURL(_urls[URL], "3d noblock", function(Sound)
+    Sound:setLooping(IsLooping)
+    Sound:setPitch(Speed)
+    Sound:setVolume(player() == owner() and 50000 or Volume)
+    
+    hook.add("think", "", function()
+        Sound:setPos(IsAllServer and eyePos() or chip():getPos())
+    end)
+        
+end)
+

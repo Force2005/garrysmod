@@ -1,0 +1,72 @@
+@name holo ex2 wallhack2
+@inputs 
+@outputs [TargetArr]:array 
+@persist C RanT:ranger [Epos]:vector
+@trigger 
+
+runOnTick(1)
+if(C>300){
+    holoCreate(0)
+}
+else{
+    C++
+}
+    
+Epos = owner():pos()+vec(0,0,64)
+
+findExcludeEntity(owner())
+findExcludeEntity(holoEntity(0))
+findInCone(owner():attachmentPos("eyes"),owner():eye(),99999,90)
+findIncludeClass("Player")
+findIncludeClass("npc")
+
+TargetArr = findToArray()
+
+
+holoParent(0,owner():weapon())
+holoModel(0,"hq_hdome_thin")
+holoScaleUnits(0,vec(50,50,50))
+holoColor(0,vec4(0,0,0,50))
+holoDisableShading(0,1)
+
+
+holoPos(0,Epos-vec(0,0,36))
+holoAng(0,(owner():eyeAngles()+ang(90,0,0)))
+
+
+
+for(I=1,5){ 
+    if(TargetArr[I,entity]){
+        holoCreate(I)
+        holoParent(I,holoEntity(0))
+        holoScaleUnits(I,vec(1,1,1))
+        holoColor(I,vec4(255,0,0,100))
+        holoDisableShading(I,1)
+        holoModel(I,"hq_sphere")
+    }
+    else{
+        holoDelete(I)
+    }
+    rangerDefaultZero(0)
+    rangerFilter(owner())
+    RanT = rangerOffset(25,Epos,TargetArr[I,entity]:pos()+TargetArr[I,entity]:boxCenter()-Epos)
+    holoPos(I,RanT:pos()-vec(0,0,36))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

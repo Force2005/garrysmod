@@ -1,0 +1,59 @@
+local app = {}
+
+app.title = "File"
+app.version = 1.0
+app.author = "Neker's Industry's"
+app.description = "Show file data"
+
+app.pos = Vector(0,0)
+app.size = Vector(400, 300)
+app.minimum_size = Vector(400, 300)
+app.maximum_size = Vector(4096, 4096)
+
+app.draggable = true
+app.close_btn = true
+app.resizable = true
+
+app.multiple_open = true
+app.app_id = "gcomputer_file"
+
+app.on_load = function(window,app)
+    window.pos = computer.resolution/2 - window.size/2
+end
+
+app.app_logo = function(app,x,y,w,h)
+    render.setFilterMag(1)
+    render.setFilterMin(1)
+
+    render.setColor(Color(255,255,255))
+    render.setMaterial(computer.icon["page_white_text"])
+    render.drawTexturedRect(x,y,w,h)
+    render.setMaterial()
+
+    render.setFilterMag(3)
+    render.setFilterMin(3)
+end
+    
+//use only if you need to draw another thing that not in SFUi lib
+//Like a simple rect, roundedbox or polygon etc..
+app.add_render = function(window,app,x,y,w,h)
+    if window.file_info and window.file_info.type == "file" then
+        window.title = window.file_info.name
+        render.setColor(Color(255,255,255))
+        for id, line in pairs(string.split(window.file_info.content,"\n")) do
+            if (id+1)*15 > h then break end
+
+            show_data = ""
+            for i=1, #line do
+                if render.getTextSize(show_data) > window.size.x-40 then
+                    show_data = show_data .. "..."
+                    break
+                end
+                show_data = show_data .. line[i]
+            end
+            render.drawText(x,y-15+id*15,show_data)
+        end
+    end
+end
+    
+return app

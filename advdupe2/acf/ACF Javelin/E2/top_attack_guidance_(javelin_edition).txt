@@ -1,0 +1,271 @@
+@name Top Attack Guidance (Javelin Edition)
+@inputs [Launcher Base]:entity [DirectModeToggle Zoom FOVChange FireIn Ready]:number [CamController EGP]:wirelink
+@outputs TargetEnt:entity TargetPos:vector [Reload Fire]:number
+@persist [TargetPos Target TargetVel Vec VecRate]:vector TargetEnt:entity [NewTarg HasRan Ready GuidanceMode RocketVelocity TurningRadius MinHeight HoloIndex GuidanceIndex Reload Stage DiveMultiplierShort DiveMultiplierLong ClimbMultiplier]:number [MissileCandidate Missile]:entity
+interval(100)
+if(first() || dupefinished()) {
+    #For A Full Propellant Missile, Mode 1 is 0-65m, Mode 2 is 65-130m, Mode 3 is 200-375m (375 Max Range)
+    findIncludeClass("vehicle") #Lookin' for vehicles. Change to players or whatever else you want to be able to lock on.
+    TurningRadius = 2650 #Missile Orbit Radius. Try and get it to fly around a central point. This determines this number.
+    RocketVelocity = 2250 #How fast the missile travels in units/s
+    DiveMultiplierLong = 0.75 #This determines how steep the missile dives in mode 3 guidance. 1 = straight down, higher numbers are shallower dives.
+    DiveMultiplierShort = 1.2 #This determines how steep the missile dives in mode 2 guidance.
+    ClimbMultiplier = 0.5 #This is determines how steep or shallow the missile's climb is. Smaller numbers are steeper.
+    DiveAngle = 45 #Angle between the turn point and the target. As altitude increases this will approach the actual angle the missile dives at. For min alt, 45 degrees is a straight vertical dive.
+    ############## Config Stops Here ##############
+    MinHeight = TurningRadius*tan(DiveAngle)
+    HoloIndex = 4
+    GuidanceIndex = 1
+    NewTarg = 0
+    GuidanceMode = 0
+    Reload = 1
+    Stage = 0
+    HasRan = 0
+    hint("Left click fires. This is a fire and forget weapon.",3)
+    hint("Shift toggles weapon system zoom.",3)
+    hint("Right click aims down sights.",3)
+    hint("Alt changes firemodes and lases target (must be pressed for each new target).",3)
+    hint("Equip a Wiremod Remote Control to use.",3)
+    hint("This is a Javelin ATGM system made by NYET RIFLE IS FINE!",3)
+    #Note this stuff uses EGP extras. The system will work without EGP. Just dont link it. Also designed for a 2160p screen so it wont work properly on 1080p.
+    ScrSize = egpScrSize(owner()) #EGP shit
+    EGP:egpClear()
+    EGP:egpBox(14,ScrSize/2,ScrSize)
+    EGP:egpMaterial(14,"egpextras/textures/tank/overlays/scanlines.png")
+    EGP:egpAlpha(14,70)
+    EGP:egpBox(1,ScrSize/2,vec2(ScrSize:y(),ScrSize:y())*2)
+    EGP:egpMaterial(1,"egpextras/textures/tank/overlays/border_rectangular01.png")
+    EGP:egpBox(2,ScrSize/2,vec2(ScrSize:y(),ScrSize:y())*0.7)
+    EGP:egpMaterial(2,"egpextras/textures/tank/sights/sosna-u/reticle_night.png")
+    EGP:egpBox(3,vec2(0,0),vec2(ScrSize:y(),ScrSize:y())*0.05)
+    EGP:egpMaterial(3,"egpextras/textures/air/reticles/reticle_helicopter4.png")
+    EGP:egpBox(7,ScrSize/2+vec2(0,+385),vec2(130,60))
+    EGP:egpColor(7,vec(0,0,0))
+    EGP:egpText(4,"000",ScrSize/2+vec2(-48,+350))
+    EGP:egpFont(4,"Consolas",70)
+    EGP:egpCircle(5,ScrSize+vec2(-925,-1450),vec2(75))
+    EGP:egpColor(5,vec(255,0,0))
+    EGP:egpAlpha(1,0)
+    EGP:egpAlpha(2,0)
+    EGP:egpAlpha(3,0)
+    EGP:egpAlpha(4,0)
+    EGP:egpAlpha(5,0)
+    holoCreate(0)
+    holoAlpha(0,0)
+    EGP:egp3DTracker(6,vec(0,0,0)) #This one creates the tracker box
+    EGP:egpParent(6,holoEntity(0))
+    EGP:egpParent(3,6)
+    timer("Find",1000) #Creates a seperate search timer to save on uS.
+    EGP:egpBox(8,ScrSize/2+vec2(515,385),vec2(170,60))
+    EGP:egpColor(8,vec(0,0,0))
+    EGP:egpText(9,"WHOT",ScrSize/2+vec2(-48+500,+350))
+    EGP:egpFont(9,"Consolas",70)
+    EGP:egpBox(10,ScrSize/2+vec2(-515,385),vec2(170,60))
+    EGP:egpColor(10,vec(0,0,0))
+    EGP:egpText(11,"TARG",ScrSize/2+vec2(-500-80,+350))
+    EGP:egpFont(11,"Consolas",70)
+    EGP:egpBox(12,ScrSize/2+vec2(0,+495),vec2(130,60))
+    EGP:egpColor(12,vec(0,0,0))
+    EGP:egpText(13,"DIR",ScrSize/2+vec2(-48,+460))
+    EGP:egpFont(13,"Consolas",70)
+
+}
+if(clk("Find")){ #Track vehicles in a cone in front of the player
+    if(Zoom) {
+        findInCone( Launcher:pos()+Launcher:forward()*35-Launcher:right()*10,owner():eye(),fromUnit("m",800),2)    
+        TargetEnt=find()
+    }
+    timer("Find",1000)   
+}
+if(owner():weapon():type() == "remotecontroller" && changed(owner():weapon():type())) { #When holding a remote controller, system is active.
+    timer("Equip",1000)
+}
+if(owner():weapon():type() != "remotecontroller" && changed(owner():weapon():type())) { #When holding a remote controller, system is active.
+    timer("Equip2",1000)
+}
+if(owner():weapon():type() == "remotecontroller") {
+    CamController["Position",vector] = Launcher:pos()+Launcher:forward()*35-Launcher:right()*10 #Setup the camcontroller position etc.
+    CamController["Activated",number] = Zoom
+    CamController["FLIR",number] = 1
+    CamController["Parent",entity] = Launcher
+    if(FOVChange) {
+        CamController["FOV",number] = 20
+    }
+    else {
+        CamController["FOV",number] = 75
+    }
+    if(Zoom) { #Basically only show the hud and play sounds when ADS
+        EGP:egpAlpha(1,255)
+        EGP:egpAlpha(2,255)
+        EGP:egpAlpha(3,255)
+        EGP:egpAlpha(4,255)
+        EGP:egpAlpha(7,255)
+        EGP:egpAlpha(8,255)
+        EGP:egpAlpha(9,255)
+        EGP:egpAlpha(10,255)
+        EGP:egpAlpha(11,255)
+        EGP:egpAlpha(12,255)
+        EGP:egpAlpha(13,255)
+        EGP:egpAlpha(14,65)
+        
+        if(TargetEnt:isValid()) { 
+            EGP:egpAlpha(5,128)
+            if(TargetEnt&Ready){owner():soundPlay(1,0.5,"acf_extra/airfx/laser_track.wav")}else{soundStop(1)}
+            EGP:egpSetText(11,"TARG")
+        } else {
+            EGP:egpSetText(11,"SEEK")
+        }
+        if(DirectModeToggle) {EGP:egpSetText(13,"DIR")} else {EGP:egpSetText(13,"TOP")}
+        holoPos(0,TargetEnt:pos())
+    }
+    else {
+        EGP:egpAlpha(1,0)
+        EGP:egpAlpha(2,0)
+        EGP:egpAlpha(3,0)
+        EGP:egpAlpha(4,0)
+        EGP:egpAlpha(5,0)
+        EGP:egpAlpha(7,0)
+        EGP:egpAlpha(8,0)
+        EGP:egpAlpha(9,0)
+        EGP:egpAlpha(10,0)
+        EGP:egpAlpha(11,0)
+        EGP:egpAlpha(12,0)
+        EGP:egpAlpha(13,0)
+        EGP:egpAlpha(14,0)
+        soundStop(1)
+    }
+    DistTemp = round((owner():eyeTrace():pos():distance(Launcher:pos())/39.37008),0) #Control the display elements
+    if(DistTemp <10) {
+        StrTemp = "00" + DistTemp:toString()
+    }
+    elseif(DistTemp <100) {
+        StrTemp = "0" + DistTemp:toString()
+    }
+    else { #Add zeros to keep string constant length for EGP
+        StrTemp = DistTemp:toString()
+    }
+    EGP:egpSetText(4,StrTemp)
+    Fire = (FireIn && Zoom) #Control weapon firing
+    if(changed(DirectModeToggle)) { #This basically controls how many holowaypoints a missile follows
+        if((Target:distance(Launcher:pos())) > 3*TurningRadius && !DirectModeToggle) {
+            Notif = "Mode 3 - Long Range Top Attack"
+        }
+        elseif((Target:distance(Launcher:pos())) > 2*TurningRadius && !DirectModeToggle) {
+            Notif = "Mode 2 - Medium Range Top Attack"
+        }
+        else { #This is direct attack mode
+            Notif = "Mode 1 - Direct Attack"
+        }
+        hint("Range: " + round((Target:distance(Launcher:pos())/39.37008),1):toString() + "m : " + Notif,3) #This stuff creates the holowaypoints
+        if(Target:distance(Launcher:pos()) > 3*TurningRadius && !DirectModeToggle) { #Guidance Mode 3
+            GuidanceMode = 3
+            holoCreate(2,Target + vec(0,0,MinHeight)-(Target-Launcher:pos()):normalized()*TurningRadius*DiveMultiplierLong)
+            holoAlpha(2,0)
+            holoCreate(1,Launcher:pos() + vec(0,0,MinHeight)+(Target-Launcher:pos()):normalized()*TurningRadius*ClimbMultiplier)
+            holoAlpha(1,0)
+            TargetPos = holoEntity(1):pos()
+        }
+        elseif (Target:distance(Launcher:pos()) > 2*TurningRadius && !DirectModeToggle) { #Guidance Mode 2
+            GuidanceMode = 2
+            holoCreate(1,Target + vec(0,0,MinHeight)-(Target-Launcher:pos()):normalized()*TurningRadius*DiveMultiplierShort)
+            holoAlpha(1,0)
+            TargetPos = holoEntity(1):pos()
+        }
+        elseif (Target:distance(Launcher:pos()) < 2*TurningRadius || DirectModeToggle) { #Guidance Mode 1
+            GuidanceMode = 1
+            holoCreate(1,Launcher:pos() + vec(0,0,MinHeight/4)+(Target-Launcher:pos()):normalized()*TurningRadius)
+            holoAlpha(1,0)
+            TargetPos = holoEntity(1):pos()
+        }
+    }
+    rangerFilter(owner())
+    MissileCandidate=rangerOffset(12,Launcher:toWorld(vec(0,0,-1)),Launcher:forward()):entity() #This basically just changes missile textures and models, but also resets some things.
+    if(changed(MissileCandidate) && MissileCandidate:isValid()) {
+        HoloIndex++
+        Missile = MissileCandidate
+        holoCreate(HoloIndex,Missile:pos())
+        holoParent(HoloIndex,Missile)
+        holoAng(HoloIndex,Missile:angles())
+        holoModel(HoloIndex,"models/missiles/glatgm/9m117.mdl")
+        Missile:setAlpha(0)
+        GuidanceIndex = 1
+        TargetPos = holoEntity(GuidanceIndex):pos()
+        NewTarg = 0
+    }
+    if(!Missile:isValid()) { #This makes sure a new missile isnt reloaded until the old one is dead.
+        Reload = 1
+        TargetEnt = world()
+    }
+    else {
+        Reload = 0
+    }
+    if(Missile:pos():distance(TargetPos) < 500 && Stage == 0) { #This changes between waypoints once the missile gets close, and if its the last one, sends it terminal.
+        GuidanceIndex++
+        if((GuidanceIndex == 3 && GuidanceMode == 3) || (GuidanceIndex == 2 && GuidanceMode == 2) || (GuidanceIndex == 2 && GuidanceMode == 1)) {
+            NewTarg = 1
+        }
+        else {
+            TargetPos = holoEntity(GuidanceIndex):pos()
+        }
+        Stage = 1
+    }
+    else {
+        Stage = 0
+    }
+    RelativeVel = (TargetEnt:vel()-Missile:vel()) #All of this stuff is simple quadratic target lead presuming constant velocity (which the missile achieves)
+    Distance = (TargetEnt:pos()-Missile:pos())
+    A = RelativeVel:length2()-RocketVelocity*RocketVelocity #quadratic stuff
+    B = 2*Distance:dot(RelativeVel)
+    C = Distance:length2()
+    if(A >= 0) { ## if no solution exists
+        LeadPos = TargetEnt:massCenter() ##output target position with no lead
+    }
+    else {
+        RT = sqrt((B*B) - (4*A*C)) ##more quadratic stuff
+        DT1 = (-B+RT) / (2*A)
+        DT2 = (-B-RT) / (2*A)
+        if(DT1 < 0) {
+            DT = DT2
+        }
+        else {
+            DT = DT1
+        }
+        LeadPos = TargetEnt:massCenter()+TargetEnt:vel()*DT
+    }
+    if(NewTarg) {
+            Vec = (TargetEnt:pos()-Missile:pos()):normalized()
+            VecRate = $Vec*3000
+            TargetPos = (Missile:pos()+Vec*100)+VecRate 
+    }
+    Target = LeadPos
+    if(GuidanceMode==3) { #This basically just updates the position of the holos so the missile is roughly lead.
+        holoPos(2,Target + vec(0,0,MinHeight)-(Target-Launcher:pos()):normalized()*TurningRadius*DiveMultiplierLong)
+        holoPos(1,Launcher:pos() + vec(0,0,MinHeight)+(Target-Launcher:pos()):normalized()*TurningRadius*ClimbMultiplier)
+    }
+    elseif(GuidanceMode==2) {
+        holoPos(1,Target + vec(0,0,MinHeight)-(Target-Launcher:pos()):normalized()*TurningRadius*DiveMultiplierShort)
+    }
+    elseif(GuidanceMode==1) {
+        holoPos(1,Launcher:pos() + vec(0,0,MinHeight/4)+(Target-Launcher:pos()):normalized()*TurningRadius)
+    }
+}
+if(clk("Equip")) {
+    if(!HasRan) {
+        holoCreate(99,Launcher:pos())
+        holoAng(99,Launcher:angles())
+        holoAlpha(99,0)
+        Base:parentTo(Launcher)
+        Launcher:parentTo(holoEntity(99))
+        HasRan = 1
+    }
+    holoUnparent(99)
+    holoPos(99,owner():attachmentPos("anim_attachment_RH")+owner():eyeAngles():right()*(8)+owner():eyeAngles():forward()*-27+owner():eyeAngles():up()*-1)
+    holoAng(99,owner():eyeAngles()-ang(15,0,0))
+    holoParentAttachment(99,owner(),"anim_attachment_RH")
+}
+if(clk("Equip2")) {
+    holoUnparent(99)
+    holoPos(99,owner():attachmentPos("chest")+(owner():forward()*-15))
+    holoAng(99,owner():angles()+ang(90,90,-45))
+    holoParentAttachment(99,owner(),"chest")
+}

@@ -1,0 +1,33 @@
+@name MingeSkin
+@persist [E O]:entity A
+
+runOnTick(1)
+
+A=
+
+E=entity()
+O=owner()
+
+holoCreate(1,O:toWorld(vec(-20,0,0)))
+holoModel(1,"models/Kleiner.mdl")
+#holoMaterial(1,"models/flesh")
+holoColor(1,vec(255,255,255))
+holoScale(1,vec(1,1,1))
+holoParent(1,O)
+holoAng(1,ang(0,A,0))
+#holoParentAttachment(1,O,"eyePos")
+
+holoCreate(2,O:toWorld(vec(-20,0,30)))
+holoModel(2,"models/weapons/w_Physics.mdl")
+#holoMaterial(1,"models/flesh")
+holoColor(2,vec(255,255,255))
+holoScale(2,vec(1,1,1))
+holoParent(2,O)
+holoAng(2,ang(0,A,0))
+#holoParentAttachment(2,O,"XYU")
+
+entity():owner():setColor(255,255,255)
+owner():setMaterial("Models/effects/vol_light001")
+owner():weapon():setAlpha(0)
+#holoEntity(1):soundPlay(1,999,"synth/square.wav")
+#soundPitch(1,random(500))

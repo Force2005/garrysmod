@@ -1,0 +1,154 @@
+local app = {}
+
+app.title = "Audio Player"
+app.version = 1.0
+app.author = "Neker's Industry's"
+app.description = "Allow you to play song"
+
+app.pos = Vector(0,0)
+app.size = Vector(400, 200)
+app.minimum_size = Vector(300, 80)
+app.maximum_size = Vector(4096, 4096)
+
+app.draggable = true
+app.close_btn = true
+app.resizable = true
+
+app.multiple_open = true
+app.app_id = "gcomputer_audioplayer"
+
+--@include ../lib/mp3_metadata_reader.txt
+--@include ../lib/base64img.txt
+app.mp3dataReader = require("../lib/mp3_metadata_reader.txt")
+app.base64img = require("../lib/base64img.txt")
+
+app.on_load = function(window,app)
+    window.pos = computer.resolution/2 - window.size/2
+
+    window.cover_mat = computer.icon["music"]
+    window.has_set_img = false
+    window.load_error = nil
+    window.loaded_info = false
+
+    --window.volume = SFUi.slider(window, Vector(0, 0), Vector(120, 8), 1, 0, 10, 0.1)
+    window.seek = SFUi.slider(window, Vector(0, 0), Vector(120, 8), 0, 0, 1, nil, function(to)
+        if window.soundPlaying and type(window.soundPlaying) == "Bass" then
+            window.soundPlaying:setTime(to)
+        end
+    end)
+end
+
+app.on_close = function(window,app)
+    if window.soundPlaying and type(window.soundPlaying) == "Bass" then window.soundPlaying:stop() window.soundPlaying = nil end
+end
+
+app.app_logo = function(app,x,y,w,h)
+    render.setFilterMag(1)
+    render.setFilterMin(1)
+    
+    render.setColor(Color(255,255,255))
+    render.setMaterial(computer.icon["music"])
+    render.drawTexturedRect(x,y,w,h)
+    render.setMaterial()
+
+    render.setFilterMag(3)
+    render.setFilterMin(3)
+end
+
+//use only if you need to draw another thing that not in SFUi lib
+//Like a simple rect, roundedbox or polygon etc..
+app.add_render = function(window,app,x,y,w,h)
+    --window.volume.pos = Vector(w - 130 - 15,h-20)
+    --window.volume.size = Vector(130,8)
+    --window.volume.custom_value_text = window.volume.value*100 .. "%"
+
+    window.seek.pos = Vector(115/2,h-80 + 25)
+    window.seek.size = Vector(w-115,8)
+
+    if window.file_info and window.file_info.type == "music" then
+        window.title = "Audio Player | " .. window.file_info.name
+        if window.loaded_info == false then
+            window.songMetadata = app.mp3dataReader.readMusicInfo(window.file_info.content)
+
+            window.playPath = "data/sf_filedata/" .. window.file_info.file_path .. window.file_info.name
+            bass.loadFile(window.playPath,"",function(snd,error,error_name)
+                if error > 0 then
+                else
+                    snd:setLooping(true)
+                    window.soundPlaying = snd
+                    window.seek.max = snd:getLength()
+                end
+            end)
+            window.loaded_info = true
+        end
+
+        if window.has_set_img == false and window.songMetadata and window.songMetadata.image then
+            local base64data = app.base64img.decode("test."..window.songMetadata.image.mime:replace("image/",""),window.songMetadata.imageBuffer)
+            
+            if base64data.error then
+            else
+                window.cover_mat = material.create("UnlitGeneric")
+                window.cover_mat:setTextureURL("$basetexture",base64data.data,function(_,_,w,h,layout)
+                    //fix size to 1024x1024 depending of proportion
+                    local fw, fh = w, h
+                    local scl = 1
+    
+                    scl = 1024 / fh
+                    if fh < fw then scl = 1024 / fw end
+                    fw = fw * scl
+                    fh = fh * scl
+                    layout(512 - fw/2,512 - fh/2,fw,fh)
+                end)
+            end
+            window.has_set_img = true
+        end
+    end
+
+    local back_size = window.size.x
+    if window.size.y-80 < back_size then back_size = window.size.y-80 end
+
+    render.setColor(Color(0,0,0))
+    render.drawRect(x,y,w,back_size)
+
+    render.setFilterMag(1)
+    render.setFilterMin(1)
+    render.setColor(Color(255,255,255))
+    render.setMaterial(window.cover_mat)
+    render.drawTexturedRect(x + w/2 - back_size/2,y,back_size,back_size)
+    render.setFilterMag(3)
+    render.setFilterMin(3)
+
+    render.setMaterial()
+
+    if window.songMetadata and window.soundPlaying then
+        render.drawSimpleText(x + 10,y+h-80 + 25, string.trimLength(window.songMetadata.title or window.file_info.name,window.size.x-50))
+        render.drawSimpleText(x + 10,y+h-80 + 40, string.trimLength(window.songMetadata.artist or "",window.size.x-50))
+        
+        render.drawSimpleText(x + 10,y+h-80 + 13,"" .. string.toMinutesSeconds(window.soundPlaying:getTime()),0,1)
+        render.drawSimpleText(x + w - 10,y+h-80 + 13,"" .. string.toMinutesSeconds(window.soundPlaying:getLength()),2,1)
+    end
+
+    if window.soundPlaying and type(window.soundPlaying) == "Bass" then
+        if window.seek.hold == false then window.seek.value = window.soundPlaying:getTime() end
+        --window.soundPlaying:setVolume(window.volume.value)
+        
+        window.soundFFT = window.soundPlaying:getFFT(4)
+        if not window.smoothFFT then window.smoothFFT = {} end
+        
+        local length = 100
+        for i=1, length do
+            window.smoothFFT[i] = math.lerp(timer.frametime()*10,window.smoothFFT[i] or 5,5 + (window.soundFFT[i] or 0) * (h-45))
+            render.setColor(Color(100 - (window.smoothFFT[i]/h) * 150,1,1):hsvToRGB())
+            render.drawRect(x - (1/length) * w + (i/length) * (w + (1/length) * (w/2)),y + h - 80 - window.smoothFFT[i],(1/length) * (w/2),window.smoothFFT[i])
+        end
+        
+        window.seek.custom_value_text = string.toMinutesSeconds(window.seek.value) .. "/" .. string.toMinutesSeconds(window.soundPlaying:getLength())
+        
+        //avoide from stoping
+        if window.soundPlaying:getTime() < window.soundPlaying:getLength() then else
+            window.soundPlaying:pause()
+        end
+    end
+end
+    
+return app

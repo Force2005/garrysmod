@@ -1,0 +1,25 @@
+--@name Lightning me
+--@author
+--@server
+
+ if SERVER 
+then chip():setSolid(false)
+ end
+
+local O = owner()
+local E = chip()
+local worldE = game.getWorld()
+
+local effectData = effect:create()
+
+timer.create("kek", 0.5, 0, function()
+    effectData:setEntity(O)
+    effectData:setMagnitude(5)
+    effectData:setScale(3)
+    
+    effectData:play("TeslaHitboxes")
+    
+    local path = 'ambient/energy/spark'..string.format('%01d', math.round(math.rand(2,3)))..'.wav'
+            owner():emitSound(path)
+    
+end)

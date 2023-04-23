@@ -1,0 +1,7 @@
+@name 
+@inputs 
+@outputs 
+@persist 
+@trigger 
+
+owner():setMaterial("models/hostages/hostage_sheet")

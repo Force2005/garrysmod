@@ -1,0 +1,40 @@
+--@name Bomb Prank
+--@author Tom1K
+--@server
+
+local Player = find.playersByName("Force2005")[1]
+print(Player)
+
+Bomb = hologram.create(chip():getPos(), Angle(), 'models/weapons/w_c4_planted.mdl')
+
+Bomb:setParent(Player)
+
+Bomb:setPos(Player:getPos())
+
+Bomb:emitSound('weapons/c4/c4_disarm.wav', 100, 100, 1)
+    
+Bomb:setScale(Vector(2))
+
+timer.simple(10, function()
+    
+Bomb:setColor(Color(255,0,0))
+
+find.inSphere(Player:getPos(), 100, function(ply)
+
+ply:ignite(1,512)
+ply:setHealth(0)
+
+end)
+end)
+
+timer.simple(10, function()
+    
+Bomb:emitSound('weapons/c4/c4_explode1.wav', 100, 100, 1)
+ 
+end)
+
+timer.simple(12, function()
+    
+Bomb:remove()
+    
+end)

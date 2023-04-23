@@ -1,0 +1,27 @@
+function init()
+    if not computer.save_data.settings.event["v1.03-has_reset_desktop"] then
+        computer.dialogMessage(computer.lang.query_word("dialog.information"),"Some changes have been made to GComputer's data\nand some applications will probably no longer work.\n\nDo you want to reset your desktop data?\n(Doesn't need to reset if it's your first start\nof GComputer !)",{1,2},function(id)
+            if id == 1 then
+                computer.dialogMessage(computer.lang.query_word("dialog.information"),computer.lang.query_word("dialog.sure?"),{1,2},function(id)
+                    if id == 1 then
+                        computer.dialogMessage(computer.lang.query_word("dialog.information"),computer.lang.query_word("dialog_popup.gc_will_restart"),{3},function(id) end)
+                        computer.save_data.settings.event["v1.03-has_reset_desktop"] = true
+                        timer.simple(5,function()
+                            computer.create_default_data()
+                            load_interface("bios")
+                        end)
+                    end
+                    if id == 2 then
+                        computer.save_data.settings.event["v1.03-has_reset_desktop"] = true
+                    end
+                end)
+            end
+
+            if id == 2 then
+                computer.save_data.settings.event["v1.03-has_reset_desktop"] = true
+            end
+        end)
+    end
+end
+
+return {init=init}

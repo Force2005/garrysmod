@@ -1,0 +1,82 @@
+local app = {}
+
+app.title = "ui design"
+app.version = 1.0
+app.author = "Neker's Industry's"
+app.description = "An app to show an ui components"
+
+app.pos = Vector(60,60)
+app.size = Vector(300, 200)
+app.minimum_size = Vector(300, 200)
+app.maximum_size = Vector(4096, 4096)
+
+app.draggable = true
+app.close_btn = true
+app.resizable = true
+
+app.multiple_open = true
+app.app_id = "gcomputer_uidesign"
+
+app.on_load = function(window,app)
+    window.tabA = SFUi.tabber(window, Vector(0, 0), window.size)
+    window.tabA_tabA = window.tabA:addTab("Your tab A") 
+    window.tabA_tabB = window.tabA:addTab("Your tab B")
+
+    SFUi.label(window.tabA_tabA, Vector(10, 30), "Some label :)")
+    window.slider = SFUi.slider(window.tabA_tabA, Vector(10, 90), Vector(120, 8), 5, 0, 10, 0.1)
+    window.progressA = SFUi.progress(window.tabA_tabA, Vector(10, 120), Vector(120, 12), nil)
+    window.progressB = SFUi.progress(window.tabA_tabA, Vector(10, 140), Vector(120, 12), 0)
+
+    window.radioA = SFUi.radio(window.tabA_tabA, Vector(150, 90), Vector(5, 5), "Option A", "mygroup1", "A", true)
+    window.radioB = SFUi.radio(window.tabA_tabA, Vector(150, 110), Vector(5, 5), "Option B", "mygroup1", "B", false)
+    window.radioC = SFUi.radio(window.tabA_tabA, Vector(150, 130), Vector(5, 5), "Option C", "mygroup1", "C", false)
+    window.radioD = SFUi.radio(window.tabA_tabA, Vector(150, 150), Vector(5, 5), "Option D", "mygroup1", "D", false)
+
+    window.select_label = SFUi.label(window.tabA_tabA, Vector(150, 170), "You select option:")
+end
+
+app.app_logo = function(app,x,y,w,h)
+    render.setFilterMag(1)
+    render.setFilterMin(1)
+
+    render.setColor(Color(255,255,255))
+    render.setMaterial(computer.icon["application_form"])
+    render.drawTexturedRect(x,y,w,h)
+    render.setMaterial()
+
+    render.setFilterMag(3)
+    render.setFilterMin(3)
+end
+    
+//use only if you need to draw another thing that not in SFUi lib
+//Like a simple rect, roundedbox or polygon etc..
+app.add_render = function(window,app,x,y,w,h)
+    window.tabA.pos = Vector(0,window.barheight)
+    window.tabA.size = Vector(w,h-window.barheight)
+    
+    if window.tabA.activeTab == window.tabA_tabA then
+        window.progressA.size.x = w - 180
+        window.progressB.size.x = w - 180
+        window.slider.size.x = w - 180
+        
+        window.progressB.value = window.slider.value / 10
+        window.select_label.content = {computer.current_theme.main_color,"You select option: ", Color(0, 255, 0), window.radioA:groupValue()}
+        
+        window.select_label.pos.x = w - 150
+        
+        window.radioA.pos.x = w - 150
+        window.radioB.pos.x = w - 150
+        window.radioC.pos.x = w - 150
+        window.radioD.pos.x = w - 150
+    
+        render.setColor(Color(255,0,0))
+        render.drawRect(x, y + h/2, 64, 64)
+    end
+
+    if window.tabA.activeTab == window.tabA_tabB then
+        render.setColor(Color(255,255,255))
+        render.drawSimpleText(x+15,y+25,"Add element of the second tab here :)")
+    end
+end
+    
+return app

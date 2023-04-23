@@ -1,0 +1,12 @@
+@name skin2
+@inputs 
+@outputs 
+@persist 
+@trigger 
+
+runOnTick(1) 
+owner():setSubMaterial(1,"phoenix_storms/black_chrome") 
+owner():setSubMaterial(3,"phoenix_storms/black_chrome") 
+owner():setSubMaterial(4,"phoenix_storms/black_chrome") 
+owner():setSubMaterial(6,"models/player/t_arctic/t_arctic") #models/humans/male/group01/ted_facemap
+owner():setSubMaterial(8,"effects/breenscreen_static01_")

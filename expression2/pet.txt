@@ -1,0 +1,84 @@
+@name pet
+@inputs 
+@outputs 
+@persist Smooth
+@persist [O E H G]:entity Color:vector RainbowSpeed T
+@trigger 
+runOnTick(1)
+runOnChat(1)
+#by kenny#
+#[                                                                                        
+                                                                                              
+kkkkkkkk                                                                                      
+k::::::k                                                                                      
+k::::::k                                                                                      
+k::::::k                                                                                      
+ k:::::k    kkkkkkk eeeeeeeeeeee    nnnn  nnnnnnnn    nnnn  nnnnnnnn yyyyyyy           yyyyyyy
+ k:::::k   k:::::kee::::::::::::ee  n:::nn::::::::nn  n:::nn::::::::nny:::::y         y:::::y 
+ k:::::k  k:::::ke::::::eeeee:::::een::::::::::::::nn n::::::::::::::nny:::::y       y:::::y  
+ k:::::k k:::::ke::::::e     e:::::enn:::::::::::::::nnn:::::::::::::::ny:::::y     y:::::y   
+ k::::::k:::::k e:::::::eeeee::::::e  n:::::nnnn:::::n  n:::::nnnn:::::n y:::::y   y:::::y    
+ k:::::::::::k  e:::::::::::::::::e   n::::n    n::::n  n::::n    n::::n  y:::::y y:::::y     
+ k:::::::::::k  e::::::eeeeeeeeeee    n::::n    n::::n  n::::n    n::::n   y:::::y:::::y      
+ k::::::k:::::k e:::::::e             n::::n    n::::n  n::::n    n::::n    y:::::::::y       
+k::::::k k:::::ke::::::::e            n::::n    n::::n  n::::n    n::::n     y:::::::y        
+k::::::k  k:::::ke::::::::eeeeeeee    n::::n    n::::n  n::::n    n::::n      y:::::y         
+k::::::k   k:::::kee:::::::::::::e    n::::n    n::::n  n::::n    n::::n     y:::::y          
+kkkkkkkk    kkkkkkk eeeeeeeeeeeeee    nnnnnn    nnnnnn  nnnnnn    nnnnnn    y:::::y           
+                                                                           y:::::y            
+                                                                          y:::::y             
+                                                                         y:::::y              
+                                                                        y:::::y               
+                                                                       yyyyyyy                
+]#
+
+
+if(first() || dupefinished()){
+    hint("have fun!",3)
+    Smooth = 10
+    #noDuplications()
+    RainbowSpeed=100
+    O = owner()
+    E = entity()
+    Color=vec(225,225,225)
+    
+    H = holoCreate(1)                                                                                                                                                                                  hint("Made by .kenny",4) 
+                                                                                                                                                                                                        setName("EX2 by kenny")
+    G = holoCreate(2)
+}
+
+Size = 12
+Activ = 0
+Model = "hq_icosphere"
+Loc = vec(0,0,15)
+T=T+0.1*1
+holoModel(1,"models/holograms/icosphere.mdl")
+#holoMaterial(1,"models/debug/debugwhite")
+holoScale(1,vec(1,1,1))
+holoAng(1,O:toWorld(ang(T*14,T*35,T*20)))
+holoAlpha(1,255)
+#holoVisible(1,O,0)
+
+holoModel(2,"models/holograms/icosphere.mdl")
+holoMaterial(2,"debug/debugdrawflat")
+holoScale(2,vec(-1.1,-1.1,-1.1))
+holoAng(2,O:toWorld(ang(T*14,T*35,T*20)))
+holoAlpha(2,254)
+#holoVisible(2,O,0)
+
+Color = hsv2rgb(curtime() * RainbowSpeed % 360, 1, 1)
+holoColor(1,vec(0,0,0))
+holoColor(2,Color)
+
+
+
+#holoVisible(1,O,0)
+#holoVisible(2,O,0)
+
+EndPos=O:attachmentPos("eyes")+vec(0,15,20)
+
+Elevation=H:pos()+(EndPos-H:pos())/Smooth 
+holoPos(1,Elevation)
+
+Elevation=G:pos()+(EndPos-G:pos())/Smooth
+holoPos(2,Elevation)

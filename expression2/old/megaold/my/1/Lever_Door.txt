@@ -1,0 +1,8 @@
+@name Lever Door
+@inputs A
+@outputs Fade 
+@persist 
+@trigger 
+
+if(changed(A) & A) { Fade=!Fade }
+

@@ -1,0 +1,17 @@
+@name Timer Door
+@inputs A
+@outputs Fade 
+@persist 
+@trigger 
+
+if(A) {
+    Fade = 1
+    stopAllTimers()
+    interval(100)
+    timer("timer",4000)
+    
+}
+
+if(clk("timer")) {
+    Fade = 0
+}

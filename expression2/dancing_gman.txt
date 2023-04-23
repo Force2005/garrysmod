@@ -1,0 +1,11 @@
+@name Dancing gman
+
+interval(8500)
+if (duped()) {reset()}
+if (duped()) {reset()}
+if (first()|duped()|dupefinished()) {
+    holoCreate(1)
+    holoModel(1,"models/player/gman_high.mdl")
+    holoParent(1,entity())
+}
+holoAnim(1,"taunt_dance")

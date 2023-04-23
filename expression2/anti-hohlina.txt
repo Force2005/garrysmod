@@ -1,0 +1,26 @@
+@name Anti-Hohlina
+@persist [E O P Prop]:entity
+
+interval(1)
+
+E=entity()
+O=owner()
+
+S=O:lastSaid():explode(" ")
+
+if(S:string(1)=="/t") {
+TP=findPlayerByName(S:string(2))
+if(TP:isPlayer()){
+P=TP}
+}
+if(P:isAlive()){
+Prop=propSpawn("models/props_c17/oildrum001_explosive.mdl",P:toWorld(vec(0,0,0)),1)
+Prop:propBreak()
+}
+#[holoCreate(1,P:toWorld(vec(0,0,0)))
+holoAng(1,ang(45,45,45))
+holoColor(1,vec(0,0,0))
+holoScale(1,vec(-5,-5,-5))
+holoPos(1,P:pos()+vec(0,0,50))
+holoParentAttachment(1,P,"eyes")]#
+

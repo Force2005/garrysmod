@@ -1,0 +1,96 @@
+//@name FFT
+--@name 3D Music
+--@author
+--@client
+--@model models/props_lab/citizenradio.mdl
+
+local fft={}
+
+//mat2 = material.create("UnlitGeneric")
+mat = material.create("UnlitGeneric")
+mat:setInt("$flags",138414080)
+//mat:setInt("$flags", bit.bxor(bit.bor(2^11, 2^22, 2^27, 2^22)))
+mat:setTexture("$basetexture","gm_construct/grass1")
+
+local url1 = "http://radio.licen777.ru/chechnya"
+local url2 = "http://radio.licen777.ru/stream"
+local url3 = "https://play.sas-media.ru/play_256"
+local url4 = "http://sv.wargaming.fm:8051/128"
+local url5 = "https://u.teknik.io/o2Fly.mp3"
+local url6 = "http://radio-srv1.11one.ru/record192k.mp3"
+
+local url = url6
+
+function start() 
+    bass.loadURL( url, "3d noblock", function(Sound)
+        Sound:setVolume(5.2)
+        Sound:play()
+        hook.add("think","",function()
+            Sound:setPos(chip():getPos())
+            fft=Sound:getFFT(5)
+        end)
+    end)
+    
+                    
+    hook.add("render","",function()      
+        render.setColor(Color(188,1,(fft[5] or 0)*20):hsvToRGB()) 
+        render.draw3DBox(Vector(0,512,0),Angle(),Vector(),Vector(512*2))
+                    
+        render.setColor(Color(188,1,(fft[6] or 0)*20):hsvToRGB()) 
+        render.draw3DBox(Vector(512,512,0),Angle(0,0,90),Vector(),Vector(512))
+        render.draw3DBox(Vector(-512,512,0),Angle(0,0,90),Vector(),Vector(512))
+                        
+        render.setColor(Color(188,1,(fft[7] or 0)*20):hsvToRGB()) 
+        render.draw3DBox(Vector(0,0,0),Angle(0,0,90),Vector(),Vector(512))  
+                    
+        render.setColor(Color(188,1,(fft[10] or 0)*20):hsvToRGB()) 
+        render.draw3DBox(Vector(0,512,512),Angle(0,0,90),Vector(),Vector(512))
+        
+        render.setMaterial(mat)
+        render.draw3DBox(Vector(256,256,256), Angle(), Vector(256,256,256+(fft[10] or 0)*1000), -Vector(256,256,256))
+                    
+        for i=0,50,1 do
+            render.setMaterial()
+            render.setColor(Color(i*4,1,1):hsvToRGB())
+            render.draw3DBox(Vector(0+i*10,511,250),Angle(),Vector(),Vector(10,-50-(fft[i+1] or 0)*700,10))
+        end
+    end)
+end
+
+
+
+local perms = {
+    "bass.loadURL",
+    "render.screen",
+    "console.command",
+}
+
+setupPermissionRequest(perms, "URL sounds from external sites", true)
+
+
+function checkGrant()
+    return url and hasPermission("bass.loadURL", url) and hasPermission("render.screen") and hasPermission("console.command")
+end
+
+
+if checkGrant() then
+    start(url)
+else
+    hook.add("render", "perms", function()
+        render.setFont(render.createFont("BudgetLabel",35,1666,0,0,0,0))
+        render.drawSimpleText(256, 256, "Press E to listen to epic songs", 1, 1)
+    end)
+end
+
+hook.add("permissionrequest", "perms", function()
+    if checkGrant() then
+        hook.remove("permissionrequest", "perms")
+        hook.remove("render", "perms")
+        
+        if player() ~= owner() then
+            concmd("sf_permission_cl console.command client 3")
+        end
+        
+        start()
+    end
+end)

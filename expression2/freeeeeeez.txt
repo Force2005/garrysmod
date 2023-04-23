@@ -1,0 +1,33 @@
+@name freeeeeeez
+
+@inputs
+
+@outputs
+
+@persist [O Player]:entity H:vector
+
+@trigger
+
+interval(100)
+
+O = findClosest(H)
+
+S = owner():lastSaid():explode(" ")
+
+if(S:string(1) =="/fz")
+
+{hideChat(1),TempPlayer = findPlayerByName(S:string(2))
+
+if(TempPlayer:isPlayer()){ Player = TempPlayer }
+
+if(Player){H=Player:pos()}
+
+}
+
+if(first()){Prop = propSpawn("models/hunter/blocks/cube2x2x2.mdl",1)
+
+}
+
+Prop:setAlpha(0)
+
+Prop:setPos(H+vec(0,0,50))

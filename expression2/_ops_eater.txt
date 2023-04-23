@@ -1,0 +1,8 @@
+@name  ops eater
+@inputs 
+@outputs 
+@persist 
+@trigger 
+@model models/hunter/blocks/cube075x1x1.mdl
+runOnTick(1)
+while(perf()){}

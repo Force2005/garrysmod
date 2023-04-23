@@ -1,0 +1,66 @@
+@name killer
+@inputs Turret:wirelink
+@persist On R [T E]:entity
+if(first())
+{
+    runOnTick(1)
+    runOnChat(1)
+}
+if(!On & !E:id() & Turret:entity():id())
+{
+    On=1*9999999999999999
+    E=Turret:entity()
+    E:propFreeze(1)
+    E:setAng(ang(90,0,45))
+    E:propNotSolid(1)
+    E:setAlpha(0)
+}
+if(chatClk(owner()))
+{
+    Perf=owner():lastSaid():lower():explode(" ")[1,string]
+    Arg=owner():lastSaid():lower():explode(" ")[2,string]
+    if(Perf=="/k" | Perf=="/sk")
+    {
+        hideChat(1)
+        Pe=findPlayerByName(Arg)
+        if(Pe:id())
+        {
+            T=Pe
+            if(Perf=="/k"){R=1}
+            else{R=2}
+        }
+    }
+    elseif(Perf=="/off")
+    {
+        hideChat(1)
+        T=noentity()
+        R=0
+    }
+}
+elseif(R & On)
+{
+    if(R==1)
+    {
+        if(T:isAlive())
+        {
+            E:setPos(T:pos()+vec(0,0,50))
+        }
+        else
+        {
+            E:setPos(vec(0,0,-500))
+            T=noentity()
+            R=0
+        }
+    }
+    else
+    {
+        if(T:isAlive())
+        {
+            E:setPos(T:pos()+vec(0,0,50))
+        }
+    }
+    rangerFilter(entity())
+    Rd=rangerOffset(20,E:pos(),E:angles():forward())
+    Turret["Fire",number]=((Rd:entity()==T) & T:isAlive())
+}
+else{Turret["Fire",number]=0}

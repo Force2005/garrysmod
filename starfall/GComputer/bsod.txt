@@ -1,0 +1,31 @@
+
+function onInit(computer,attributes)
+    local data = {}
+    computer.font.bios_font = render.createFont("FontAwesome",20,600,true,false,false,false,0,false,0)
+    computer.load_attributes = attributes
+    
+    timer.simple(5,function()
+        load_interface("bios")    
+    end)
+    
+    return data
+end
+
+function on_render(computer,data,w,h)
+    render.setColor(computer.current_theme.main_color)
+    render.drawRect(0,0,w,h)
+    
+    render.setColor((computer.current_theme.main_color/3):setA(255))
+    render.drawRect(0,h-45,w,45)
+    
+    render.setFont(computer.font.bios_font)
+    render.setColor(Color(255,255,255))
+    
+    if computer.load_attributes then
+        render.drawText(10,10,"" .. computer.load_attributes.bsod_error)
+    else
+        render.drawText(10,10,"Debug error message for fun\nYou sucks :)")
+    end
+end
+
+return {render=on_render,init=onInit}

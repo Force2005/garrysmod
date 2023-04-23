@@ -1,0 +1,19 @@
+@name pizdec
+@inputs Prop:wirelink
+
+runOnTick(1)
+
+    ApplyForce = 30
+    ApplyTorque = 15
+
+E = entity():isWeldedTo()
+rangerFilter(E)
+R = rangerOffset(1000,E:massCenter(),vec(0,0,-1))
+EE = R:position()
+Pod1 = (Prop:number("A")-Prop:number("D"))*10
+Pod2 = (Prop:number("W")-Prop:number("S"))*-(Prop:number("Shift")? 100 : 20)
+Pos = EE-E:pos()+(E:right()*Pod2)+vec(0,0,50)
+Ang = -E:angles()
+E:setMass(50000)
+E:applyForce((Pos*ApplyForce-E:vel())*E:mass())
+E:applyAngForce((Ang:setYaw(Pod1)*ApplyTorque-E:angVel())*E:mass())

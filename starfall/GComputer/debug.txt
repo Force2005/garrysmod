@@ -1,0 +1,51 @@
+
+--@includedir base64_image/sprite_sheet
+
+function onInit(computer)
+    local data = {}
+    computer.material.sprite_sheet = {}
+    
+    //import custom base64 material
+    local base64_img = requiredir("base64_image/sprite_sheet")
+    for id, data in pairs(base64_img) do
+        local base64Mat = material.create("UnlitGeneric")
+        base64Mat:setTextureURL("$basetexture", data)
+
+        table.insert(computer.material.sprite_sheet,base64Mat)
+        console.log({Color(80,255,80),"Imported sprite sheet ",Color(80,255,255),"'"..id.."'"})
+    end
+
+    computer.func = {}
+
+    computer.font.bios_font = render.createFont("FontAwesome",20,600,true,false,false,false,0,false,0)
+    computer.font.gui_font = render.createFont("FontAwesome",15,600,true,false,false,false,0,false,0)
+
+    return data
+end
+
+function on_render(computer,data,w,h)
+    --render.setColor(Color(255,255,255))
+    --another_render.roundedBoxOutline(24,64,64,128,128)
+    --another_render.roundedBoxOutline(4,64 + 128 + 32,64,128,128)
+
+    --another_render.roundedBoxEx(64,64 + 128 + 32,128,128,24,0,0,0)
+    --another_render.roundedBoxEx(64 + 128 + 32,64 + 128 + 32,128,128,45,64,32,24)
+    
+    render.setFilterMag(1)
+    render.setFilterMin(1)
+    local number_of_frame = 20
+    local max_width = 640
+    local frame_size = 32
+    
+    if not c then c = 1 end
+    c = c + 0.05
+    if c > number_of_frame then c = 1 end
+    render.setColor(Color(255,255,255))
+    render.setMaterial(computer.material.sprite_sheet[1])
+
+    rat = (max_width/frame_size) / max_width
+    render.drawTexturedRectUV(0,0,512,512,(math.round(c)-1)*rat,0,math.round(c)*rat,rat)
+    render.setFilterMag(3)
+end
+
+return {render=on_render,init=onInit}

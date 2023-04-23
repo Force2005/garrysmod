@@ -1,0 +1,149 @@
+local app = {}
+
+app.title = "Clock"
+app.version = 1.101
+app.author = "Neker's Industry's"
+app.description = "Show clock"
+
+app.pos = Vector(0,0)
+app.size = Vector(400, 256)
+app.minimum_size = Vector(400, 256)
+app.maximum_size = Vector(400, 256)
+
+app.draggable = true
+app.close_btn = true
+app.resizable = false
+
+app.multiple_open = true
+app.app_id = "gcomputer_clock"
+
+
+app.enum_font = render.createFont("FontAwesome",23,700,true,false,false,false,0,false,0)
+app.hour_font = render.createFont("FontAwesome",45,700,true,false,false,false,0,false,0)
+app.date_font = render.createFont("FontAwesome",25,700,true,false,false,false,0,false,0)
+
+app.on_load = function(window,app)
+    --window.list = SFUi.list(window, Vector(240, 40), Vector(150, 256-80), "UTC:", computer.clock.ClockUTCOffset, function(choose_utc) computer.save_data.utc_id = choose_utc end)
+    --window.list.value = computer.save_data.utc_id or 15
+
+    window.pos = Vector(computer.resolution.x-app.size.x-15,computer.resolution.y-app.size.y-15-45)
+end
+
+app.app_logo = function(app,x,y,w,h)
+    render.setFilterMag(1)
+    render.setFilterMin(1)
+
+    render.setColor(Color(255,255,255))
+    render.setMaterial(computer.icon["time"])
+    render.drawTexturedRect(x,y,w,h)
+    render.setMaterial()
+    
+    render.setFilterMag(3)
+    render.setFilterMin(3)
+end
+    
+//use only if you need to draw another thing that not in SFUi lib
+//Like a simple rect, roundedbox or polygon etc..
+app.add_render = function(window,app,x,y,w,h)
+    window.title = computer.lang.query_word("clock.name")
+    //draw clock
+    local clock_pos = window.pos:clone()
+    clock_pos.x = clock_pos.x + 120
+    clock_pos.y = clock_pos.y + window.size.y/2
+    
+    //draw arc circle
+    render.setMaterial(nil)
+    render.setColor(Color(0,0,0,100))
+    render.drawFilledCircle(clock_pos.x,clock_pos.y,80)
+    
+    //draw seconde wedge
+    render.setMaterial(nil)
+    local sec_poly = {}
+    sec_poly[1] = Vector(clock_pos.x,clock_pos.y)
+
+    for i=0, computer.time.sec do
+        sec_poly[2 + i] = {}
+        sec_poly[2 + i].x = clock_pos.x + math.cos(-(math.pi/2) + (i/60) * (math.pi*2)) * 62
+        sec_poly[2 + i].y = clock_pos.y + math.sin(-(math.pi/2) + (i/60) * (math.pi*2)) * 62
+    end
+    render.setColor(Color(255,80,80))
+    render.drawPoly(sec_poly)
+
+    //draw time num
+    for i=1, 12 do
+        local bw = 8
+        local bh = 1
+        render.setColor((computer.current_theme.main_color/3):setA(255))
+        if i%3 == 0 then
+            render.setColor(Color(255,255,255))
+            render.setFont(app.enum_font)
+            render.drawSimpleText(clock_pos.x + math.cos(-(math.pi/2) + (i/12) * (math.pi*2)) * 92,clock_pos.y + math.sin(-(math.pi/2) + (i/12) * (math.pi*2)) * 92,""..math.round((i/12)*12),1,1)
+            
+            render.setColor(computer.current_theme.main_color)
+            bw = 12
+            bh = 2
+        end
+
+        local m = Matrix()
+        m:translate(Vector(clock_pos.x + math.cos((i/12) * (math.pi*2)) * (76-12/2),clock_pos.y + math.sin((i/12) * (math.pi*2)) * (76-12/2),0))
+        m:rotate(Angle(0,(i/12)*360,0))
+        render.pushMatrix(m)
+        render.drawRect(-bw/2,-bh/2,bw,bh)
+        render.popMatrix()
+    end
+
+    //fake center crop of circle
+    render.setMaterial(nil)
+    render.setColor(window.palette.background)
+    render.drawFilledCircle(clock_pos.x,clock_pos.y,60)
+    
+    //same but with time needle
+    local m = Matrix()
+    m:translate(Vector(clock_pos.x,clock_pos.y,0))
+    m:rotate(Angle(0,-90 + ((computer.time.hour+1)/12)*360,0))
+    render.pushMatrix(m)
+    render.setColor(Color(255,255,255))
+    another_render.roundedBox2(1,0,-1,35,2)
+    render.popMatrix()
+
+    local m = Matrix()
+    m:translate(Vector(clock_pos.x,clock_pos.y,0))
+    m:rotate(Angle(0,-90 + (computer.time.min/60)*360,0))
+    render.pushMatrix(m)
+    render.setColor(Color(255,255,255))
+    another_render.roundedBox2(1,0,-1,50,2)
+    render.popMatrix()
+    
+    local m = Matrix()
+    m:translate(Vector(clock_pos.x,clock_pos.y,0))
+    m:rotate(Angle(0,-90 + (computer.time.sec/60)*360,0))
+    render.pushMatrix(m)
+    render.setColor(Color(255,255,255))
+    another_render.roundedBox2(1,0,-1,62,2)
+    render.popMatrix()
+    
+    //needle center circle
+    render.setMaterial(nil)
+    render.setColor(computer.current_theme.main_color)
+    render.drawFilledCircle(clock_pos.x,clock_pos.y,7)
+    render.setMaterial(nil)
+    render.setColor(window.palette.background)
+    render.drawFilledCircle(clock_pos.x,clock_pos.y,6)
+    render.setMaterial(nil)
+    render.setColor(Color(255,255,255))
+    render.drawFilledCircle(clock_pos.x,clock_pos.y,4)
+
+    render.setMaterial(nil)
+
+    //other thing
+    render.setFont(app.hour_font)
+    render.drawSimpleText(x + w-10,y,"" .. os.date("%X",computer.time.realtime),2)
+
+    render.setFont(app.date_font)
+    render.setColor(computer.current_theme.main_color)
+    render.drawSimpleText(x + w-10,y+10 + 30,computer.lang.query_word("clock.day."..os.date("%w",computer.time.realtime)):sub(0,3) .. ". " .. os.date("%d",computer.time.realtime) .. " " .. computer.lang.query_word("clock.month."..os.date("%m",computer.time.realtime)):sub(0,3) .. ".",2)
+
+    render.setFont(computer.font.gui_font)
+end
+    
+return app

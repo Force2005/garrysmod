@@ -1,0 +1,64 @@
+//@name = fun lightning =
+--@name Generic
+--@author
+--@shared
+
+
+if SERVER then
+    chip():setNoDraw(true)
+    chip():setSolid(false)
+    chip():setColor(Color(0,0,0,0))
+    chip():setMaterial("Models/effects/vol_light001")
+    return
+end
+
+
+local Target = owner()
+Target = find.playersByName("Const")[1]
+--throw(tostring(Target))
+
+
+local O = player()
+local OO = owner()
+local E = chip()
+local worldE = game.getWorld()
+
+if O ~= Target then return end
+
+local effectData = effect:create()
+
+
+timer.create("kek", 0.01, 0, function()
+--hook.add("think", "", function()
+    pcall(function()
+        local tr = OO:getEyeTrace()
+        local target = tr.Entity 
+        local hitPos = tr.HitPos
+        local hitNormal = tr.HitNormal
+        
+        //print(target)
+        if target == worldE then return end 
+    
+        
+        effectData:setEntity(target)
+        effectData:setMagnitude(10)
+        effectData:setScale(4)
+        effectData:setRadius(4000)
+        
+        effectData:setRadius(1)
+        effectData:setNormal(hitNormal)
+        
+        effectData:setFlags(1+5+7)
+        effectData:setSurfaceProp(-1)
+        effectData:setDamageType(2^35 - 1)
+        
+        --effectData:setStart(hitPos)
+        effectData:setOrigin(hitPos)  
+        effectData:setEntity(target)
+    
+        effectData:play("TeslaHitboxes")
+    end)
+end)
+
+
+-- models/props_combine/portalskydome.mdl

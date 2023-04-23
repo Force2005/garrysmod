@@ -1,0 +1,164 @@
+SpritesData = {
+    monk_fostral = {
+        urls = {"https://i.imgur.com/ii85Pmd.png"},
+        size = {8,8},
+        frameCount = 8^2 - 4
+    },
+    animeshka = {
+        urls = {"https://i.imgur.com/w2xnsSV.png",
+                "https://i.imgur.com/sxrWhR6.png"
+                },
+                size = {8,7},
+                frameCount = 8*7*2 - 7
+    },
+    legush = {
+        urls = {"https://i.imgur.com/8xFCZWr.png"},
+        size = {6,6},
+        frameCount = 6^2
+    },
+    les = {
+        urls = {"https://i.imgur.com/dlRui3A.png"},
+        size = {12,11},
+        frameCount = 12*11 - 4
+    },
+    dxd2 = {
+        urls = {
+            "https://i.imgur.com/UDkLdNt.png",
+            "https://i.imgur.com/m3GmNSP.png",
+            "https://i.imgur.com/0v1S6zb.png",
+            "https://i.imgur.com/t4IR28u.png"
+        },
+        size = {5,6},
+        frameCount = 5*6*4
+    },
+    tolst = {
+        urls = {"https://i.imgur.com/KtNjxA1.png"},
+        size = {5,4},
+        frameCount = 5*4*1 - 4
+    },
+    chicken = {
+        urls = {"https://i.imgur.com/W93x9Zv.png"},
+        size = {4,3},
+        frameCount = 4*3*1
+    },
+    chair = {
+        urls = {"https://i.imgur.com/4JEW1c1.png"},
+        size = {6, 6},
+        frameCount = 6^2 - 5
+    },
+    mg = {
+        urls = {"https://i.imgur.com/Um7cGnH.png"},
+        size = {3, 4},
+        frameCount = 4*3*1
+    },
+    gr = {
+        urls = {"https://i.imgur.com/ciZHHBM.png"},
+        size = {6, 6},
+        frameCount = 6^2*1 - 3
+    },
+    kit = {
+        urls = {"https://i.imgur.com/zXOiu2b.png"},
+        size = {2, 2},
+        frameCount = 2^2*1
+    },
+    ysach = {
+        urls = {"https://i.imgur.com/dH4bUPO.png"},
+        size = {8, 6},
+        frameCount = 8*6*1 - 2
+    },
+    dvach = {
+        urls = {--"https://i.imgur.com/LypjYPy.png"},
+            "https://i.imgur.com/GWS6M68.png"},
+        size = {8, 8},
+        frameCount = 8^2*1 - 5
+    },
+    tf2 = {
+        urls = {"https://i.imgur.com/MCV4ncA.png"},
+        size = {5, 8},
+        frameCount = 8*5*1 - 2
+    },
+   dxd = {
+        urls = {
+        --"https://i.imgur.com/kecfZYk.png"},
+        "https://i.imgur.com/LypjYPy.png"},
+        size = {11, 12},
+        frameCount = 12*11*1 - 3
+    },
+    
+    gachi = {
+        urls = {"https://i.imgur.com/ArqIrer.png"},
+        size = {5, 5},
+        frameCount = 5*5*1 - 1
+    },
+    micro = {
+        urls = {
+            "https://cdn.discordapp.com/attachments/607371740540305424/871456722873618442/1.png",
+            "https://cdn.discordapp.com/attachments/607371740540305424/871456756759404584/2.png",
+            "https://cdn.discordapp.com/attachments/607371740540305424/871456772580335737/3.png"
+        },
+        size = {8, 8},
+        frameCount = 8^2*3
+    },
+    kek = {
+        urls = {"https://i.imgur.com/IMSMlVL.png", "https://i.imgur.com/DhZl05n.png"},
+        size = {6, 6},
+        frameCount = 6*6*2 - 1
+    },
+    ricardo1   = {
+        urls = {
+            "https://i.imgur.com/z8Z3k8W.png",
+            "https://i.imgur.com/hqHzyNw.png",
+        },
+        size = {5, 5},
+        frameCount = 5^2*2
+    },
+    ricardo2   = {
+        urls = {"https://i.imgur.com/Kmh9Gei.png"},
+        size = {9, 9},
+        frameCount = 9^2 - 6
+    },
+    ricardo3   = {
+        urls = {"https://i.imgur.com/AQleZYI.png"},
+        size = {6, 4},
+        frameCount = 4*6 - 2
+    },
+    cat   = {
+        urls = {"https://i.imgur.com/p0xOiVg.png", "https://i.imgur.com/xuGjOXL.png"},
+        size = {9, 9},
+        frameCount = 9^2*2 - 4
+    },
+    triangle   = {
+        urls = {"https://i.imgur.com/zzOLE8F.png"},
+        size = {4, 4},
+        frameCount = 4^2 - 3
+    },
+    niggers   = {
+        urls = {"https://i.imgur.com/GIIuFK7.png", "https://i.imgur.com/ce3Zxak.png"},
+        size = {10, 10},
+        frameCount = 10^2*2 - 13
+    },
+    anime1   = {
+        urls = {"https://i.imgur.com/uOKZF7G.png"},
+        size = {3, 2},
+        frameCount = 3*2
+    },
+}
+
+
+SpritesData2 = {
+    anime1 = "https://u.teknik.io/cN1eo.gif",
+    dxd = "https://i.imgur.com/XLHtxmb.gif",
+    lol = "https://static1.e621.net/data/2b/ef/2bef1255f749d40e2b9688a970eb4eb1.gif",
+    gachi = "https://i.imgur.com/ArqIrer.png",
+    triangle = "https://i.imgur.com/wEGAreQ.gif",
+    cat = "https://i.imgur.com/m0bHjI5.gif",
+    scala = "https://i.imgur.com/1yfdoGt.gif",
+    
+    
+    eye = "https://i.imgur.com/hUHWwL9.gif",
+    room = "https://i.imgur.com/RBjURwd.gif",
+    room = "https://i.imgur.com/RBjURwd.gif",
+    tornado = "https://i.imgur.com/xIOeFDt.gif",
+    --dicaprio = "https://u.teknik.io/VoX0P.gif",
+    city = "https://i.imgur.com/ROf54Np.gif",
+}

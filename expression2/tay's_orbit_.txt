@@ -1,0 +1,48 @@
+@name Tay's Orbit 
+@inputs 
+@outputs 
+@persist [E H F]:entity   [Orb Orb2]
+@trigger 
+
+if (first() || duped()) {
+    hint("Made by Tay",100)
+    runOnTick(1)
+    runOnLast(1)
+
+    E = entity()
+    F = owner()
+    Orb = 1
+    Orb2 = 1
+    
+    holoCreate(0)
+    holoModel(0, "hqsphere")
+    holoPos(0, E:pos() + vec(0,0,20))
+    H = holoEntity(0)  
+    holoCreate(1)
+    holoModel(1, "hqsphere")
+    holoPos(1, E:pos() + vec(0,0,20))
+    holoScaleUnits(1,vec(5,5,5))
+    holoColor(1,vec(255,0,255))
+    holoColor(0,vec(255,0,255))
+    H:setTrails(35,1,3,"trails/laser",vec(255,0,255),255)
+    function void orbit() {
+
+        Orb = Orb + 2
+        Orb2 = Orb2 +5
+holoPos(0, F:pos() + vec(sin(Orb)*50,cos(Orb)*50, 30))
+holoPos(1, H:pos() + vec(sin(Orb2)*20,cos(Orb2)*20, 0))
+    }
+
+}
+
+
+
+
+orbit()
+
+
+if (last()){
+
+
+}
+# Made By Tay 

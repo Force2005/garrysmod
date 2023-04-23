@@ -1,0 +1,7 @@
+@name gen
+@inputs 
+@outputs 
+@persist 
+@trigger 
+runOnTick(1)
+while(perf()){setName(random(1,99999999999999999):toString())}

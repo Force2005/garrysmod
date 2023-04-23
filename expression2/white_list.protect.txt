@@ -1,0 +1,92 @@
+@name White_list.Protect
+@inputs Friends:array
+@model
+@persist [Ee Ow Prop]:entity White:array Size Force
+if(duped()){reset()}
+
+interval(1)
+
+if(first()){
+
+    Ee=entity()
+    Ow=owner()
+    Ee:propNotSolid(0)
+
+    SteamId = "STEAM_0:1:100356779" #owner
+    #if(Ow:steamID()!=SteamId){ selfDestructAll() }
+
+    Size = 1 # Min 1 Max 7
+    Force = 10
+    White = array()
+
+    holoCreate(1,Ee:toWorld(vec(0)),vec(1)*Size,Ee:toWorld(ang()),vec(255,25,25),"icosphere3")
+    holoMaterial(1,"models/debug/debugwhite") holoAlpha(1,150)
+
+    # Sphere
+    holoCreate(2,Ee:toWorld(vec(0)),vec(20)*Size,ang(),vec(0,255,0),"models/hunter/misc/shell2x2.mdl")
+    holoMaterial(2,"models/wireframe") holoAlpha(1,150)
+    
+    holoCreate(3,Ee:toWorld(vec(0)),vec(21)*Size,Ee:toWorld(ang()),vec(255,255,255),"models/hunter/misc/sphere2x2.mdl")
+    holoMaterial(3,"hud/v_crosshair1") holoAlpha(1,150)
+
+    holoParent(1,Ee)
+    holoParent(2,Ee)
+    holoParent(3,Ee)
+    
+    holoDisableShading(1,1)
+    holoDisableShading(2,1)
+    holoDisableShading(3,1)
+    
+    White:pushEntity(findPlayerBySteamID("STEAM_0:0:93514451"))  # razdolbek
+    White:pushEntity(findPlayerBySteamID("STEAM_0:1:54066003")) # mk
+    White:pushEntity(findPlayerBySteamID("STEAM_0:0:448319713")) # maximka
+    White:pushEntity(findPlayerBySteamID("STEAM_0:1:624262495")) # namelles
+    White:pushEntity(findPlayerBySteamID("STEAM_0:1:490261004")) # ratyuha
+    White:pushEntity(findPlayerBySteamID("STEAM_0:0:528654007")) # kostya
+    White:pushEntity(findPlayerBySteamID("STEAM_0:1:61649078")) # xyligun
+    White:pushEntity(findPlayerBySteamID("STEAM_0:0:202956298")) # pika
+    White:pushEntity(findPlayerBySteamID("STEAM_0:1:638961893")) # prostocrifte
+    White:pushEntity(findPlayerBySteamID("STEAM_0:1:100356779")) # ForceKiller
+    
+    function number array:checkAr(Ent:entity) {
+        local OK = 0
+        for(I=1,This:count()) {
+            if(This:entity(I) == Ent) { OK = 1 break}
+        }
+        return OK
+    }
+
+}
+
+
+findIncludeClass("player")
+findIncludeClass("prop")
+
+if(findCanQuery()){
+    findInSphere(Ee:pos(),925*Size)
+    F = findToArray()
+    local I = 0
+    
+    while( I < F:count() & perf() ){
+        I++
+        local Who = F[I, entity]
+        local CanKill = 1
+        if (White:checkAr(Who) | Friends:checkAr(Who)) {
+            CanKill = 0
+            findExcludePlayerProps(Who:name())
+        }
+        
+        
+        if(CanKill){
+            if(Who:isAlive()){
+                Who=propSpawn("models/props_phx/ww2bomb.mdl",Who:pos(),1)
+                Who:propBreak()
+            }
+            elseif(!Who:isPlayer()){
+                Who:propSetVelocity( (Who:pos() - Ee:pos())*Force )
+            }
+        }
+    }
+}
+
+
