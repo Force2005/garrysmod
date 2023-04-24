@@ -1,0 +1,37 @@
+--@name Holo Zasos
+--@author Tom1K
+--@client
+
+local holo = holograms.create(chip():getPos(), Angle(), "models/hunter/plates/plate24x32.mdl", Vector(1,1,1))
+local size = 10
+local r,g,b = 0,0,0
+
+size = size + 1
+holo:setScale(Vector(size,size,size))
+
+timer.create("color", 1, 0, function()
+    r = math.random(0,255)
+    g = math.random(0,255)
+    b = math.random(0,255)
+    
+    holo:setColor(Color(r,g,b))
+end)
+
+local skyboxHeight = 16384 
+local spacing = 100
+
+for i=0, skyboxHeight/spacing do
+    local holoPos = chip():getPos() + Vector(0,0,i*spacing)
+    local holo = holograms.create(holoPos, Angle(), "models/hunter/plates/plate24x32.mdl", Vector(1,1,1))
+    
+        size = size + 1
+        holo:setScale(Vector(size,size,size))
+    
+    timer.create("color"..i, 1, 0, function()
+        r = math.random(0,255)
+        g = math.random(0,255)
+        b = math.random(0,255)
+        
+        holo:setColor(Color(r,g,b))
+    end)
+end
