@@ -3,7 +3,7 @@
 --@author Markiz
 --@client
 
-local Animation = "zombie_run"
+local Animation = "zombie_walk_02"
 --local Animation = "original_dance11"
 --local Animation = "bunnyhop"
 --local MusicAnimation = "weapons/guitar/vdv.ogg" -- or nill
@@ -12,7 +12,7 @@ local Animation = "zombie_run"
 --local MusicAnimation = "mmd/original_dance11.mp3" -- or nill
 --local MusicAnimation = "npc/zombie/moan_loop3.wav" -- or nill
 
-local Speed = 0.2
+local Speed = 1
 local Volume = 1
 
 local Target = owner()

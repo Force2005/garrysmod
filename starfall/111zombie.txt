@@ -1,0 +1,29 @@
+--@name zomb1
+--@author force2005
+--@shared
+local owner = chip():getOwner()
+local function isOwnerRunning()
+  local ownerVel = owner:GetVelocity()
+  return ownerVel:Length() > 0 and ownerVel:Length2D() > 0
+end
+local function changeAnimation()
+  if isOwnerRunning() then
+    owner:setAnimation "zombie_run"
+  else
+    owner:setAnimation "zombie_walk_02"
+  end
+end
+local function onOwnerThink()
+  changeAnimation()
+end
+if owner and owner:IsPlayer() then
+  hook.add("Think", "ChangeOwnerAnimation", onOwnerThink)
+end
+--[[
+Starfall Scripting Environment
+
+Github: https://github.com/thegrb93/StarfallEx
+Reference Page: http://thegrb93.github.io/Starfall/
+
+Default Keyboard shortcuts: https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts
+]]

@@ -1,0 +1,26 @@
+--@name Dancing SAS
+--@author Stanley aka Lavka
+--@shared
+
+if SERVER then
+
+
+local Razmer = Vector(3,3,3)
+
+local Animation = "ACT_GMOD_TAUNT_DANCE"
+
+meat = holograms.create(chip():getPos(), Angle(), 'models/player/hostage/hostage_04.mdl')
+meat:setAnimation(Animation)
+timer.create("bebra", 8.7, 0, function()
+meat:setAnimation(Animation)
+end)
+
+meat:emitSound('music/mvm_end_tank_wave.wav', 100, 100, 1)
+
+meat:setColor(Color(255,255,255))
+
+end
+timer.simple(999,function()
+local Remover = chip():remove()
+
+end)
