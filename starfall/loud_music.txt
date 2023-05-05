@@ -3,9 +3,9 @@
 --@shared
 --@model models/props_lab/citizenradio.mdl
 
-local Volume = 3
+local Volume = 2
 local Speed = 1
-local URL = "otm"
+local URL = "webgrl"
 local IsLooping = true
 
 local IsAllServer = false
@@ -29,6 +29,7 @@ end)[1]*/
 ------------------------------------------------------------------------------------
 
 local _urls = {
+    webgrl = "https://cdn.discordapp.com/attachments/1081967820172181578/1104157838936387675/Itai_The_Maid_-_Webgirl_2_.mp3",
     otm = "https://cdn.discordapp.com/attachments/1081967820172181578/1100424250025840765/Ozoi_The_Maid_Yakui_The_Maid_-_Bayan_Bonus_Track.mp3",
     ff = "https://cdn.discordapp.com/attachments/1081967820172181578/1099699301770338304/Ozoi_The_Maid_Yakui_The_Maid_-_Faraway.mp3",
     az = "https://cdn.discordapp.com/attachments/1081967820172181578/1099700543519215676/Itai_The_Maid_-_Azoera.mp3",

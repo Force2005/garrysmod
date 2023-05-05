@@ -4,6 +4,8 @@
 
 
 local URLS = {
+    scout = "https://i.imgur.com/UZCxd6H.jpg",
+    avoc = "https://i.imgur.com/buOL2dK.png",
     mshk = "https://i.imgur.com/Lev1aZG.jpg",
     kolt = "https://i.imgur.com/cPgCGMB.jpg",
     k = "https://i.imgur.com/BmftcrV.png",
@@ -47,17 +49,17 @@ local URLS = {
     custom = nil
 }
 
-local img = "mshk"
+local img = "scout"
 
 local IsHaveProportions = false
 local HaveAlpha = false
 
 local RadiusMode = true
 local Radius = 500000
-local MaxAlpha = 0.5 -- if RadiusMode == false
+local MaxAlpha = 1 -- if RadiusMode == false
 
 local Target = owner() -- if RadiusMode = false
-Target = find.playersByName("for")[1]
+Target = find.playersByName("ivo")[1]
 
 
 

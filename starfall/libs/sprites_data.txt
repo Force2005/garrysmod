@@ -1,4 +1,9 @@
 SpritesData = {
+    scout = {
+        urls = {"https://i.imgur.com/UZCxd6H.jpg"},
+        size = {1,1},
+        frameCount = 1
+    },
     monk_fostral = {
         urls = {"https://i.imgur.com/ii85Pmd.png"},
         size = {8,8},
