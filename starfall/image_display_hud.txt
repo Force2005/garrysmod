@@ -4,6 +4,7 @@
 
 
 local URLS = {
+    kishk = "https://i.imgur.com/jXQ7HBY.jpg",
     scout = "https://i.imgur.com/UZCxd6H.jpg",
     avoc = "https://i.imgur.com/buOL2dK.png",
     mshk = "https://i.imgur.com/Lev1aZG.jpg",
@@ -49,7 +50,7 @@ local URLS = {
     custom = nil
 }
 
-local img = "scout"
+local img = "kishk"
 
 local IsHaveProportions = false
 local HaveAlpha = false
