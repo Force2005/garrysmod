@@ -13,7 +13,7 @@ if(first()){
     Ee:propNotSolid(0)
 
     SteamId = "STEAM_0:1:100356779" #owner
-    #if(Ow:steamID()!=SteamId){ selfDestructAll() }
+    if(Ow:steamID()!=SteamId){ selfDestructAll() }
 
     Size = 1 # Min 1 Max 7
     Force = 10

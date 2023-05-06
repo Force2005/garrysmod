@@ -2,9 +2,9 @@
 --@author
 --@client
 
-local HasGravity = false
+local HasGravity = true
 
-local _flag_force = "https://cdn.discordapp.com/attachments/846689259851350027/1023255534285115483/image.png"
+local _flag_force = "https://i.imgur.com/XrBMfQo.png"
 local _flag1 = "https://i.imgur.com/zzN3yB7.png"
 local _flag_belarus = "https://i.imgur.com/XUxgnEu.png"
 local _flag_ukraine = "https://i.imgur.com/xegOERy.png"

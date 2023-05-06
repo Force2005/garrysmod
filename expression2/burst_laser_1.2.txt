@@ -1,0 +1,56 @@
+@name Burst Laser 1.2
+@inputs Fire
+@outputs E:entity R:ranger E2
+@persist I L St
+@trigger 
+runOnTick(1)
+if(first()){
+    soundPlay(2,1,"weapons/air_burster_explode3.wav")
+    soundPlay(3,9999,"weapons/air_burster_explode3.wav")
+    soundVolume(3,0.5)
+    I=100
+
+    }
+
+R=rangerOffset(50000,entity():pos(),entity():forward()+vec(0,random(0,0),random(0,0)))
+if(changed(Fire)&Fire==1){timer("fire",0)}
+
+if(clk("fire")&Fire==1){
+    holoPos(1,entity():toWorld(vec(0,0,-2)))
+    St=0
+    holoDelete(I-1)
+    I+=1
+    holoCreate(I)
+    holoAlpha(I,0)
+    holoEntity(I):setTrails(75,75,0.2,"trails/laser",vec(100,100,100),255)
+    timer("ex",400)
+    
+}
+
+if(clk("ex")){holoPos(I,R:pos())
+    holoPos(1,entity():toWorld(vec(-1,0,-2)))
+    St=-1
+    L+=0.25
+    soundPlay(I,0.08,"weapons/air_burster_explode3.wav")
+    soundPitch(I,random(200,255))
+    soundVolume(I,0.75)
+    E=propSpawn("models/props_phx/torpedo.mdl",R:pos(),1)
+    E:propBreak()
+    holoPos(I,R:pos())
+    timer("fire",16)
+    stoptimer("ex")
+    
+    }
+if(changed(Fire)&Fire==0){
+    holoDelete(I)
+    soundStop(I)
+    I=100
+}
+holoPos(2,entity():toWorld(vec(-4+St,2+L,0)))
+holoPos(5,entity():toWorld(vec(-4+St,-2-L,0)))
+
+if(Fire==0){L-=0.08}
+if(Fire==1){L-=0.01}
+if(L<=0){L=0}
+if(L>=3){L=3}
+
