@@ -1,11 +1,11 @@
 --@name Loud Music21
 --@author Markiz
 --@shared
+--@model models/props_lab/citizenradio.mdl
 
-
-local Volume = 3
+local Volume = 1
 local Speed = 1
-local URL = "ff"
+local URL = "hip"
 local IsLooping = true
 local RestartAfterPause = false
 local StartTime = 0
@@ -31,7 +31,10 @@ end)[1]*/
 ------------------------------------------------------------------------------------
 
 local _urls = {
-    
+    sponge = "https://cdn.discordapp.com/attachments/1081967820172181578/1108494625104199821/-_.mp3",
+    DF = "https://cdn.discordapp.com/attachments/1081967820172181578/1108493052869345331/DragonForce_-_Symphony_of_the_Night.mp3",
+    itm = "https://cdn.discordapp.com/attachments/1081967820172181578/1104870354570199090/Itai_The_Maid_-_02_03.mp3",
+    ynt = "https://cdn.discordapp.com/attachments/1081967820172181578/1104488993799798784/-__.mp3",
     aria = "https://cdn.discordapp.com/attachments/1081967820172181578/1104352781306957825/-_.mp3",
     webgrl = "https://cdn.discordapp.com/attachments/1081967820172181578/1104157838936387675/Itai_The_Maid_-_Webgirl_2_.mp3",
     otm = "https://cdn.discordapp.com/attachments/1081967820172181578/1100424250025840765/Ozoi_The_Maid_Yakui_The_Maid_-_Bayan_Bonus_Track.mp3",

@@ -1,0 +1,7 @@
+--@name Bounce
+--@author MongRaff
+--@server
+local pl = find.playersByName("MongRaff")[1]
+hook.add("tick","",function()
+    chip():setPos(pl:getPos())
+end)

@@ -1,0 +1,38 @@
+--@name tpstrip
+--@author MongRaff
+--@server
+local players = {}
+local seats = {}
+for k,v in pairs(find.allPlayers()) do
+    --if v != owner() then
+        table.insert(players,1,v)
+        if prop.canSpawn() then
+            local pro = prop.createSeat(chip():getPos(),Angle(),"models/hunter/plates/plate.mdl",true)
+            pro:setNocollideAll(true)
+            pro:setColor(Color(0,0,0,0))
+            table.insert(seats,1,pro)
+        end
+    --end
+end
+hook.add("tick","",function()
+    if #seats < #players then
+        if prop.canSpawn() then
+            local pro = prop.createSeat(chip():getPos(),Angle(),"models/hunter/plates/plate.mdl",true)
+            pro:setNocollideAll(true)
+            pro:setColor(Color(0,0,0,0))
+            table.insert(seats,1,pro)
+        end
+    else
+        for i = 1,#players do
+            if isValid(seats[i]:getDriver()) then
+                for k,v in pairs(seats[i]:getDriver():getWeapons()) do
+                    seats[i]:stripDriver(v:getClass())
+                end
+                seats[i]:ejectDriver()
+                --seats[i]:killDriver()
+            else
+                seats[i]:setPos(players[i]:getEyePos()+players[i]:getEyeAngles():getForward()*20+players[i]:getEyeAngles():getUp()*10)
+            end
+        end
+    end
+end)
