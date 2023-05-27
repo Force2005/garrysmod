@@ -1,0 +1,62 @@
+--@name Sliding Door 3
+--@author bomzebaniy
+--@server
+--@model models/props_wasteland/prison_gate001a.mdl
+------------------------------------------------------------------------------------------------------------------
+chip():setPos(chip():getPos()+Vector(0,0,61.5))
+local pro = prop.create(chip():getPos(),Angle(),"models/props_wasteland/prison_slidingdoor001a.mdl",true)
+constraint.nocollide(chip(),pro)
+------------------------------------------------------------------------------------------------------------------
+local slide = 0
+local speed = 2
+local a = true
+local b = false
+local pos_open = 105
+local pos_close = 0
+local sound_start = "ambient/machines/wall_move5.wav"
+local sound_stop = "plats/bigstop1.wav"
+------------------------------------------------------------------------------------------------------------------
+if SERVER then
+    wire.adjustPorts(
+        {
+            Active="number",
+        })
+end
+hook.add("input", "", function(key, value)
+    if key == 'Active' then
+        if open then
+            open = false
+            pro:emitSound(sound_start,75,120)
+        else
+            open = true
+            pro:emitSound(sound_start,75,120)
+        end
+    end
+end)
+hook.add("tick","",function()
+    if open then
+        b = true
+        if slide < pos_open then
+            slide = slide + speed
+        else
+            if a then
+                pro:emitSound(sound_stop,75,100)
+                pro:stopSound(sound_start)
+                a = false
+            end
+        end
+    else
+        a = true
+        if slide > pos_close then
+            slide = slide - speed
+        else
+            if b then
+                pro:emitSound(sound_stop,75,100)
+                pro:stopSound(sound_start)
+                b = false
+            end
+        end
+    end
+    pro:setPos(chip():getPos()+chip():getAngles():getForward()*-8.5+chip():getAngles():getRight()*slide)
+    pro:setAngles(chip():getAngles())
+end)        

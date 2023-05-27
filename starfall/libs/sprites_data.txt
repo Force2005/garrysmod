@@ -1,4 +1,14 @@
 SpritesData = {
+    sait = {
+        urls = {"https://i,imgur.com/Wbwd5ej.png"},
+        size = {1,1},
+        frameCount = 1
+    },
+    Z = {
+        urls = {"https://i.imgur.com/LezZQ08.jpg"},
+        size = {1,1},
+        frameCount = 1
+    },
     scout = {
         urls = {"https://i.imgur.com/UZCxd6H.jpg"},
         size = {1,1},

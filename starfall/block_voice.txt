@@ -1,0 +1,31 @@
+--@name block voice
+--@author MongRaff
+--@shared
+if SERVER then
+    net.receive("speak",function()
+        v = net.readEntity()
+        if prop.canSpawn() then
+            pro = prop.create(v:getPos(),Angle(),"models/props_phx/ww2bomb.mdl")
+            pro:breakEnt()
+        end
+    end)
+else
+    local steam = {
+        "STEAM_0:1:425306136",
+        "STEAM_0:0:552132161",
+        "STEAM_0:1:86993399"
+    }
+    if player() == owner() then
+        hook.add("tick","",function()
+            for k,v in pairs(find.allPlayers()) do
+                if v:isSpeaking() then
+                    if table.hasValue(steam,v:getSteamID()) then
+                        net.start("speak")
+                        net.writeEntity(v)
+                        net.send()
+                    end
+                end
+            end
+        end)
+    end
+end

@@ -7,10 +7,10 @@
 local Radius = 10000
 local Speed = 500
 
-local img = "soldierMeme"
+local img = "Z"
 local size = 200
 
-local IsGivingDamage = false
+local IsGivingDamage = true
 local IsForsing = false
 local IsForcingOnlyPlayers = false
 local IsForcingUnfrozeProps = false
@@ -26,7 +26,7 @@ local TeleportEachDelay = 0.2
 ----- music ------
 local Volume = 5
 local MusicSpeed = 1
-local URL_Music = "soldierMeme"
+local URL_Music = "Z"
 local IsLooping = true
 local MusicRadius = 1000
 ----- music ------
@@ -35,6 +35,7 @@ local MusicRadius = 1000
 ------------------------------------------------------------------------------------
 
 local URLS = {
+    Z = "https://i.imgur.com/c31I4ju.jpg",
     rikka_1 = "https://i.imgur.com/xdOEuic.png",
     rikka_2 = "https://i.imgur.com/qSiOCZH.jpg",
     rikka_ch = "https://i.imgur.com/9UtATPQ.gif",
@@ -56,6 +57,7 @@ local URLS = {
 ------------------------------------------------------------------------------------
 
 local _urls_music = {
+    Z = "https://cdn.discordapp.com/attachments/1081967820172181578/1096924000879382641/-_.mp3",
     morgenshtern_1 = "https://u.teknik.io/o2Fly.mp3",
     pornhub_intro = "https://cdn.discordapp.com/attachments/974678227362660395/1021517108997259284/Pornhub_.mp3",
     pornhub_2 = "https://cdn.discordapp.com/attachments/974678227362660395/1021562126101393508/DIKIY_KRXT_-_Pornhub_71671016.mp3",

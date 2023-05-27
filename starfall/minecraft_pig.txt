@@ -1,0 +1,103 @@
+--@name Minecraft Pig
+--@author MongRaff
+--@server
+local plate = prop.create(chip():getPos()+Vector(0,0,10),Angle(),"models/hunter/plates/plate1x1.mdl",true)
+local body = holograms.create(chip():getPos()+Vector(0,0,25),Angle(),"models/holograms/cube.mdl",Vector(2,1.5,1))
+body:setColor(Color(250,190,190))
+local head = holograms.create(chip():getPos()+Vector(15,0,30),Angle(),"models/holograms/cube.mdl",Vector(1))
+local headr = holograms.create(chip():getPos()+Vector(10,0,30),Angle(),"models/holograms/icosphere.mdl",Vector(1))
+head:setColor(Color(250,190,190))
+-- legs rotate
+local lf_legr = holograms.create(chip():getPos()+Vector(7.5,6,20),Angle(),"models/holograms/icosphere.mdl",Vector(0.7))
+local rf_legr = holograms.create(chip():getPos()+Vector(7.5,-6,20),Angle(),"models/holograms/icosphere.mdl",Vector(0.7))
+local lb_legr = holograms.create(chip():getPos()+Vector(-10,6,20),Angle(),"models/holograms/icosphere.mdl",Vector(0.7))
+local rb_legr = holograms.create(chip():getPos()+Vector(-10,-6,20),Angle(),"models/holograms/icosphere.mdl",Vector(0.7))
+-- legs
+local lf_leg = holograms.create(chip():getPos()+Vector(7.5,6,15),Angle(),"models/holograms/cube.mdl",Vector(0.5,0.5,1))
+lf_leg:setColor(Color(250,190,190))
+local rf_leg = holograms.create(chip():getPos()+Vector(7.5,-6,15),Angle(),"models/holograms/cube.mdl",Vector(0.5,0.5,1))
+rf_leg:setColor(Color(250,190,190))
+local lb_leg = holograms.create(chip():getPos()+Vector(-10,6,15),Angle(),"models/holograms/cube.mdl",Vector(0.5,0.5,1))
+lb_leg:setColor(Color(250,190,190))
+local rb_leg = holograms.create(chip():getPos()+Vector(-10,-6,15),Angle(),"models/holograms/cube.mdl",Vector(0.5,0.5,1))
+rb_leg:setColor(Color(250,190,190))
+-- face
+local nose = holograms.create(chip():getPos()+Vector(19,0,29),Angle(),"models/holograms/cube.mdl",Vector(0.5,0.5,0.35))
+nose:setColor(Color(250,190,190))
+local noser = holograms.create(chip():getPos()+Vector(21.5,2,29),Angle(),"models/holograms/cube.mdl",Vector(0.1))
+noser:setColor(Color(200,140,140))
+local nosel = holograms.create(chip():getPos()+Vector(21.5,-2,29),Angle(),"models/holograms/cube.mdl",Vector(0.1))
+nosel:setColor(Color(200,140,140))
+local lb_eye = holograms.create(chip():getPos()+Vector(20.5,5.2,32),Angle(),"models/holograms/cube.mdl",Vector(0.1))
+lb_eye:setColor(Color(0,0,0))
+local lw_eye = holograms.create(chip():getPos()+Vector(20.5,4,32),Angle(),"models/holograms/cube.mdl",Vector(0.1))
+local rb_eye = holograms.create(chip():getPos()+Vector(20.5,-5.2,32),Angle(),"models/holograms/cube.mdl",Vector(0.1))
+rb_eye:setColor(Color(0,0,0))
+local rw_eye = holograms.create(chip():getPos()+Vector(20.5,-4,32),Angle(),"models/holograms/cube.mdl",Vector(0.1))
+-- parent
+body:setParent(plate)
+headr:setParent(body)
+head:setParent(headr)
+nose:setParent(head)
+noser:setParent(nose)
+nosel:setParent(nose)
+lb_eye:setParent(head)
+lw_eye:setParent(head)
+rb_eye:setParent(head)
+rw_eye:setParent(head)
+lf_leg:setParent(lf_legr)
+rf_leg:setParent(rf_legr)
+lb_leg:setParent(lb_legr)
+rb_leg:setParent(rb_legr)
+lf_legr:setParent(body)
+rf_legr:setParent(body)
+lb_legr:setParent(body)
+rb_legr:setParent(body)
+-- params
+local ang = Angle()
+local vang = Angle()
+-- functions
+plate:setPos(chip():getPos())
+plate:setColor(Color(0,0,0,0))
+lf_legr:setColor(Color(0,0,0,0))
+rf_legr:setColor(Color(0,0,0,0))
+lb_legr:setColor(Color(0,0,0,0))
+rb_legr:setColor(Color(0,0,0,0))
+headr:setColor(Color(0,0,0,0))
+function move(ent)
+    if timer.exists("move") then return end
+    timer.create("move",0,0,function()
+        local t = timer.curtime()
+        rf_legr:setAngles(body:getAngles()+Angle(math.sin(t*5)*25,0,0))
+        lf_legr:setAngles(body:getAngles()+Angle(-math.sin(t*5)*25,0,0))
+        rb_legr:setAngles(body:getAngles()+Angle(-math.sin(t*5)*25,0,0))
+        lb_legr:setAngles(body:getAngles()+Angle(math.sin(t*5)*25,0,0))
+        headr:setAngles(body:getAngles()+Angle(0,math.sin(t*5)*5,0))
+        vang = (ent:getPos()-plate:getPos()):getAngle()
+        plate:setAngles(Angle(0,ang.y,0))
+        plate:setPos(plate:getPos()+plate:getAngles():getForward()*1)
+    end)
+end
+function stopmove()
+    timer.remove("move")
+    rf_legr:setAngles(body:getAngles())
+    lf_legr:setAngles(body:getAngles())
+    rb_legr:setAngles(body:getAngles())
+    lb_legr:setAngles(body:getAngles())
+    headr:setAngles(body:getAngles())
+end
+hook.add("tick","",function()
+    ang = math.lerpAngle(0.1,ang,vang)
+    local ply = find.closest(find.allPlayers(function(ent) if ent:isAlive() then return true end end),plate:getPos())
+    if ply:getPos():getDistance(plate:getPos()) < 100 then
+        move(ply)
+    else
+        stopmove()
+    end
+end)
+
+
+
+
+
+

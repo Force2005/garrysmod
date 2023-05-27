@@ -5,12 +5,12 @@
 
 local Volume = 1
 local Speed = 1
-local URL = "hip"
+local URL = "rap"
 local IsLooping = true
 local RestartAfterPause = false
 local StartTime = 0
 
-local IsAllServer = false
+local IsAllServer = true
 local Radius = 1500
 
 ------------------------------------------------------------------------------------
@@ -31,6 +31,9 @@ end)[1]*/
 ------------------------------------------------------------------------------------
 
 local _urls = {
+    rap = "https://cdn.discordapp.com/attachments/1081967820172181578/1110264422326345929/-_.mp3",
+    mshp = "https://cdn.discordapp.com/attachments/1081967820172181578/1109490273479819264/--.mp3",
+    nayt = "https://cdn.discordapp.com/attachments/1081967820172181578/1109215109454254170/-_.mp3",
     sponge = "https://cdn.discordapp.com/attachments/1081967820172181578/1108494625104199821/-_.mp3",
     DF = "https://cdn.discordapp.com/attachments/1081967820172181578/1108493052869345331/DragonForce_-_Symphony_of_the_Night.mp3",
     itm = "https://cdn.discordapp.com/attachments/1081967820172181578/1104870354570199090/Itai_The_Maid_-_02_03.mp3",

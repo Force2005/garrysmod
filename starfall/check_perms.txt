@@ -1,0 +1,6 @@
+--@name Check Perms
+--@author MongRaff
+--@client
+if hasPermission("console.command") then
+    concmd("say РАЗДОЛБЕК ВЫЕБИ МЕНЯ ПОЗАЛУЙСТА")
+end
