@@ -4,6 +4,7 @@
 
 
 local URLS = {
+    mamont = "https://i.imgur.com/YVoBNzg.png",
     rikka_1 = "https://i.imgur.com/xdOEuic.png",
     rikka_2 = "https://i.imgur.com/qSiOCZH.jpg",
     rikka_ch = "https://i.imgur.com/9UtATPQ.gif",
@@ -34,7 +35,7 @@ local URLS = {
     custom = nil
 }
 
-local img = "obobrali_do_gola"
+local img = "mamont"
 
 local IsHaveProportions = false
 local HaveAlpha = false

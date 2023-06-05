@@ -1,0 +1,19 @@
+--@name jump
+--@author MongRaff
+--@server
+local holo = holograms.create(chip():getPos(),Angle(),"models/props_phx/construct/metal_angle360.mdl",Vector(3))
+holo:setParent(chip())
+hook.add("tick","",function()
+    local ply = find.closest(find.allPlayers(),chip():getPos())
+    if chip():getPos():getDistance(ply:getPos()) < 150 then
+        if not ply:isNoclipped() then
+            ply:setVelocity(Vector(0,0,2500))
+            ply:emitSound("ambient/explosions/explode_1.wav",100,125)
+            ply:setTrails(0,150,3,"trails/smoke",Color(255,255,255))
+            timer.simple(5,function()
+                ply:removeTrails()
+            end)
+            --ply:setHealth(ply:getHealth()+10000)
+        end
+    end
+end)

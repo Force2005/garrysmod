@@ -5,12 +5,12 @@
 
 local Volume = 1
 local Speed = 1
-local URL = "rap"
+local URL = "hf"
 local IsLooping = true
 local RestartAfterPause = false
 local StartTime = 0
 
-local IsAllServer = true
+local IsAllServer = false
 local Radius = 1500
 
 ------------------------------------------------------------------------------------
@@ -31,6 +31,9 @@ end)[1]*/
 ------------------------------------------------------------------------------------
 
 local _urls = {
+    hf = "https://cdn.discordapp.com/attachments/1081967820172181578/1114222009635835995/H-E-L-L-F-I-R-E.mp3",
+    relax = "https://cdn.discordapp.com/attachments/1081967820172181578/1113194970065670154/Dabro_-_.mp3",
+    dmdp = "https://cdn.discordapp.com/attachments/1081967820172181578/1112365376253198386/Sou_-_Dead_Mount_Death_Play_OPAnimeNewMusic.mp3",
     rap = "https://cdn.discordapp.com/attachments/1081967820172181578/1110264422326345929/-_.mp3",
     mshp = "https://cdn.discordapp.com/attachments/1081967820172181578/1109490273479819264/--.mp3",
     nayt = "https://cdn.discordapp.com/attachments/1081967820172181578/1109215109454254170/-_.mp3",

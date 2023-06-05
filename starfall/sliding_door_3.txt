@@ -8,14 +8,14 @@ local pro = prop.create(chip():getPos(),Angle(),"models/props_wasteland/prison_s
 constraint.nocollide(chip(),pro)
 ------------------------------------------------------------------------------------------------------------------
 local slide = 0
-local speed = 2
+local speed = 3
 local a = true
 local b = false
-local pos_open = 105
+local pos_open = 125
 local pos_close = 0
 local sound_start = "ambient/machines/wall_move5.wav"
 local sound_stop = "plats/bigstop1.wav"
-------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------"models/props_wasteland/prison_gate001a.mdl"----------------------------------------------
 if SERVER then
     wire.adjustPorts(
         {
@@ -57,6 +57,6 @@ hook.add("tick","",function()
             end
         end
     end
-    pro:setPos(chip():getPos()+chip():getAngles():getForward()*-8.5+chip():getAngles():getRight()*slide)
+    pro:setPos(chip():getPos()+Vector(2,0,-2)+chip():getAngles():getForward()*-8.5+chip():getAngles():getRight()*slide)
     pro:setAngles(chip():getAngles())
 end)        

@@ -1,0 +1,11 @@
+--@name Heal
+--@author MongRaff
+--@server
+--@model models/props_phx/construct/metal_angle360.mdl
+hook.add("tick","",function()
+    local ply = find.closest(find.allPlayers(),chip():getPos())
+    if chip():getPos():getDistance(ply:getPos()) < 50 then
+        --ply:setVelocity(Vector(0,0,250))
+        ply:setHealth(ply:getHealth()+10)
+    end
+end)

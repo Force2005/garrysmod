@@ -1,10 +1,10 @@
---@name Renamon
+--@name Renamon123123
 --@author Sparky
 --@client
 
-local holo = holograms.create(chip():getPos()+Vector(-40,-30,-30), chip():getAngles()+Angle(0,0,90), "models/Combine_Helicopter/helicopter_bomb01.mdl", Vector(1)*1)
+local holo = holograms.create(chip():getPos()+Vector(0,0,-10), chip():getAngles()+Angle(0,0,90), "models/Combine_Helicopter/helicopter_bomb01.mdl", Vector(1)*50)
 holo:setParent(chip())
-
+holo:setColor(Color(0,100,0))
 local textureloaded, mymesh
 local texture = material.create("VertexLitGeneric")
 local screentexture = material.create("UnlitGeneric")
@@ -40,10 +40,10 @@ local function renderScreen()
     render.drawTexturedRect(0,0,512,512)
 end
 
-texture:setTextureURL("$basetexture", "https://i.imgur.com/0b5a9cB.png")
+--texture:setTextureURL("$basetexture", "https://i.imgur.com/cJCo5Hz.png")
 screentexture:setTexture("$basetexture", texture:getTexture("$basetexture"))
 
-http.get("https://raw.githubusercontent.com/KonstantinKomend/My_repository/master/gmstrucV3.obj",function(objdata)
+http.get("https://raw.githubusercontent.com/alekseat/test_model2/main/Maxim.obj",function(objdata)
     local triangles = mesh.trianglesLeft()
 
     local function doneLoadingMesh()
@@ -56,7 +56,7 @@ http.get("https://raw.githubusercontent.com/KonstantinKomend/My_repository/maste
         hook.add("render","mesh",renderScreen)
     end
 
-    local loadmesh = coroutine.wrap(function() mymesh = mesh.createFromObj(objdata, true, true)["baked2_baked_world_geometry_MESH.001"] return true end)
+    local loadmesh = coroutine.wrap(function() mymesh = mesh.createFromObj(objdata, true, true).ArmaCano_Cylinder return true end)
     hook.add("think","loadingMesh",function()
         while quotaAverage()<quotaMax()/2 do
             if loadmesh() then

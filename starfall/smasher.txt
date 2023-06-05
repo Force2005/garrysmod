@@ -1,0 +1,37 @@
+--@name smasher
+--@author MongRaff
+--@server
+local wir = false
+local en = false
+local pro = prop.create(chip():getPos()+Vector(0,0,52),Angle(),"models/props_c17/TrapPropeller_Blade.mdl",false)
+local axis = prop.create(chip():getPos()+Vector(0,0,25),Angle(),"models/props_c17/FurnitureWashingmachine001a.mdl",true)
+local trail = holograms.create(chip():getPos()+Vector(10,-65,55),Angle(),"models/holograms/icosphere.mdl",Vector(0))
+if wir then
+    wire.adjustInputs({"A"},{"number"})
+end
+trail:setParent(pro)
+trail:setTrails(0,150,1,"trails/smoke",Color(255,255,255))
+constraint.axis(pro,axis,nil,nil,Vector(),Vector())
+local sound = sounds.create(pro,"NPC_CombineDropship.FireLoop")
+sound:play()
+sound:setVolume(1,1)
+hook.add("tick","",function()
+    sound:setPitch(50+pro:getAngleVelocity():getLength()/20)
+    if en then
+        if pro:getAngleVelocity().z < 2000 then
+            pro:addAngleVelocity(Vector(0,0,10))
+            pro:applyForceCenter(pro:getAngles():getUp()*15000)
+        else
+            pro:addAngleVelocity(Vector(0,0,-10))
+        end
+    end
+    if wir then
+        if wire.ports.A == 1 then
+            en = true
+        else
+            en = false
+        end
+    else
+        en = true
+    end
+end)
