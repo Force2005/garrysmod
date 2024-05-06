@@ -1,0 +1,79 @@
+--@name PhysGym 2
+--@author IIIAIIIJIbIK BYDEIII?)
+--@server
+local a = true
+local b = true
+local dist = 0
+local ent = chip()
+local grabbing = false
+local throw = false
+local angStartOwner = Angle()
+local angStartEnt = Angle()
+hook.add("tick","",function()
+    if owner():keyDown(IN_KEY.USE) then
+        if a then
+            --if owner():getEyeTrace().Entity:getOwner() then
+                --if owner():getEyeTrace().Entity:getOwner() == owner() then
+                    dist = owner():getShootPos():getDistance(owner():getEyeTrace().Entity:getPos())
+                    ent = owner():getEyeTrace().Entity
+                    ent:isFrozen(false) 
+                    
+                    if ent:getClass() == "prop_ragdoll" then
+                        bone = ent:getPhysicsObjectNum(owner():getEyeTrace().PhysicsBone)
+                    end
+                        if owner():keyDown(IN_KEY.ATTACK2) then 
+                            
+                        ent:setFrozen(false)  
+                            
+                        end
+                    grabbing = true
+                --end
+            --end
+            a = false
+            angStartOwner = owner():getEyeAngles()
+            angStartEnt = ent:getAngles()
+        end
+        if ent != chip() then
+            if isValid(ent) then
+                if throw then
+                    if ent:getClass() == "prop_ragdoll" then
+                        bone:applyForceCenter(owner():getEyeAngles():getForward()*500*bone:getMass())
+                        
+                    else
+                        ent:applyForceCenter(owner():getEyeAngles():getForward()*500*ent:getMass())
+                        
+                    end
+                else
+                    if ent:getClass() == "prop_ragdoll" then
+                        bone:applyForceCenter(((owner():getShootPos()+owner():getEyeAngles():getForward()*dist)-ent:getPos()-ent:getVelocity()*0.1)*ent:getMass())
+                    else
+                        --ent:applyForceCenter(((owner():getShootPos()+owner():getEyeAngles():getForward()*dist)-ent:getPos()-ent:getVelocity()*0.1)*ent:getMass())
+                        ent:setPos(owner():getShootPos()+owner():getEyeAngles():getForward()*dist)
+                        if ent:getClass() == 'player' then
+                            ent:setVelocity(Vector(0,0,25))
+                        else
+
+                        end
+                    end
+                end
+            else
+                ent = chip()
+                dist = 0
+                bone = nil
+            end
+        end
+        b = true
+    else
+        grabbing = false
+        ent = chip()
+        a = true
+        if b then
+            b = false
+        end
+    end
+    if owner():keyDown(IN_KEY.ATTACK) then
+        throw = true
+    else
+        throw = false
+    end
+end)

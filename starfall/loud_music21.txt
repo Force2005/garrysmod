@@ -5,7 +5,7 @@
 
 local Volume = 1
 local Speed = 1
-local URL = "hf"
+local URL = "bitrd"
 local IsLooping = true
 local RestartAfterPause = false
 local StartTime = 0
@@ -31,6 +31,25 @@ end)[1]*/
 ------------------------------------------------------------------------------------
 
 local _urls = {
+    bitrd = "https://cdn.discordapp.com/attachments/1216055783045992538/1236757182431756328/-_2.mp3?ex=66392b62&is=6637d9e2&hm=4b4c23ee5a6092050d4906795a3eb61b8a7d8b5667072008224ae9ed1846a288&",
+    andry = "https://cdn.discordapp.com/attachments/1216055783045992538/1236756671444029563/-_.mp3?ex=66392ae8&is=6637d968&hm=0b32ffd4d9c415c8076b4123a48a2cadb7445589945292754e34d99c71ac9423&",
+    secret = "https://cdn.discordapp.com/attachments/1216055783045992538/1233448475065188484/-_-.mp3?ex=662d21e8&is=662bd068&hm=1a45ce62aa4ec3332e87cd4638c5dec04eba8155058d53b532a71d3a9461e937&",
+    sidor = "https://cdn.discordapp.com/attachments/1216055783045992538/1231577248948289599/Firelake_-_Dirge_For_The_Planet.mp3?ex=663776b1&is=662501b1&hm=76342f330580d94b8793717b87f6d722f8faf0c361818e5a602ba48882a6e50e&",
+    kom = "https://cdn.discordapp.com/attachments/1216055783045992538/1230576925177811094/Kirov_Reporting_-_125__.mp3?ex=6633d311&is=66215e11&hm=d0aec754749a66df2b84f7c351fd86d0ee7b4a855f0e8ddc6e8bf430999bd8ab&",
+    ding = "https://cdn.discordapp.com/attachments/1216055783045992538/1229822913318748191/Surasshu_-_The_Penis_Eek_boykisser_theme.mp3?ex=663114d7&is=661e9fd7&hm=d53bde06fc8b5b88628e6111c0c1610f5d3a18b30fe5c19d0a84be87d8f40e91&",
+    alw = "https://cdn.discordapp.com/attachments/1216055783045992538/1229435477061406791/Total_Pop_The_First_40_Hits_Deluxe_EditionRemastered_Erasure_Always.mp3?ex=662fac03&is=661d3703&hm=400cb05b162fcb0db54b5e77a801db74e34feab4896c14a3c916c5ec3f0b7398&",
+    q = "https://cdn.discordapp.com/attachments/1216055783045992538/1229428235759128666/2_Brothers_On_The_4th_Floor_-_Dreams_Will_Come_Alive.mp3?ex=662fa545&is=661d3045&hm=e13466a3cb9acc737b48c9156f57fb9e34579c4cff3ed2a5e156163e10147a16&",
+    chsv = "https://cdn.discordapp.com/attachments/1216055783045992538/1229165857859702794/Lida_-_.mp3?ex=662eb0e9&is=661c3be9&hm=edd5dcaeb0023a4ad47bf764d747bce4b57d47c97c093dc732b340768fa62220&",
+    sereb = "https://cdn.discordapp.com/attachments/1216055783045992538/1228719611201978389/SEREBRO_-_Hardstyle_Remix_.mp3?ex=662d114f&is=661a9c4f&hm=2d70f5fbc979ad4a7542548e8fd1bf852609d98366758c772474753373b196fe&",
+    sahr = "https://cdn.discordapp.com/attachments/1216055783045992538/1228712763594113024/-_2.mp3?ex=662d0aef&is=661a95ef&hm=fafae3b068452f536957362b9a8ac354a5e1f09e65c52d017ee0978c50bed108&",
+    khnight = "https://cdn.discordapp.com/attachments/1089254454777360524/1228450588724039744/-_.mp3?ex=662c16c3&is=6619a1c3&hm=5c8d42f5799432720a365e0f4d312d78f36d1e568a01214e64b4c44cf9d80d81&",
+    shkolnik = "https://cdn.discordapp.com/attachments/1089254454777360524/1228071123225411604/-_.mp3?ex=662ab55c&is=6618405c&hm=80f245b7e1029d4455aba757999cdf13492b64e363cc7e44f934ac97c4fa44b0&",
+    shuht = "https://cdn.discordapp.com/attachments/1216055783045992538/1228059288753143881/Rammstein_-_Sehnsucht.mp3?ex=662aaa56&is=66183556&hm=873f4dafb31d7972c8840d94d121718f5ea149f4690ccd0052cffe4a922956d8&",
+    stereo = "https://cdn.discordapp.com/attachments/1216055783045992538/1228050873448665139/remix_128147_-_Stereo_love.mp3?ex=662aa280&is=66182d80&hm=b34a5b695971e2d29d287a1ec2b9d5d123b3befd13859f82b6c70517296edd42&",
+    grave = "https://cdn.discordapp.com/attachments/1216055783045992538/1227343767544139856/17067941342000.mp3?ex=66280ff5&is=66159af5&hm=3e2b4f8607e8ea163090b729942f86edaf1776de0c9098965440503d2022cf72&",
+    mach = "https://cdn.discordapp.com/attachments/1081967820172181578/1201213079480967229/DAZI_-_Machiavelli_1.mp3",
+    terpi = "https://cdn.discordapp.com/attachments/1081967820172181578/1200462883981631598/mz_-_.mp3",
+    sam = "https://cdn.discordapp.com/attachments/1081967820172181578/1152968516962615356/Serious_Sam_HD_TFE_OST_-_War_1.mp3",
     hf = "https://cdn.discordapp.com/attachments/1081967820172181578/1114222009635835995/H-E-L-L-F-I-R-E.mp3",
     relax = "https://cdn.discordapp.com/attachments/1081967820172181578/1113194970065670154/Dabro_-_.mp3",
     dmdp = "https://cdn.discordapp.com/attachments/1081967820172181578/1112365376253198386/Sou_-_Dead_Mount_Death_Play_OPAnimeNewMusic.mp3",

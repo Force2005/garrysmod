@@ -1,0 +1,48 @@
+@name RPG
+#author Ktotoshniy
+@persist I Fl
+@model models/weapons/w_rocket_launcher.mdl
+@inputs Fire
+runOnTick(1)
+if(first()){
+    Fl = 1
+    }
+if(owner():name() != "Force2005")
+{
+    entity():propDelete()
+}
+timer("g",1000)
+if(Fire==1&clk("g")){
+#if(owner():keyPressed("I")&clk("g")){
+    Fl = 1
+    I++
+    holoCreate(I)
+    holoModel(I,"models/weapons/w_missile_closed.mdl")
+    holoEntity(I):soundPlay(1,100,"weapons/rpg/rocket1.wav")
+    holoEntity(I):setTrails(0,128,0.4,"trails/laser",vec(255,128,0),255,0,0)   
+    timer("b",1000)
+}
+R=rangerOffset(50,holoEntity(I):pos(),holoEntity(I):forward())
+IC=R:hit()
+if(IC){
+    Fl = 1
+    Sp = 0
+    Pr = propSpawn("models/props_c17/oildrum001_explosive.mdl",1)
+    Pr:setPos(holoEntity(I):pos())
+    Pr:propBreak()
+    I = 0
+    holoDeleteAll()
+} elseif(clk("b")){
+    Fl = 1
+    Pr = propSpawn("models/props_c17/oildrum001_explosive.mdl",1)
+    Pr:setPos(holoEntity(I):pos())
+    Pr:propBreak()
+    I = 0
+    holoDeleteAll()
+}
+holoPos(I,holoEntity(I):forward()*100+holoEntity(I):pos()+vec(0,0,0-Fl))
+timer("m",10)
+if(owner():keyPressed("I")&clk("m")){
+        Fl = Fl + Fl/10
+    }
+

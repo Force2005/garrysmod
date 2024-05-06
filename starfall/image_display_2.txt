@@ -22,7 +22,7 @@ local URLS = {
     blue="https://i.imgur.com/ghdomiN.png",
     mong="https://i.imgur.com/hGuA4pm.png",
     uzhas="https://i.imgur.com/vbJtSbn.png",
-    custom = "https://i.imgur.com/vbDUZXu.png"
+    custom = "https://i.imgur.com/k4rAdoX.png"
 }
 
 local img = "custom"

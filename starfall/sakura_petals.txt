@@ -1,0 +1,106 @@
+--@name Sakura Petals
+--@author Force
+--@client
+
+local Target = owner()
+local maxRadius = 500
+local forMax = 2
+local spawnDelay = 0.2
+local startZ = 1
+local velocity = 10
+local wind_strength = 50 --  
+local wind_direction = Vector(1, 0.5, 0.5) --   (     )
+
+local enableSound = false
+local volume = 5
+local dieTime = 5
+local soundUrl = "https://cdn.discordapp.com/attachments/974678227362660395/974678348343148584/f969747680e8276.mp3"
+
+local emitter = nil
+local sound = nil
+local parts = {}
+local eyeAngle = Angle()
+
+local m = material.create("UnlitGeneric")
+m:setTexture("$basetexture", "effects/workshop/sakura")
+local VertexAlpha = false
+local VertexColor = true
+local AlphaTest = false
+local Additive = true
+local Translucent = false
+local flags = (VertexColor and 16 or 0) + (VertexAlpha and 32 or 0) + (Additive and 128 or 0) + (AlphaTest and 256 or 0) + (Translucent and 2097152 or 0)
+if flags ~= 0 then
+    m:setInt("$flags", flags)
+end
+m:recompute()
+
+if enableSound then
+    bass.loadURL(soundUrl, "3d noblock noplay", function(snd)
+        if snd then
+            sound = snd
+            sound:setLooping(true)
+            sound:setVolume(volume)
+            sound:play()
+        end
+    end)
+end
+
+function rain(radius, degree)
+    local x = radius * math.cos(degree)
+    local y = -radius * math.sin(degree)
+    local pos = Target:getPos() + Vector(x, y, startZ)
+    
+    local part = emitter:add(m, pos, 5, 0, 0, 0, 0, 255, dieTime)
+    if part then
+        table.insert(parts, 1, {p = part, t = timer.curtime() + dieTime})
+        part:setCollide(true)
+        part:setBounce(0)
+        part:setColor(Color(255, 192, 203)) --   ,  
+        part:setGravity(Vector(0, 0, -0.1)) --  ,    
+        part:setVelocity(Vector(0, 0, -velocity) + wind_direction * wind_strength) --      
+        part:setAngles(eyeAngle)
+    end
+end
+
+function startRain()
+    if emitter and emitter:isValid() then emitter:destroy() end
+    emitter = particle.create(Vector(), true)
+    emitter:setNoDraw(false)
+    
+    for i = 0, forMax do
+        local radius, degree = math.rand(0, maxRadius), math.rand(0, math.pi * 2)
+        rain(radius, degree)
+    end
+end
+
+timer.create("rain", spawnDelay, 0, function()
+    startRain()
+end)
+
+timer.create("updateAng", 0.2, 0, function()
+    local time = timer.curtime()
+    local pos = eyePos()
+    eyeAngle = (-eyeVector()):getAngle() + Angle(0, 0, -90)
+    
+    for i, d in ipairs(parts) do
+        if d.t > time then
+            d.p:setAngles(eyeAngle)
+        else
+            table.removeByValue(parts, d)
+        end
+    end
+    
+    if enableSound and sound then
+        sound:setPos(Target:getPos())
+    end
+end)
+
+hook.add("Removed", "anim", function()
+    local color = Color(0, 0, 0)
+    for i, d in ipairs(parts) do
+        d.p:setColor(color)
+        d.p:setAngles(Angle(90, 0, 0))
+    end
+    if emitter and emitter:isValid() then emitter:destroy() end
+    m:destroy()
+end)

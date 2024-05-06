@@ -7,7 +7,7 @@
 local Radius = 10000
 local Speed = 500
 
-local img = "Z"
+local img = "soldierMeme"
 local size = 200
 
 local IsGivingDamage = true
@@ -26,7 +26,7 @@ local TeleportEachDelay = 0.2
 ----- music ------
 local Volume = 5
 local MusicSpeed = 1
-local URL_Music = "Z"
+local URL_Music = "soldierMeme"
 local IsLooping = true
 local MusicRadius = 1000
 ----- music ------
@@ -57,6 +57,7 @@ local URLS = {
 ------------------------------------------------------------------------------------
 
 local _urls_music = {
+        grave = "https://cdn.discordapp.com/attachments/1216055783045992538/1227343767544139856/17067941342000.mp3?ex=66280ff5&is=66159af5&hm=3e2b4f8607e8ea163090b729942f86edaf1776de0c9098965440503d2022cf72&",
     Z = "https://cdn.discordapp.com/attachments/1081967820172181578/1096924000879382641/-_.mp3",
     morgenshtern_1 = "https://u.teknik.io/o2Fly.mp3",
     pornhub_intro = "https://cdn.discordapp.com/attachments/974678227362660395/1021517108997259284/Pornhub_.mp3",

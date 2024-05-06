@@ -15,7 +15,7 @@ end
 
 
 local Target = owner()
-Target = find.playersByName("nonrp")[1]
+Target = find.playersByName("1piqa")[1]
 --throw(tostring(Target))
 
 

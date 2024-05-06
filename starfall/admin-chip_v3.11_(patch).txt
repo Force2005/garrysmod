@@ -5,9 +5,6 @@
 if SERVER then
     po = false
     ent = nil
-    print("<color=255,255,255>Admin-chip V3.11 by <color=0,200,255>maxobur0001")
-    print("<color=255,255,255>Press <color=0,200,255>F2<color=255,255,255> to open the menu. All functions in menu.")
-    print("<color=255,255,255>And last: <color=255,0,0>have fun =)")
     net.receive("kill", function()
         ply = net.readEntity()
         if ply:isAlive() then
@@ -730,7 +727,7 @@ if CLIENT and player() == owner() then
                 render.drawText(30, sy/2-115, "Kill a...", 0)
                 getPlayersByPages(find.allPlayers(), p, pages)
             elseif mode == "main" then
-                render.drawText(30, sy/2-115, "Admin-chip V3.11 by maxobur0001", 0)
+                render.drawText(30, sy/2-115, "Admin settings", 0)
                 if mainp == 1 then
                     render.drawText(45, sy/2-95, "1. Kill", 0)
                     render.drawText(45, sy/2-80, "2. Spawn-kill", 0) 

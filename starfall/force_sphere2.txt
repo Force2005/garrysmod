@@ -23,17 +23,16 @@ local IsTriggerWorldEntity = true
 
 
 local IsWorkByTimer = true
-local WorkTimerDelay = 0.1
+local WorkTimerDelay = 0.2
 
 local IsOnlyPlayers = false
 
 local Friends = {
-    'Force2005',
+    'Force',
     'Markiz',
     'prostocrifte',
-    'Kostanchik',
-    '1piqa',
-    'Xy--GuN',
+    'Lonny',
+    'SHRØØM',
 }
 
 --local SphereMode = 'ihv' -- invisible / ihv
