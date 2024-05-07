@@ -5,13 +5,13 @@
 
 local Volume = 1
 local Speed = 1
-local URL = "bitrd"
+local URL = "vang"
 local IsLooping = true
 local RestartAfterPause = false
 local StartTime = 0
 
 local IsAllServer = false
-local Radius = 1500
+local Radius = 1000
 
 ------------------------------------------------------------------------------------
 
@@ -31,6 +31,7 @@ end)[1]*/
 ------------------------------------------------------------------------------------
 
 local _urls = {
+    vang = "https://cdn.discordapp.com/attachments/1216055783045992538/1237439763309531237/Fulgenesis_-__OST_Metal_Cover.mp3?ex=663ba716&is=663a5596&hm=7e99177198c8a1fc56ce7dedfe6873892ec0891ffbe6008dc26dd7ce25eeb861&",
     bitrd = "https://cdn.discordapp.com/attachments/1216055783045992538/1236757182431756328/-_2.mp3?ex=66392b62&is=6637d9e2&hm=4b4c23ee5a6092050d4906795a3eb61b8a7d8b5667072008224ae9ed1846a288&",
     andry = "https://cdn.discordapp.com/attachments/1216055783045992538/1236756671444029563/-_.mp3?ex=66392ae8&is=6637d968&hm=0b32ffd4d9c415c8076b4123a48a2cadb7445589945292754e34d99c71ac9423&",
     secret = "https://cdn.discordapp.com/attachments/1216055783045992538/1233448475065188484/-_-.mp3?ex=662d21e8&is=662bd068&hm=1a45ce62aa4ec3332e87cd4638c5dec04eba8155058d53b532a71d3a9461e937&",
