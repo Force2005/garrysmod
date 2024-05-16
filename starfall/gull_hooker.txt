@@ -1,0 +1,19 @@
+--@name gull_hooker
+--@author Force \ Loony
+--@shared
+
+function teleportGift(eEnt) 
+    eEnt:setPos( chip():getPos() + Vector( 0,0,0 ))
+    eEnt:ignite(10)
+    chip():emitSound( "items/gift_drop.wav" )
+end
+
+timer.create( "findGift", 0.1, 0, function()
+local Gifts = find.byClass( "player" ) 
+for _, eGift in ipairs( Gifts ) do
+    
+if !eGift.isTeleported then eGift.isTeleported = true
+teleportGift( eGift )
+end
+end
+end)

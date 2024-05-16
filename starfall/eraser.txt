@@ -1,0 +1,242 @@
+--@name Eraser
+--@author 
+--@server
+local filter = {"worldspawn","starfall_processor"}
+local randoms = {"a","b","c","d"}
+local tiles = {"025","05","075","025x025","025x075"}
+local meaty = {"models/Gibs/HGIBS.mdl","models/Gibs/HGIBS_rib.mdl","models/Gibs/HGIBS_scapula.mdl","models/Gibs/HGIBS_spine.mdl","models/props_junk/garbage_bag001a.mdl","models/Gibs/Antlion_gib_Large_2.mdl"}
+local ents = {}
+local poss = {}
+-------------------------------------------
+local maxpiece = 3
+local gibs = 3
+local vecr = Vector(0,0,125)
+local plasticIsConcrete = false
+local plasticIsGlass = false
+-------------------------------------------
+local pro = prop.create(chip():getPos()+chip():getAngles():getUp()*10,chip():getAngles(),"models/holograms/hq_rcube.mdl",false)
+pro:addCollisionListener(function(tab)
+    if not table.hasValue(filter,tab.HitEntity:getClass()) then
+        if not table.hasValue(ents,tab.HitEntity) then
+            table.insert(ents,1,tab.HitEntity)
+            table.insert(poss,1,tab.HitEntity:getPos())
+            if tab.HitEntity:isPlayer() then
+                tab.HitEntity:applyDamage(100000)
+                pro:emitSound("physics/flesh/flesh_bloody_break.wav",75,100,1,CHAN_AUTO)
+                if prop.propsLeft() > maxpiece then
+                        timer.create("a",0.001,gibs,function()
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),table.random(meaty),false)
+                            mg:setMaterial("models/flesh")
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                timer.stop("a")
+                            end)
+                        end)
+                    end
+            elseif tab.HitEntity:isNPC() then
+                tab.HitEntity:applyDamage(100000)
+                if prop.propsLeft() > maxpiece then
+                        timer.create("a",0.001,gibs,function()
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),table.random(meaty),false)
+                            mg:setMaterial("models/flesh")
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                timer.stop("a")
+                            end)
+                        end)
+                    end
+            else
+                if tab.HitEntity:getPhysMaterial() == "metal" then
+                    pro:emitSound("physics/metal/metal_box_break"..math.random(1,2)..".wav",75,100,1,CHAN_AUTO)
+                    if prop.propsLeft() > maxpiece then
+                        timer.create("a",0.001,gibs,function()
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),"models/gibs/scanner_gib02.mdl",false)
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                timer.stop("a")
+                            end)
+                        end)
+                    end
+                    
+                elseif tab.HitEntity:getPhysMaterial() == "metalvent" then
+                    pro:emitSound("physics/metal/metal_box_break"..math.random(1,2)..".wav",75,100,1,CHAN_AUTO)
+                    if prop.propsLeft() > maxpiece then
+                        timer.create("a",0.001,gibs,function()
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),"models/gibs/scanner_gib02.mdl",false)
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                timer.stop("a")
+                            end)
+                        end)
+                    end
+                    
+
+                elseif tab.HitEntity:getPhysMaterial() == "wood" then
+                    pro:emitSound("physics/wood/wood_furniture_break"..math.random(1,2)..".wav",75,100,1,CHAN_AUTO)
+                    if prop.propsLeft() > maxpiece then
+                        timer.create("a",0.001,gibs,function()
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),"models/gibs/wood_gib01b.mdl",false)
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                timer.stop("a")
+                            end)
+                        end)
+                    end
+                   
+                
+                elseif tab.HitEntity:getPhysMaterial() == "glass" then
+                    pro:emitSound("physics/glass/glass_sheet_break"..math.random(1,3)..".wav",75,100,1,CHAN_AUTO)
+                    if prop.propsLeft() > maxpiece then
+                        timer.create("a",0.001,gibs,function()
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),"models/gibs/glass_shard0"..math.random(1,6)..".mdl",false)
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                timer.stop("a")
+                            end)
+                        end)
+                    end
+                    
+                    
+                elseif tab.HitEntity:getPhysMaterial() == "tile" then
+                    if prop.propsLeft() > maxpiece then
+                        timer.create("a",0.001,gibs,function()
+                            if plasticIsConcrete == false and plasticIsGlass == false then
+                            pro:emitSound("physics/glass/glass_pottery_break"..math.random(1,4)..".wav",75,100,1,CHAN_AUTO)
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),"models/hunter/plates/plate"..table.random(tiles)..".mdl",false)
+                            mg:setMaterial("hunter/myplastic")
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                timer.stop("a")
+                            end)
+                            elseif plasticIsGlass == true then
+                            pro:emitSound("physics/glass/glass_sheet_break"..math.random(1,3)..".wav",75,100,1,CHAN_AUTO)
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),"models/gibs/glass_shard0"..math.random(1,6)..".mdl",false)
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                timer.stop("a")
+                            end)
+                            else
+                            pro:emitSound("physics/concrete/boulder_impact_hard"..math.random(1,4)..".wav",75,100,1,CHAN_AUTO)
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),"models/props_debris/concrete_chunk0"..math.random(7,9).."a.mdl",false)
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                    timer.stop("a")
+                            end)
+                            end
+                        end)
+                    end
+                    
+                elseif tab.HitEntity:getPhysMaterial() == "plastic" then
+                    pro:emitSound("physics/plastic/plastic_box_break"..math.random(1,2)..".wav",75,100,1,CHAN_AUTO)
+                    if prop.propsLeft() > maxpiece then
+                        timer.create("a",0.001,gibs,function()
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),"models/gibs/glass_shard0"..math.random(1,6)..".mdl",false)
+                            mg:setMaterial("hunter/myplastic")
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                timer.stop("a")
+                            end)
+                        end)
+                    end
+                    
+                elseif tab.HitEntity:getPhysMaterial() == "concrete" then
+                    pro:emitSound("physics/concrete/boulder_impact_hard"..math.random(1,4)..".wav",75,100,1,CHAN_AUTO)
+                    if prop.propsLeft() > maxpiece then
+                        timer.create("a",0.001,gibs,function()
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),"models/props_debris/concrete_chunk0"..math.random(7,9).."a.mdl",false)
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                timer.stop("a")
+                            end)
+                        end)
+                    end
+                    
+                elseif tab.HitEntity:getPhysMaterial() == "flesh" then
+                    pro:emitSound("physics/flesh/flesh_bloody_break.wav",75,100,1,CHAN_AUTO)
+                    if prop.propsLeft() > maxpiece then
+                        timer.create("a",0.001,gibs,function()
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),table.random(meaty),false)
+                            mg:setMaterial("models/flesh")
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                timer.stop("a")
+                            end)
+                        end)
+                    end
+                    
+                elseif tab.HitEntity:getPhysMaterial() == "solidmetal" then
+                    pro:emitSound("physics/metal/metal_box_break"..math.random(1,2)..".wav",75,100,1,CHAN_AUTO)
+                    if prop.propsLeft() > maxpiece then
+                        timer.create("a",0.001,gibs,function()
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),"models/props_debris/metal_panelshard01"..table.random(randoms)..".mdl",false)
+                            mg:setMaterial("models/gibs/metalgibs/metal_gibs")
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                timer.stop("a")
+                            end)
+                        end)
+                    end
+                elseif tab.HitEntity:getPhysMaterial() == "computer" then
+                    pro:emitSound("physics/metal/paintcan_impact_hard3.wav",75,100,1,CHAN_AUTO)
+                    if prop.propsLeft() > maxpiece then
+                        timer.create("a",0.001,gibs,function()
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),"models/gibs/manhack_gib0"..math.random(1,4)..".mdl",false)
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                timer.stop("a")
+                            end)
+                        end)
+                    end
+                elseif tab.HitEntity:getPhysMaterial() == "plastic_box" then
+                    pro:emitSound("physics/plastic/plastic_box_break"..math.random(1,2)..".wav",75,100,1,CHAN_AUTO)
+                    if prop.propsLeft() > maxpiece then
+                        timer.create("a",0.001,gibs,function()
+                            local mg = prop.create(pro:getPos(),Angle(math.random(0,360),math.random(0,360),math.random(0,360)),"models/gibs/glass_shard0"..math.random(1,6)..".mdl",false)
+                            mg:setMaterial("hunter/myplastic")
+                            mg:addVelocity(vecr)
+                            constraint.nocollide(pro,mg)
+                            timer.simple(2,function()
+                                mg:remove()                                
+                                timer.stop("a")
+                                timer.stop("a")
+                            end)
+                        end)
+                    end
+                else
+                    pro:emitSound("physics/metal/paintcan_impact_hard3.wav",75,100,1,CHAN_AUTO)
+                end
+            
+                tab.HitEntity:applyDamage(100000)
+                tab.HitEntity:remove()
+            end
+        end
+    end
+end)

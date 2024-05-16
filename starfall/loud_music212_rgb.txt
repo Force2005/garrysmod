@@ -1,11 +1,11 @@
---@name Loud Music212
---@author Markiz
+--@name Loud Music21
+--@author Markiz red by Force
 --@shared
---@model models/props_lab/citizenradio.mdl
+--@model models/sligwolf/grocel/radio/gramophone.mdl
 
-local Volume = 0.5
+local Volume = 0.4
 local Speed = 1
-local URL = "win"
+local URL = "sh"
 local IsLooping = true
 local RestartAfterPause = false
 local StartTime = 0
@@ -31,6 +31,11 @@ end)[1]*/
 ------------------------------------------------------------------------------------
 
 local _urls = {
+    sh = "https://cdn.discordapp.com/attachments/1202316619951382598/1238502123852005406/Vakhbet_Abedov_-_SHaurma_51924809.mp3?ex=663f847c&is=663e32fc&hm=22f37214ab64cd5a03b2be9f4c75a65c014c6b701e6f224ce9e6a0df6cb03c9c&",
+    d = "https://cdn.discordapp.com/attachments/1216055783045992538/1238479411851034624/-_.mp3?ex=663f6f55&is=663e1dd5&hm=cd64c00d97e05bfcdd188f73fe8b3a6a2a10114e1a0884a4e25d52719d1f9c0d&",
+    i = "https://cdn.discordapp.com/attachments/1202316619951382598/1238471561338552371/semmmyq_shinra_-_untitled.mp3?ex=663f6805&is=663e1685&hm=e4ff00efa62b232ec9c0745a1087287c2aa979f88bebd3e4931adc1bdf9514d9&",
+    hps = "https://cdn.discordapp.com/attachments/1202316619951382598/1238469814826045440/Undertale_-_Hopes_and_Dreams_Save_the_World_His_Theme_Last_Goodbye____Mr._Feral_.mp3?ex=663f6665&is=663e14e5&hm=f047619f53e98e8722136c234a57ea82dcf6d57c4a752f6d918b7022d69b3060&",
+    ss = "https://cdn.discordapp.com/attachments/1216055783045992538/1238469217754284092/Toby_Fox_-_Vs._Susie.mp3?ex=663f65d7&is=663e1457&hm=b60d1a93a99854ddb6f2f4e0103192875b00731d6653e79b4a333223b59d651c&",
     field = "https://cdn.discordapp.com/attachments/1216055783045992538/1238217557543227495/Toby_Fox_-_Field_of_Hopes_and_Dreams.mp3?ex=663e7b76&is=663d29f6&hm=de77f98637787fdd07a9ee6290eb71e465e8280b51bd98b62e580ae5dadc43c2&",
     pnd = "https://cdn.discordapp.com/attachments/1216055783045992538/1238214996769378375/Toby_Fox_-_Pandora_Palace.mp3?ex=663e7914&is=663d2794&hm=1c7ba8b54cc073028a3e5d5ac66c42d93fcc47c92a01f68329bfd8b3ec5d15e7&",
     grl = "https://cdn.discordapp.com/attachments/1216055783045992538/1238214452432605184/Toby_Fox_-_Girl_Next_Door.mp3?ex=663e7892&is=663d2712&hm=9417cf3971c4d14185f266feecaa967ca5b52da8b9c9d49aa95fcbb1ddae6236&",
@@ -122,7 +127,7 @@ local _urls = {
     morgenshtern_1 = "https://u.teknik.io/o2Fly.mp3",
     pornhub_intro = "https://cdn.discordapp.com/attachments/974678227362660395/1021517108997259284/Pornhub_.mp3",
     pornhub_2 = "https://cdn.discordapp.com/attachments/974678227362660395/1021562126101393508/DIKIY_KRXT_-_Pornhub_71671016.mp3",
-    bs1 = "https://cdn.discordapp.com/attachments/952924658456494111/1023239769074962492/S.T.A.L.K.E.R.-Shadow-of-Chernobyl-Brain-Scorcher-Ambience.mp3",
+    bs1 = "https://cdn.discordapp.com/attachments/1202316619951382598/1238472163783348355/Y2mate.mx_-_FACE_128_kbps.mp3?ex=663f6895&is=663e1715&hm=cda0742e9c7f27e9b64a02978ca76f31ce83d0f9890a121811a7d7f9bd99e318&",
     soldierMinus = "https://cdn.discordapp.com/attachments/974678227362660395/1061342876648345713/-__minus.mp3",
     soldierMeme = "https://cdn.discordapp.com/attachments/974678227362660395/1061361274233036933/-_mp3-2020.com.mp3",
     sidorovich_1 = "https://cdn.discordapp.com/attachments/974678227362660395/1062476888334946344/sidorovich-ya-tebya-spas.mp3",
@@ -134,7 +139,9 @@ local _urls = {
     screamer = "https://cdn.discordapp.com/attachments/1081967820172181578/1099705174836129912/-_.mp3",
     aahh = "https://cdn.discordapp.com/attachments/974678227362660395/1100475849314148442/onlymp3.to_-_AUUGHHH_Sound_Effect-srodNyimqTM-256k-1654135608956.mp3",
     wither_storm = "https://cdn.discordapp.com/attachments/974678227362660395/1101220414325280798/SnapInsta.io_-_Wither_Storm_-_FULL_GAME_MUSIC_128_kbps.mp3",
+    a = "https://cdn.discordapp.com/attachments/1202316619951382598/1238470408215335024/Y2mate.mx_-_Circus_Theme_Song_320_kbps.mp3?ex=663f66f2&is=663e1572&hm=3f0ebc72bf94bffaa161db57d435782e9a493e900538341b129dfdfb5dd26a9c&",
 }
+
 
 -- =================================================================================
 
@@ -220,19 +227,28 @@ bass.loadURL(_urls[URL], "3d noblock noplay", function(Sound)
         
 end)
 
-local mat = material.load("voice/icntlk_pl")
+local mat = material.load("voice/icntlk_sv")
 
-timer.create("throwVoice", 0.2, 0, function()
-    local chipPos = chip():getPos()
+--     
+local function rainbowColor(time)
+    local r = math.floor(math.sin(time) * 127 + 128)
+    local g = math.floor(math.sin(time + 2) * 127 + 128)
+    local b = math.floor(math.sin(time + 4) * 127 + 128)
+    return Color(r, g, b)
+end
+
+timer.create("throwVoice", 0.3, 0, function()
+    local chipPos = chip():getPos() + Vector(0, 0, 19)
     local emit = particle.create(chipPos, false)
-    local part = emit:add(mat, chipPos, 10, 0, 0, 0, 255, 255, 2)
+    local time = timer.curtime() * 5 --    
+
+    local part = emit:add(mat, chipPos, 5, 0, 0, 0, 255, 255, 2)
     if part then
-        part:setColor(Color(255, 255, 255))
+        part:setColor(rainbowColor(time)) --   
         part:setVelocity(Vector(math.random(-1, 1), math.random(-1, 1), 3):getNormalized() * 100)
-        part:setGravity(Vector(0, 0, -50))
+        part:setGravity(Vector(0, 0, -150))
         part:setCollide(true)
         part:setBounce(0.75)
     end
     emit:destroy()
 end)
-
